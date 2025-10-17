@@ -11,18 +11,18 @@ public class QuanLyPhim_DAO {
         danhSachPhim = new ArrayList<>();
     }
 
-    public boolean addNewMovie(Phim newMovie) {
+    public boolean add(Phim newMovie) {
         if (newMovie == null || danhSachPhim.contains(newMovie)) {
             return false;
         }
-        Phim phim = findMovieByID(newMovie.getMaPhim());
+        Phim phim = timPhim(newMovie.getMaPhim());
         if (phim != null)
-            return false; // đã tồn tại mã phim này
+            return false; 
         danhSachPhim.add(newMovie);
         return true;
     }
 
-    public Phim findMovieByID(String maPhim) {
+    public Phim timPhim(String maPhim) {
         for (Phim phim : danhSachPhim) {
             if (phim.getMaPhim().equalsIgnoreCase(maPhim))
                 return phim;
@@ -34,7 +34,7 @@ public class QuanLyPhim_DAO {
         return danhSachPhim;
     }
 
-    public Phim getPhimByIndex(int index) {
+    public Phim getPhim(int index) {
         if (index < 0 || index >= danhSachPhim.size())
             return null;
         return danhSachPhim.get(index);
