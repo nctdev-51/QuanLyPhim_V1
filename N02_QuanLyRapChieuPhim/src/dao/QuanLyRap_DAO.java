@@ -3,7 +3,6 @@ package dao;
 import java.util.ArrayList;
 
 import entity.Rap;
-import entity.SuatChieu;
 
 public class QuanLyRap_DAO {
     ArrayList<Rap> danhSachRap;
