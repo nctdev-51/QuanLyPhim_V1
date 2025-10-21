@@ -4,14 +4,13 @@ import javax.swing.*;
 
 import ConnectDB.DataBase;
 import dao.QuanLyGhe_DAO;
+import dao.QuanLyKhachHang_DAO;
 import dao.QuanLyPhim_DAO;
 import dao.QuanLyRap_DAO;
 import dao.QuanLySuatChieu_DAO;
 
 import java.awt.*;
 import java.awt.Dialog.ModalExclusionType;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -19,12 +18,13 @@ import entity.Ve;
 import entity.SuatChieu;
 import entity.Rap;
 import entity.Ghe;
+import entity.KhachHang;
 import entity.Phim;
 
 public class QuanLyBanVe extends JPanel {
-    private JComboBox<String> cbPhim, cbPhong, cbSuatChieu;
+    private JComboBox<String> cbPhim, cbPhong, cbSuatChieu, cbGioiTinh;
     private JButton btnChonGhe, btnDatVe, btnXoaChon;
-    private JTextField txtHoTen, txtSDT, txtDiaChi, txtGioiTinh;
+    private JTextField txtHoTen, txtSDT, txtDiaChi;
     private JTextField txtTenPhim, txtTenPhong, txtThoiLuong, txtTheLoai, txtSuatChieu, txtSoGhe;
     private SuatChieu suatChieu;
     private ArrayList<String> roomIDSelectList;
@@ -34,9 +34,11 @@ public class QuanLyBanVe extends JPanel {
     private QuanLySuatChieu_DAO suatChieuManager;
     private QuanLyRap_DAO rapManager;
     private QuanLyGhe_DAO chairManager;
+    private QuanLyKhachHang_DAO customerManager;
 
     public QuanLyBanVe() {
         setLayout(new BorderLayout(10, 10));
+        // Load database
         LoadMovieManager();
         LoadSuatChieuManager();
         LoadRapManager();
@@ -104,7 +106,7 @@ public class QuanLyBanVe extends JPanel {
 
         txtSDT = new JTextField();
 
-        txtGioiTinh = new JTextField();
+        cbGioiTinh = new JComboBox<>(new String[] { "Nam", "Nữ" });
 
         txtSoGhe = new JTextField();
         txtSoGhe.setEditable(false);
@@ -131,7 +133,7 @@ public class QuanLyBanVe extends JPanel {
         JPanel pRow4 = new JPanel();
         pRow4.setLayout(new BoxLayout(pRow4, BoxLayout.X_AXIS));
         pRow4.add(new JLabel("     Giới tính:            "));
-        pRow4.add(txtGioiTinh);
+        pRow4.add(cbGioiTinh);
 
         infoPanel.add(Box.createVerticalStrut(20));
         infoPanel.add(pRow1);
@@ -237,6 +239,7 @@ public class QuanLyBanVe extends JPanel {
         cbPhim.setSelectedIndex(0);
         cbPhong.setSelectedIndex(0);
         cbSuatChieu.setSelectedIndex(0);
+        cbGioiTinh.setSelectedIndex(0);
 
         cbPhong.setEnabled(false);
         cbSuatChieu.setEnabled(false);
@@ -244,7 +247,6 @@ public class QuanLyBanVe extends JPanel {
         btnDatVe.setEnabled(false);
 
         txtDiaChi.setText("");
-        txtGioiTinh.setText("");
         txtHoTen.setText("");
         txtSDT.setText("");
 
@@ -252,11 +254,46 @@ public class QuanLyBanVe extends JPanel {
     }
 
     private void acceptTicket() {
-        JOptionPane.showMessageDialog(this, "Đặt vé thành công!");
+        String hoten = txtHoTen.getText().trim();
+        String sdt = txtSDT.getText().trim();
+        String diaChi = txtDiaChi.getText().trim();
+        String gioiTinh = cbGioiTinh.getSelectedItem().toString();
+        if (hoten.equals("") || sdt.equals("") || diaChi.equals("")) {
+            JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin khách hàng", "Thông báo",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        String regexHoten = "^[A-Z][a-z]+(\s[A-Z][a-z]+)*\\s[A-Z][a-z]+$"; // Gồm Họ và tên - chữ cái đầu phải viết hoa
+        String regexSDT = "^[0-9]{10}$"; // số điện thoại - có 10 số
+        String regexDiaChi = "^([a-z0-9/\\s]+,\\s){3}[a-z0-9/\\s]+$"; // gồm: ấp/đường + xã/phường + quận/huyện +
+                                                                      // tỉnh/thành phố.
+                                                                      // ngăn cách bởi dấu phẩy + khoảng trắng
+        if (!hoten.matches(regexHoten)) {
+            JOptionPane.showMessageDialog(this, "Gồm phần họ và tên, chữ cái đầu phải viết hoa", "Lỗi cú pháp Họ tên",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (!sdt.matches(regexSDT)) {
+            JOptionPane.showMessageDialog(this, "số điện thoại - có 10 số", "Lỗi cú pháp số điện thoại",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (!diaChi.matches(regexDiaChi)) {
+            JOptionPane.showMessageDialog(this,
+                    "Gồm: ấp/đường + xã/phường + quận/huyện + tỉnh/thành phố.\nngăn cách bởi dấu phẩy + khoảng trắng ",
+                    "Lỗi cú pháp Họ tên", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        KhachHang khachHang = new KhachHang("AUTO_GENERATE", hoten, gioiTinh, sdt, diaChi);
+        customerManager.add(khachHang);
         resetForm();
         Ve ve = new Ve("AUTO_GENERATE");
         ve.setDaThanhToan(true);
         // chuyển danh sách ghế đã chọn sang tình trạng đã đặt
+        if (this.selectedChairs == null || this.suatChieu == null) {
+            JOptionPane.showMessageDialog(this, "Chưa chọn ghế !", "Lỗi đặt vé", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
         for (int i = 0; i < this.selectedChairs.size(); i++) {
             String maGhe = this.selectedChairs.get(i);
             Ghe ghe = this.chairManager.TimGheTheoMaRap(maGhe, this.suatChieu.getMaRap());
@@ -264,6 +301,8 @@ public class QuanLyBanVe extends JPanel {
                 ghe.setTinhTrang(true);
         }
         this.suatChieu = null;
+        this.selectedChairs.clear();
+        JOptionPane.showMessageDialog(this, "Đặt vé thành công!");
     }
 
     private void deleteTextMovieInfo() {
@@ -300,7 +339,7 @@ public class QuanLyBanVe extends JPanel {
     }
 
     private void UnlockChooseRoom() {
-        ArrayList<SuatChieu> dsSuatChieu = suatChieuManager.getSuatChieuPhim(suatChieu.getMaPhim());
+        ArrayList<SuatChieu> dsSuatChieu = suatChieuManager.getSuatChieuTheoPhim(suatChieu.getMaPhim());
         cbPhong.setEnabled(true);
         cbPhong.removeAllItems();
         cbPhong.addItem("---Chọn phòng---");
@@ -338,7 +377,7 @@ public class QuanLyBanVe extends JPanel {
     }
 
     private void UnlockChoosMovieShowtime() {
-        ArrayList<SuatChieu> dsSuatChieu = suatChieuManager.getSuatChieuPhim(this.suatChieu.getMaPhim());
+        ArrayList<SuatChieu> dsSuatChieu = suatChieuManager.getSuatChieuTheoPhim(this.suatChieu.getMaPhim());
         cbSuatChieu.setEnabled(true);
         cbSuatChieu.removeAllItems();
         cbSuatChieu.addItem("---Chọn suất chiếu---");
@@ -415,8 +454,7 @@ public class QuanLyBanVe extends JPanel {
             if (ghe.isDaDat()) {
                 btn.setBackground(Color.LIGHT_GRAY);
                 btn.setEnabled(false);
-            } 
-            else {
+            } else {
                 btn.setBackground(Color.GREEN);
             }
             btn.addActionListener(e -> hanldeSelectChair(selectedChairs, btn));
@@ -469,5 +507,9 @@ public class QuanLyBanVe extends JPanel {
 
     private void LoadChairManager() {
         this.chairManager = DataBase.FakeGheDB();
+    }
+
+    private void LoadCustomerManager() {
+        this.customerManager = DataBase.FakeKhachHangDB();
     }
 }
