@@ -1,29 +1,30 @@
 package dao;
 
 import java.util.ArrayList;
-
-import entity.Rap;
 import entity.SuatChieu;
 
 public class QuanLySuatChieu_DAO {
-    protected ArrayList<SuatChieu> danhSachSuatChieu;
+    private ArrayList<SuatChieu> danhSachSuatChieu;
 
     public QuanLySuatChieu_DAO() {
         danhSachSuatChieu = new ArrayList<>();
     }
 
     public boolean addNewSuatChieu(SuatChieu suatChieu) {
-        if (suatChieu == null || danhSachSuatChieu.contains(suatChieu)) {
+        if (suatChieu == null) 
             return false;
-        }
-        SuatChieu suatChieuById = findSuatChieuById(suatChieu.getMaSuatChieu());
-        if (suatChieuById != null)
-            return false; // đã tồn tại mã suất chiếu này
+        
+        if (timSuatChieu(suatChieu.getMaSuatChieu()) != null)
+            return false;
+
         danhSachSuatChieu.add(suatChieu);
         return true;
     }
+    
+    public SuatChieu timSuatChieu(String maSuatChieu) {
+        if (maSuatChieu == null || maSuatChieu.trim().isEmpty())
+            return null;
 
-    public SuatChieu findSuatChieuById(String maSuatChieu) {
         for (SuatChieu suat : danhSachSuatChieu) {
             if (suat.getMaSuatChieu().equalsIgnoreCase(maSuatChieu))
                 return suat;
@@ -41,14 +42,38 @@ public class QuanLySuatChieu_DAO {
         return danhSachSuatChieu.get(index);
     }
 
-    //About this method: lấy tất cả suất chiếu của mã phim trong mảng
-    public ArrayList<SuatChieu> getSuatChieuPhim(String maPhim){ 
-        ArrayList<SuatChieu> suatChieus = new ArrayList<>();
-        for (SuatChieu suatChieu : danhSachSuatChieu) {
-            if(suatChieu.getMaPhim().equals(maPhim)){
-                suatChieus.add(suatChieu);
+    public ArrayList<SuatChieu> getSuatChieuTheoPhim(String maPhim) { 
+        ArrayList<SuatChieu> list = new ArrayList<>();
+        if (maPhim == null || maPhim.trim().isEmpty())
+            return list;
+
+        for (SuatChieu sc : danhSachSuatChieu) {
+            if (sc.getMaPhim().equalsIgnoreCase(maPhim))
+                list.add(sc);
+        }
+        return list;
+    }
+    
+    public boolean suaSuatChieu(SuatChieu suatChieu) {
+        if (suatChieu == null)
+            return false;
+
+        for (int i = 0; i < danhSachSuatChieu.size(); i++) {
+            SuatChieu sc = danhSachSuatChieu.get(i);
+            if (sc.getMaSuatChieu().equalsIgnoreCase(suatChieu.getMaSuatChieu())) {
+                danhSachSuatChieu.set(i, suatChieu);
+                return true;
             }
         }
-        return suatChieus;
+        return false;
+    }
+
+    public boolean xoaSuatChieu(String maSuatChieu) {
+        if (maSuatChieu == null || maSuatChieu.trim().isEmpty())
+            return false;
+
+        return danhSachSuatChieu.removeIf(
+            sc -> sc.getMaSuatChieu().equalsIgnoreCase(maSuatChieu)
+        );
     }
 }
