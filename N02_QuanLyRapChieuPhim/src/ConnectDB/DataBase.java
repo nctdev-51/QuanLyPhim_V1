@@ -4,10 +4,12 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 import dao.QuanLyGhe_DAO;
+import dao.QuanLyKhachHang_DAO;
 import dao.QuanLyPhim_DAO;
 import dao.QuanLyRap_DAO;
 import dao.QuanLySuatChieu_DAO;
 import entity.Ghe;
+import entity.KhachHang;
 import entity.Phim;
 import entity.Rap;
 import entity.SuatChieu;
@@ -65,4 +67,17 @@ public class DataBase {
         }
         return chairManager;
     }
+    public static QuanLyKhachHang_DAO FakeKhachHangDB(){
+        KhachHang kh01 = new KhachHang("KH01", "Lê Minh Tân", "Nam", "0349099412", "66/12 nhiêu tứ, phường 7, quận phú nhuận, tphcm");
+        KhachHang kh02 = new KhachHang("KH02", "Nguyễn Chí Tâm", "Nam", "0123456789", "hóc-môn, tphcm");
+        KhachHang kh03 = new KhachHang("KH03", "Đỗ Thanh Tường", "Nam", "098765421", "21 le loi, phuong 14,quan go vap, tphcm");
+        KhachHang kh04 = new KhachHang("KH04", "Trương Mỹ Lan", "Nữ", "08220530253", "le duan, phường 1, quận 1, tphcm");
+        QuanLyKhachHang_DAO customerManager = new QuanLyKhachHang_DAO();
+        customerManager.add(kh01);
+        customerManager.add(kh02);
+        customerManager.add(kh03);
+        customerManager.add(kh04);
+        return customerManager;
+    }
+    
 }
