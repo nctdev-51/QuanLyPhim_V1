@@ -10,16 +10,20 @@ public class SuatChieu {
     private LocalDate ngayChieu;
     private LocalTime gioChieu;
 
+    private Double giaVe;
+
     public SuatChieu(String maSuatChieu) {
         setMaSuatChieu(maSuatChieu);
     }
 
-    public SuatChieu(String maSuatChieu, String maPhim, String maRap, LocalDate ngayChieu, LocalTime gioChieu) {
+    public SuatChieu(String maSuatChieu, String maPhim, String maRap, LocalDate ngayChieu, LocalTime gioChieu,
+            Double giaVe) {
         setMaSuatChieu(maSuatChieu);
         setMaPhim(maPhim);
         setMaRap(maRap);
         setNgayChieu(ngayChieu);
         setGioChieu(gioChieu);
+        setGiaVe(giaVe);
     }
 
     public String getMaSuatChieu() {
@@ -56,13 +60,32 @@ public class SuatChieu {
         this.ngayChieu = ngayChieu;
     }
 
-	public LocalTime getGioChieu() {
-		return gioChieu;
-	}
+    public LocalTime getGioChieu() {
+        return gioChieu;
+    }
 
-	public void setGioChieu(LocalTime gioChieu) {
-		this.gioChieu = gioChieu;
-	}
+    public void setGioChieu(LocalTime gioChieu) {
+        this.gioChieu = gioChieu;
+    }
+
+    public Double getGiaVe() {
+        return giaVe;
+    }
+
+    public void setGiaVe(Double giaVe) {
+        this.giaVe = giaVe;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!(obj instanceof SuatChieu))
+            return false;
+        SuatChieu other = (SuatChieu) obj;
+        return maSuatChieu.equals(other.maSuatChieu);
+    }
+
     @Override
     public String toString() {
         return "SuatChieu{" +
@@ -71,6 +94,7 @@ public class SuatChieu {
                 ", maRap='" + maRap + '\'' +
                 ", ngayChieu=" + ngayChieu +
                 ", ngioChieu=" + gioChieu +
+                ", giaVe=" + giaVe +
                 '}';
     }
 }

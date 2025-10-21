@@ -25,7 +25,7 @@ public class Start extends JFrame implements ActionListener {
         pnWest.add(boxMenu);
         boxMenu.add(Box.createVerticalStrut(25));
 
-        ImageIcon logoIcon = new ImageIcon("icon/logo.jpg");
+        ImageIcon logoIcon = new ImageIcon("N02_QuanLyRapChieuPhim/icon/logo.jpg");
         Image logoImg = logoIcon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
         JLabel lblLogo = new JLabel(new ImageIcon(logoImg));
         lblLogo.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -78,13 +78,13 @@ public class Start extends JFrame implements ActionListener {
             });
         }
 
-        btnTrangChu.setIcon(resizeIcon("icon/home.png", 28, 28));
-        btnBanVe.setIcon(resizeIcon("icon/ticket.png", 28, 28));
-        btnPhim.setIcon(resizeIcon("icon/movie.png", 60, 28));
-        btnSuatChieu.setIcon(resizeIcon("icon/schedule.png", 28, 28));
-        btnKhachHang.setIcon(resizeIcon("icon/customer.png", 28, 28));
-        btnNhanVien.setIcon(resizeIcon("icon/staff.png", 28, 28));
-        btnThongKe.setIcon(resizeIcon("icon/stats.png", 28, 28));
+        btnTrangChu.setIcon(resizeIcon("N02_QuanLyRapChieuPhim/icon/home.png", 28, 28));
+        btnBanVe.setIcon(resizeIcon("N02_QuanLyRapChieuPhim/icon/ticket.png", 28, 28));
+        btnPhim.setIcon(resizeIcon("N02_QuanLyRapChieuPhim/icon/movie.png", 60, 28));
+        btnSuatChieu.setIcon(resizeIcon("N02_QuanLyRapChieuPhim/icon/schedule.png", 28, 28));
+        btnKhachHang.setIcon(resizeIcon("N02_QuanLyRapChieuPhim/icon/customer.png", 28, 28));
+        btnNhanVien.setIcon(resizeIcon("N02_QuanLyRapChieuPhim/icon/staff.png", 28, 28));
+        btnThongKe.setIcon(resizeIcon("N02_QuanLyRapChieuPhim/icon/stats.png", 28, 28));
 
         btnDangXuat.setBackground(Color.WHITE);
         btnDangXuat.setForeground(Color.BLACK);

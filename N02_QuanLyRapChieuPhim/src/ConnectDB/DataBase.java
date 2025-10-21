@@ -30,9 +30,13 @@ public class DataBase {
     }
 
     public static QuanLySuatChieu_DAO FakeSuatChieuDB() {
-        SuatChieu suat1 = new SuatChieu("suat01", "phim01", "phong01", LocalDate.of(2025, 10, 5), LocalTime.of(7, 20));
-        SuatChieu suat2 = new SuatChieu("suat02", "phim01", "phong02", LocalDate.of(2025, 11, 26), LocalTime.of(9, 30));
-        SuatChieu suat3 = new SuatChieu("suat03", "phim03", "phong02", LocalDate.of(2025, 11, 5), LocalTime.of(18, 00));
+        SuatChieu suat1 = new SuatChieu("suat01", "phim01", "phòng 01", LocalDate.of(2025, 10, 5), LocalTime.of(7, 20),
+                75000.0);
+        SuatChieu suat2 = new SuatChieu("suat02", "phim01", "phòng 02", LocalDate.of(2025, 11, 26),
+                LocalTime.of(9, 30),
+                80000.0);
+        SuatChieu suat3 = new SuatChieu("suat03", "phim03", "phòng 02", LocalDate.of(2025, 11, 5), LocalTime.of(18, 00),
+                90000.0);
         QuanLySuatChieu_DAO suatChieuManager = new QuanLySuatChieu_DAO();
         suatChieuManager.addNewSuatChieu(suat1);
         suatChieuManager.addNewSuatChieu(suat2);
@@ -53,11 +57,11 @@ public class DataBase {
         return roomManager;
     }
 
-    public static QuanLyGhe_DAO FakeGheDB(){
+    public static QuanLyGhe_DAO FakeGheDB() {
         QuanLyGhe_DAO chairManager = new QuanLyGhe_DAO();
         QuanLyRap_DAO rapManager = FakeRapDB();
         for (Rap rap : rapManager.getDanhSachRap()) {
-            for(int i = 0; i < rap.getSoLuongGhe(); i++){
+            for (int i = 0; i < rap.getSoLuongGhe(); i++) {
                 String maGhe = String.valueOf(i);
                 Ghe ghe = new Ghe(maGhe, rap, false);
                 chairManager.add(ghe);
