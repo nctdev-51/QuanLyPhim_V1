@@ -107,7 +107,7 @@ public class Start extends JFrame implements ActionListener {
         add(pnCenter, BorderLayout.CENTER);
 
         JPanel trangChuPanel = new TrangChu();
-        JPanel banVePanel = new QuanLyBanVe();
+//        JPanel banVePanel = new QuanLyBanVe();
         JPanel phimPanel = new QuanLyPhim();
         JPanel suatChieuPanel = new QuanLySuatChieu();
         JPanel khachHangPanel = new QuanLyKhachHang();
@@ -115,7 +115,7 @@ public class Start extends JFrame implements ActionListener {
         JPanel thongKePanel = new QuanLyThongKe();
 
         pnCenter.add(trangChuPanel, "TrangChu");
-        pnCenter.add(banVePanel, "BanVe");
+//        pnCenter.add(banVePanel, "BanVe");
         pnCenter.add(phimPanel, "Phim");
         pnCenter.add(suatChieuPanel, "SuatChieu");
         pnCenter.add(khachHangPanel, "KhachHang");

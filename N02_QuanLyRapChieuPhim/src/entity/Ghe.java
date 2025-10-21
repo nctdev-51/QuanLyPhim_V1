@@ -23,7 +23,7 @@ public class Ghe {
         this.rap = rap;
     }
 
-    public boolean isTinhTrang() { return tinhTrang; }
+    public boolean isDaDat() { return tinhTrang; }
     public void setTinhTrang(boolean tinhTrang) { this.tinhTrang = tinhTrang; }
 
     public boolean datGhe() {

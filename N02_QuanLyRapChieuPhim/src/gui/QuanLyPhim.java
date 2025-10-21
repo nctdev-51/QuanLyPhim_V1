@@ -1,278 +1,369 @@
 package gui;
 
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import dao.QuanLyPhim_DAO;
 import entity.Phim;
 
-import java.awt.*;
-import java.util.ArrayList;
-
-public class QuanLyPhim extends JPanel {
+public class QuanLyPhim extends JPanel implements ActionListener, MouseListener {
+    private DefaultTableModel tableModel;
     private JTable table;
-    private DefaultTableModel model;
-    private JTextField txtMaPhim, txtTenPhim, txtNhaSX, txtTheLoai, txtThoiLuong, txtQuocGia;
-    private JTextField txtTimPhim;
-    private JButton btnThem, btnSua, btnXoa, btnXoaRong, btnLuu, btnTim;
-    private QuanLyPhim_DAO dao;
-    private ArrayList<Phim> dsPhim;
+    private QuanLyPhim_DAO phim_dao;
+
+    // labels + fields
+    JLabel lblMaPhim, lblTenPhim, lblNhaSX, lblTheLoai, lblThoiLuong, lblQuocGia;
+    JTextField txtMaPhim, txtTenPhim, txtNhaSX, txtTheLoai, txtThoiLuong, txtQuocGia, txtTimKiem;
+    // buttons
+    JButton btnThem, btnXoaTrang, btnXoa1Dong, btnLamMoi, btnSua, btnTimKiem;
 
     public QuanLyPhim() {
-        setLayout(new BorderLayout(10, 10));
-        setBackground(Color.WHITE);
+        phim_dao = new QuanLyPhim_DAO();
 
-        // ==== PANEL TRÊN (THÔNG TIN PHIM) ====
-        JPanel pnNorth = new JPanel(new GridBagLayout());
-        pnNorth.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(Color.GRAY, 1, true),
-                "Thông tin phim",
-                TitledBorder.LEFT, TitledBorder.TOP,
-                new Font("Segoe UI", Font.BOLD, 20),
-                Color.DARK_GRAY
-        ));
-        pnNorth.setBackground(Color.WHITE);
+        setLayout(new BorderLayout(0, 0));
+        setSize(900, 600);
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(6, 10, 6, 10);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        // pnNorth (title)
+        JPanel pNorth = new JPanel();
+        pNorth.setBackground(new Color(220, 20, 60)); // giống style SuatChieu
+        add(pNorth, BorderLayout.NORTH);
+        JLabel lblTieuDe = new JLabel("QUẢN LÝ PHIM");
+        lblTieuDe.setFont(new Font("Arial", Font.BOLD, 24));
+        lblTieuDe.setForeground(Color.WHITE);
+        pNorth.add(lblTieuDe);
 
-        JLabel lblMaPhim = new JLabel("Mã phim:");
-        JLabel lblTenPhim = new JLabel("Tên phim:");
-        JLabel lblNhaSX = new JLabel("Nhà sản xuất:");
-        JLabel lblTheLoai = new JLabel("Thể loại:");
-        JLabel lblThoiLuong = new JLabel("Thời lượng (phút):");
-        JLabel lblQuocGia = new JLabel("Quốc gia:");
+        // main body (Box)
+        Box b = Box.createVerticalBox();
+        Box b1, b2, b3, b4, b5, b6;
 
-        Font lblFont = new Font("Segoe UI", Font.BOLD, 18);
-        lblMaPhim.setFont(lblFont); lblTenPhim.setFont(lblFont);
-        lblNhaSX.setFont(lblFont); lblTheLoai.setFont(lblFont);
-        lblThoiLuong.setFont(lblFont); lblQuocGia.setFont(lblFont);
+        Dimension txtSize = new Dimension(260, 34); // kiểu giống SuatChieu
 
-        txtMaPhim = new JTextField(40);
-        txtTenPhim = new JTextField(40);
-        txtNhaSX = new JTextField(40);
-        txtTheLoai = new JTextField(40);
-        txtThoiLuong = new JTextField(40);
-        txtQuocGia = new JTextField(40);
+        b.add(Box.createVerticalStrut(12));
+        b.add(b1 = Box.createHorizontalBox());
+        b1.add(lblMaPhim = new JLabel("Mã phim:"));
+        b1.add(Box.createHorizontalStrut(10));
+        b1.add(txtMaPhim = new JTextField());
+        txtMaPhim.setPreferredSize(txtSize);
+        txtMaPhim.setFont(new Font("Segoe UI", Font.PLAIN, 16));
 
-        gbc.gridx = 0; gbc.gridy = 0; pnNorth.add(lblMaPhim, gbc);
-        gbc.gridx = 1; pnNorth.add(txtMaPhim, gbc);
-        gbc.gridx = 2; pnNorth.add(lblTenPhim, gbc);
-        gbc.gridx = 3; pnNorth.add(txtTenPhim, gbc);
+        b.add(Box.createVerticalStrut(10));
+        b.add(b2 = Box.createHorizontalBox());
+        b2.add(lblTenPhim = new JLabel("Tên phim:"));
+        b2.add(Box.createHorizontalStrut(10));
+        b2.add(txtTenPhim = new JTextField());
+        txtTenPhim.setPreferredSize(txtSize);
+        txtTenPhim.setFont(new Font("Segoe UI", Font.PLAIN, 16));
 
-        gbc.gridx = 0; gbc.gridy = 1; pnNorth.add(lblNhaSX, gbc);
-        gbc.gridx = 1; pnNorth.add(txtNhaSX, gbc);
-        gbc.gridx = 2; pnNorth.add(lblTheLoai, gbc);
-        gbc.gridx = 3; pnNorth.add(txtTheLoai, gbc);
+        b.add(Box.createVerticalStrut(10));
+        b.add(b3 = Box.createHorizontalBox());
+        b3.add(lblNhaSX = new JLabel("Nhà sản xuất:"));
+        b3.add(Box.createHorizontalStrut(10));
+        b3.add(txtNhaSX = new JTextField());
+        txtNhaSX.setPreferredSize(txtSize);
+        txtNhaSX.setFont(new Font("Segoe UI", Font.PLAIN, 16));
 
-        gbc.gridx = 0; gbc.gridy = 2; pnNorth.add(lblThoiLuong, gbc);
-        gbc.gridx = 1; pnNorth.add(txtThoiLuong, gbc);
-        gbc.gridx = 2; pnNorth.add(lblQuocGia, gbc);
-        gbc.gridx = 3; pnNorth.add(txtQuocGia, gbc);
+        b.add(Box.createVerticalStrut(10));
+        b.add(b4 = Box.createHorizontalBox());
+        b4.add(lblTheLoai = new JLabel("Thể loại:"));
+        b4.add(Box.createHorizontalStrut(10));
+        b4.add(txtTheLoai = new JTextField());
+        txtTheLoai.setPreferredSize(txtSize);
+        txtTheLoai.setFont(new Font("Segoe UI", Font.PLAIN, 16));
 
-        add(pnNorth, BorderLayout.NORTH);
+        b.add(Box.createVerticalStrut(10));
+        b.add(b4 = Box.createHorizontalBox()); // reuse variable b4 for next row to keep ordering
+        b4.add(lblThoiLuong = new JLabel("Thời lượng (phút):"));
+        b4.add(Box.createHorizontalStrut(10));
+        b4.add(txtThoiLuong = new JTextField());
+        txtThoiLuong.setPreferredSize(txtSize);
+        txtThoiLuong.setFont(new Font("Segoe UI", Font.PLAIN, 16));
 
-        // ==== BẢNG DỮ LIỆU ====
-        model = new DefaultTableModel(new String[]{"Mã phim", "Tên phim", "Nhà SX", "Thể loại", "Thời lượng", "Quốc gia"}, 0);
-        table = new JTable(model);
-        table.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        table.setRowHeight(25);
-        table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 18));
-        table.getTableHeader().setBackground(new Color(240, 240, 240));
+        b4.add(Box.createHorizontalStrut(20));
+        b4.add(lblQuocGia = new JLabel("Quốc gia:"));
+        b4.add(Box.createHorizontalStrut(10));
+        b4.add(txtQuocGia = new JTextField());
+        txtQuocGia.setPreferredSize(txtSize);
+        txtQuocGia.setFont(new Font("Segoe UI", Font.PLAIN, 16));
 
-        JScrollPane scroll = new JScrollPane(table);
-        scroll.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-        add(scroll, BorderLayout.CENTER);
+        // buttons row
+        b.add(Box.createVerticalStrut(15));
+        b.add(b5 = Box.createHorizontalBox());
 
-        // ==== PANEL DƯỚI (CÁC NÚT CHỨC NĂNG + TÌM KIẾM NGANG) ====
-        JPanel pnSouth = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
-        pnSouth.setBackground(Color.WHITE);
-
-        // Tạo textfield tìm kiếm + nút tìm
-        JLabel lblTim = new JLabel("Tìm mã phim:");
-        lblTim.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        txtTimPhim = new JTextField(15);
-        txtTimPhim.setFont(new Font("Segoe UI", Font.PLAIN, 18));
-        btnTim = new JButton("Tìm");
-
-        // Các nút chức năng chính
         btnThem = new JButton("Thêm");
+        btnXoaTrang = new JButton("Xóa trắng");
+        btnXoa1Dong = new JButton("Xóa 1 dòng");
+        btnLamMoi = new JButton("Làm mới");
         btnSua = new JButton("Sửa");
-        btnXoa = new JButton("Xóa");
-        btnXoaRong = new JButton("Xóa rỗng");
-        btnLuu = new JButton("Lưu");
+        btnTimKiem = new JButton("Tìm kiếm");
+        txtTimKiem = new JTextField();
+        txtTimKiem.setPreferredSize(new Dimension(280, 34));
+        txtTimKiem.setFont(new Font("Segoe UI", Font.PLAIN, 16));
 
-        JButton[] arrBtns = {btnThem, btnSua, btnXoa, btnXoaRong, btnLuu, btnTim};
-        Color[] colors = {
-                new Color(46, 204, 113),  // xanh lá
-                new Color(52, 152, 219),  // xanh dương
-                new Color(231, 76, 60),   // đỏ
-                new Color(155, 89, 182),  // tím
-                new Color(241, 196, 15),  // vàng
-                new Color(255, 140, 0)    // cam (tìm)
-        };
-
-        Font btnFont = new Font("Segoe UI", Font.BOLD, 20);
-        for (int i = 0; i < arrBtns.length; i++) {
-            arrBtns[i].setFont(btnFont);
-            arrBtns[i].setBackground(colors[i]);
-            arrBtns[i].setForeground(Color.WHITE);
-            arrBtns[i].setFocusPainted(false);
-            arrBtns[i].setPreferredSize(new Dimension(140, 45));
+        JButton[] btns = {btnThem, btnXoaTrang, btnXoa1Dong, btnLamMoi, btnSua};
+        for (JButton btn : btns) {
+            btn.setFont(new Font("Segoe UI", Font.BOLD, 14));
+            btn.setBackground(new Color(240, 240, 240));
+            btn.setPreferredSize(new Dimension(130, 38));
+            btn.setFocusPainted(false);
         }
 
-        // Thêm vào cùng một hàng
-        pnSouth.add(lblTim);
-        pnSouth.add(txtTimPhim);
-        pnSouth.add(btnTim);
-        pnSouth.add(btnThem);
-        pnSouth.add(btnSua);
-        pnSouth.add(btnXoa);
-        pnSouth.add(btnXoaRong);
-        pnSouth.add(btnLuu);
+        b5.add(btnThem);
+        b5.add(Box.createHorizontalStrut(12));
+        b5.add(btnXoaTrang);
+        b5.add(Box.createHorizontalStrut(12));
+        b5.add(btnXoa1Dong);
+        b5.add(Box.createHorizontalStrut(12));
+        b5.add(btnLamMoi);
+        b5.add(Box.createHorizontalStrut(12));
+        b5.add(btnSua);
+        b5.add(Box.createHorizontalStrut(20));
+        b5.add(new JLabel("Tìm mã phim:"));
+        b5.add(Box.createHorizontalStrut(10));
+        b5.add(txtTimKiem);
+        b5.add(Box.createHorizontalStrut(10));
+        b5.add(btnTimKiem);
 
-        add(pnSouth, BorderLayout.SOUTH);
+        // table area
+        b.add(Box.createVerticalStrut(10));
+        b.add(b6 = Box.createHorizontalBox());
 
-        dao = new QuanLyPhim_DAO();
-        suaAction();
+        String[] headers = "Mã phim;Tên phim;Nhà SX;Thể loại;Thời lượng;Quốc gia".split(";");
+        tableModel = new DefaultTableModel(headers, 0);
+        JScrollPane scroll = new JScrollPane(table = new JTable(tableModel));
+        table.setRowHeight(26);
+        table.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
+        scroll.setPreferredSize(new Dimension(880, 300));
+        b6.add(scroll);
 
-        btnThem.addActionListener(e -> themPhim());
-        btnSua.addActionListener(e -> suaPhim());
-        btnXoa.addActionListener(e -> xoaPhim());
-        btnXoaRong.addActionListener(e -> xoaRongAction());
-        btnLuu.addActionListener(e -> luuPhim());
-        btnTim.addActionListener(e -> timPhim());
-        table.getSelectionModel().addListSelectionListener(e -> hienThiTable());
+        // align labels
+        Dimension lblSize = new Dimension(150, 28);
+        lblMaPhim.setPreferredSize(lblSize);
+        lblTenPhim.setPreferredSize(lblSize);
+        lblNhaSX.setPreferredSize(lblSize);
+        lblTheLoai.setPreferredSize(lblSize);
+        lblThoiLuong.setPreferredSize(lblSize);
+        lblQuocGia.setPreferredSize(lblSize);
+
+        add(b, BorderLayout.CENTER);
+        b.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+
+        // events
+        table.addMouseListener(this);
+        btnXoa1Dong.addActionListener(this);
+        btnLamMoi.addActionListener(this);
+        btnXoaTrang.addActionListener(this);
+        btnThem.addActionListener(this);
+        btnSua.addActionListener(this);
+        btnTimKiem.addActionListener(this);
+
+        DocDuLieuVaoTable();
     }
 
-    private void themPhim() {
+    // Doc du lieu vao table
+    private void DocDuLieuVaoTable() {
+        tableModel.setRowCount(0);
+        List<Phim> list = phim_dao.getDanhSachPhim(); // giữ tên theo DAO của bạn
+        for (Phim p : list) {
+            tableModel.addRow(new Object[]{
+                    p.getMaPhim(),
+                    p.getTenPhim(),
+                    p.getNhaSanXuat(),
+                    p.getTheLoai(),
+                    p.getThoiLuong(),
+                    p.getQuocGia()
+            });
+        }
+        table.setModel(tableModel);
+    }
+
+    // revertFromField
+    private Phim revertFromField() {
+        String ma = txtMaPhim.getText().trim();
+        String ten = txtTenPhim.getText().trim();
+        String nsx = txtNhaSX.getText().trim();
+        String theLoai = txtTheLoai.getText().trim();
+        int thoiLuong = Integer.parseInt(txtThoiLuong.getText().trim());
+        String quocGia = txtQuocGia.getText().trim();
+        return new Phim(ma, ten, nsx, theLoai, thoiLuong, quocGia);
+    }
+
+    // validData
+    public boolean validData() {
+        String ma = txtMaPhim.getText().trim();
+        String ten = txtTenPhim.getText().trim();
+        String thoiluong = txtThoiLuong.getText().trim();
+
+        if (ma.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Mã phim không được để trống");
+            txtMaPhim.requestFocus();
+            return false;
+        }
+        if (!ma.matches("^P\\d+$")) {
+            JOptionPane.showMessageDialog(this, "Mã phim phải bắt đầu bằng 'P' và theo sau là số");
+            txtMaPhim.requestFocus();
+            return false;
+        }
+        if (ten.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Tên phim không được để trống");
+            txtTenPhim.requestFocus();
+            return false;
+        }
+        if (thoiluong.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Thời lượng không được để trống");
+            txtThoiLuong.requestFocus();
+            return false;
+        }
         try {
-            Phim p = new Phim(
-                    txtMaPhim.getText(),
-                    txtTenPhim.getText(),
-                    txtNhaSX.getText(),
-                    txtTheLoai.getText(),
-                    Integer.parseInt(txtThoiLuong.getText()),
-                    txtQuocGia.getText()
-            );
-            dao.add(p);
-            suaAction();
-            xoaRongAction();
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Lỗi: " + ex.getMessage());
-        }
-    }
-
-    private void suaPhim() {
-        int index = table.getSelectedRow();
-        if (index >= 0) {
-            try {
-                Phim p = dao.getPhim(index);
-                p.setMaPhim(txtMaPhim.getText());
-                p.setTenPhim(txtTenPhim.getText());
-                p.setNhaSanXuat(txtNhaSX.getText());
-                p.setTheLoai(txtTheLoai.getText());
-                p.setThoiLuong(Integer.parseInt(txtThoiLuong.getText()));
-                p.setQuocGia(txtQuocGia.getText());
-                suaAction();
-                xoaRongAction();
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Lỗi: " + ex.getMessage());
+            int t = Integer.parseInt(thoiluong);
+            if (t <= 0) {
+                JOptionPane.showMessageDialog(this, "Thời lượng phải lớn hơn 0");
+                txtThoiLuong.requestFocus();
+                return false;
             }
-        } else {
-            JOptionPane.showMessageDialog(this, "Chọn phim cần sửa!");
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Thời lượng phải là số nguyên");
+            txtThoiLuong.requestFocus();
+            return false;
         }
+        return true;
     }
 
-    private void xoaPhim() {
-        int index = table.getSelectedRow();
-        if (index >= 0) {
-            dsPhim.remove(index);
-            suaAction();
-            xoaRongAction();
-        } else {
-            JOptionPane.showMessageDialog(this, "Chọn phim cần xóa!");
-        }
-    }
-
-    private void luuPhim() {
-//        dao.save(); 
-        JOptionPane.showMessageDialog(this, "Đã lưu danh sách phim thành công!");
-    }
-
-    private void timPhim() {
-        int count = 0;
-        try {
-            String maPhimTim = txtTimPhim.getText().trim();
-
-            if (maPhimTim.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Vui lòng nhập mã phim cần tìm!");
-                txtTimPhim.requestFocus();
-                return;
-            }
-            Phim p = dao.timPhim(maPhimTim);
-            if (p != null) {
-                for (int i = 0; i < model.getRowCount(); i++) {
-                    String id = model.getValueAt(i, 0).toString().trim();
-                    if (id.equalsIgnoreCase(maPhimTim)) {
-                        txtMaPhim.setText(model.getValueAt(i, 0).toString());
-                        txtTenPhim.setText(model.getValueAt(i, 1).toString());
-                        txtNhaSX.setText(model.getValueAt(i, 2).toString());
-                        txtTheLoai.setText(model.getValueAt(i, 3).toString());
-                        txtThoiLuong.setText(model.getValueAt(i, 4).toString());
-                        txtQuocGia.setText(model.getValueAt(i, 5).toString());
-                        table.setRowSelectionInterval(i, i);
-                        table.scrollRectToVisible(table.getCellRect(i, 0, true));
-
-                        count = 1;
-                        return;
-                    }
-                }
-            }
-            if (count == 0) {
-                JOptionPane.showMessageDialog(this, "Không tìm thấy phim có mã: " + maPhimTim);
-                txtTimPhim.requestFocus();
-                txtTimPhim.selectAll();
-            }
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Lỗi khi tìm phim: " + e.getMessage());
-            txtTimPhim.requestFocus();
-            txtTimPhim.selectAll();
-        }
-    }
-
-    private void hienThiTable() {
-        int index = table.getSelectedRow();
-        if (index >= 0) {
-            Phim p = dsPhim.get(index);
-            txtMaPhim.setText(p.getMaPhim());
-            txtTenPhim.setText(p.getTenPhim());
-            txtNhaSX.setText(p.getNhaSanXuat());
-            txtTheLoai.setText(p.getTheLoai());
-            txtThoiLuong.setText(String.valueOf(p.getThoiLuong()));
-            txtQuocGia.setText(p.getQuocGia());
-        }
-    }
-
-    private void suaAction() {
-        model.setRowCount(0);
-        dsPhim = dao.getDanhSachPhim();
-        for (Phim p : dsPhim) {
-            model.addRow(new Object[]{
+    // them phim
+    public void themPhim() {
+        if (!validData()) return;
+        Phim p = revertFromField();
+        if (phim_dao.create(p)) {
+            tableModel.addRow(new Object[]{
                     p.getMaPhim(), p.getTenPhim(), p.getNhaSanXuat(),
                     p.getTheLoai(), p.getThoiLuong(), p.getQuocGia()
             });
+            JOptionPane.showMessageDialog(this, "Thêm phim thành công");
+            xoaTrang();
+        } else {
+            JOptionPane.showMessageDialog(this, "Trùng mã phim");
+            txtMaPhim.requestFocus();
         }
     }
 
-    private void xoaRongAction() {
-        txtMaPhim.setText(""); txtTenPhim.setText("");
-        txtNhaSX.setText(""); txtTheLoai.setText("");
-        txtThoiLuong.setText(""); txtQuocGia.setText("");
-        txtTimPhim.setText("");
-        txtMaPhim.requestFocus();
+    // xoa phim
+    public void xoaPhim() {
+        int row = table.getSelectedRow();
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, "Chưa chọn dòng để xóa");
+            return;
+        }
+        String ma = table.getValueAt(row, 0).toString();
+        int hoi = JOptionPane.showConfirmDialog(this, "Bạn chắc chắn muốn xóa chứ?", "Chú ý", JOptionPane.YES_NO_OPTION);
+        if (hoi == JOptionPane.YES_OPTION) {
+            if (phim_dao.xoaPhim(ma)) {
+                tableModel.removeRow(row);
+                JOptionPane.showMessageDialog(this, "Xóa thành công!");
+                xoaTrang();
+            } else {
+                JOptionPane.showMessageDialog(this, "Xóa thất bại!");
+            }
+        }
     }
+
+    // tim phim
+    public void timPhim() {
+        String ma = txtTimKiem.getText().trim();
+        if (ma.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Nhập mã phim cần tìm!");
+            txtTimKiem.requestFocus();
+            return;
+        }
+        Phim p = phim_dao.search(ma);
+        tableModel.setRowCount(0);
+        if (p != null) {
+            tableModel.addRow(new Object[]{
+                    p.getMaPhim(), p.getTenPhim(), p.getNhaSanXuat(),
+                    p.getTheLoai(), p.getThoiLuong(), p.getQuocGia()
+            });
+        } else {
+            JOptionPane.showMessageDialog(this, "Không tìm thấy phim có mã: " + ma);
+            txtTimKiem.requestFocus();
+        }
+    }
+
+    // sua phim
+    public void suaPhim() {
+        int row = table.getSelectedRow();
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, "Chưa chọn phim để sửa");
+            return;
+        }
+        String maTable = table.getValueAt(row, 0).toString().trim();
+        String ma = txtMaPhim.getText().trim();
+        if (!ma.equals(maTable)) {
+            JOptionPane.showMessageDialog(this, "Không thể sửa mã phim");
+            txtMaPhim.setText(maTable);
+            txtMaPhim.requestFocus();
+            return;
+        }
+        if (!validData()) return;
+        Phim p = revertFromField();
+        if (phim_dao.suaPhim(p)) {
+            // cập nhật table
+            tableModel.setValueAt(p.getTenPhim(), row, 1);
+            tableModel.setValueAt(p.getNhaSanXuat(), row, 2);
+            tableModel.setValueAt(p.getTheLoai(), row, 3);
+            tableModel.setValueAt(p.getThoiLuong(), row, 4);
+            tableModel.setValueAt(p.getQuocGia(), row, 5);
+            JOptionPane.showMessageDialog(this, "Cập nhật thành công");
+        } else {
+            JOptionPane.showMessageDialog(this, "Cập nhật thất bại");
+        }
+    }
+
+    // xoa trang
+    public void xoaTrang() {
+        txtMaPhim.setText("");
+        txtTenPhim.setText("");
+        txtNhaSX.setText("");
+        txtTheLoai.setText("");
+        txtThoiLuong.setText("");
+        txtQuocGia.setText("");
+        txtTimKiem.setText("");
+        table.clearSelection();
+    }
+
+    // ActionListener
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == btnThem) themPhim();
+        else if (e.getSource() == btnXoaTrang) xoaTrang();
+        else if (e.getSource() == btnXoa1Dong) xoaPhim();
+        else if (e.getSource() == btnTimKiem) timPhim();
+        else if (e.getSource() == btnSua) suaPhim();
+        else if (e.getSource() == btnLamMoi) {
+            tableModel.setRowCount(0);
+            DocDuLieuVaoTable();
+            xoaTrang();
+        }
+    }
+
+    // MouseListener
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        int row = table.getSelectedRow();
+        if (row >= 0) {
+            txtMaPhim.setText(tableModel.getValueAt(row, 0).toString());
+            txtTenPhim.setText(tableModel.getValueAt(row, 1).toString());
+            txtNhaSX.setText(tableModel.getValueAt(row, 2).toString());
+            txtTheLoai.setText(tableModel.getValueAt(row, 3).toString());
+            txtThoiLuong.setText(tableModel.getValueAt(row, 4).toString());
+            txtQuocGia.setText(tableModel.getValueAt(row, 5).toString());
+        }
+    }
+
+    @Override public void mousePressed(MouseEvent e) {}
+    @Override public void mouseReleased(MouseEvent e) {}
+    @Override public void mouseEntered(MouseEvent e) {}
+    @Override public void mouseExited(MouseEvent e) {}
 }

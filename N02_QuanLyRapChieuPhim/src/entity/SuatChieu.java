@@ -1,22 +1,25 @@
 package entity;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class SuatChieu {
     private String maSuatChieu;
     private String maPhim;
     private String maRap;
     private LocalDate ngayChieu;
+    private LocalTime gioChieu;
 
     public SuatChieu(String maSuatChieu) {
         setMaSuatChieu(maSuatChieu);
     }
 
-    public SuatChieu(String maSuatChieu, String maPhim, String maRap, LocalDate ngayChieu) {
+    public SuatChieu(String maSuatChieu, String maPhim, String maRap, LocalDate ngayChieu, LocalTime gioChieu) {
         setMaSuatChieu(maSuatChieu);
         setMaPhim(maPhim);
         setMaRap(maRap);
         setNgayChieu(ngayChieu);
+        setGioChieu(gioChieu);
     }
 
     public String getMaSuatChieu() {
@@ -53,6 +56,13 @@ public class SuatChieu {
         this.ngayChieu = ngayChieu;
     }
 
+	public LocalTime getGioChieu() {
+		return gioChieu;
+	}
+
+	public void setGioChieu(LocalTime gioChieu) {
+		this.gioChieu = gioChieu;
+	}
     @Override
     public String toString() {
         return "SuatChieu{" +
@@ -60,6 +70,7 @@ public class SuatChieu {
                 ", maPhim='" + maPhim + '\'' +
                 ", maRap='" + maRap + '\'' +
                 ", ngayChieu=" + ngayChieu +
+                ", ngioChieu=" + gioChieu +
                 '}';
     }
 }
