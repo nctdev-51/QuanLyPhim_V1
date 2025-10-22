@@ -65,8 +65,6 @@ public class Start extends JFrame implements ActionListener {
             btn.setBorderPainted(false);
             btn.setFocusPainted(false);
             btn.setIconTextGap(5);
-            if (btn == btnNhanVien)
-                continue;
             btn.addMouseListener(new java.awt.event.MouseAdapter() {
                 public void mouseEntered(java.awt.event.MouseEvent evt) {
                     btn.setBackground(new Color(41, 128, 185));
@@ -133,8 +131,6 @@ public class Start extends JFrame implements ActionListener {
         btnNhanVien.addActionListener(e -> cardLayout.show(pnCenter, "NhanVien"));
         btnThongKe.addActionListener(e -> cardLayout.show(pnCenter, "ThongKe"));
         btnDangXuat.addActionListener(this);
-
-        hienThiPhanQuyen();
     }
 
     @Override
@@ -157,16 +153,6 @@ public class Start extends JFrame implements ActionListener {
         line.setPreferredSize(new Dimension(Integer.MAX_VALUE, thickness));
         line.setBackground(Color.WHITE);
         return line;
-    }
-
-    private void hienThiPhanQuyen() {
-        if (DangNhap.vaiTro.equalsIgnoreCase("Nhân viên")) {
-            btnNhanVien.setEnabled(false);
-            btnNhanVien.setBackground(new Color(127, 140, 141));
-            btnNhanVien.setToolTipText("Chức năng chỉ dành cho Quản lý");
-        } else {
-            btnNhanVien.setEnabled(true);
-        }
     }
 
     public static void main(String[] args) {

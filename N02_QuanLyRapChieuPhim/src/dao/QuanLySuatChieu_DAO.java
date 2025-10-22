@@ -11,16 +11,16 @@ public class QuanLySuatChieu_DAO {
     }
 
     public boolean addNewSuatChieu(SuatChieu suatChieu) {
-        if (suatChieu == null) 
+        if (suatChieu == null)
             return false;
-        
+
         if (timSuatChieu(suatChieu.getMaSuatChieu()) != null)
             return false;
 
         danhSachSuatChieu.add(suatChieu);
         return true;
     }
-    
+
     public SuatChieu timSuatChieu(String maSuatChieu) {
         if (maSuatChieu == null || maSuatChieu.trim().isEmpty())
             return null;
@@ -42,7 +42,7 @@ public class QuanLySuatChieu_DAO {
         return danhSachSuatChieu.get(index);
     }
 
-    public ArrayList<SuatChieu> getSuatChieuTheoPhim(String maPhim) { 
+    public ArrayList<SuatChieu> getSuatChieuTheoPhim(String maPhim) {
         ArrayList<SuatChieu> list = new ArrayList<>();
         if (maPhim == null || maPhim.trim().isEmpty())
             return list;
@@ -53,7 +53,7 @@ public class QuanLySuatChieu_DAO {
         }
         return list;
     }
-    
+
     public boolean suaSuatChieu(SuatChieu suatChieu) {
         if (suatChieu == null)
             return false;
@@ -68,12 +68,27 @@ public class QuanLySuatChieu_DAO {
         return false;
     }
 
-    public boolean xoaSuatChieu(String maSuatChieu) {
-        if (maSuatChieu == null || maSuatChieu.trim().isEmpty())
-            return false;
+    // Xóa suất chiếu
+    public boolean removeSuatChieu(SuatChieu suatChieu) {
+        return danhSachSuatChieu.remove(suatChieu);
+    }
 
-        return danhSachSuatChieu.removeIf(
-            sc -> sc.getMaSuatChieu().equalsIgnoreCase(maSuatChieu)
-        );
+    // cập nhật suất chiếu
+    public boolean updateSuatChieu(SuatChieu suatChieu) {
+        int index = danhSachSuatChieu.indexOf(suatChieu);
+        if (index == -1) {
+            return false; // suất chiếu không tồn tại
+        }
+        danhSachSuatChieu.set(index, suatChieu);
+        return true;
+    }
+
+    // Lưu vào database
+    public boolean saveToDatabase() {
+        // Giả lập lưu vào database
+        for (SuatChieu suatChieu : danhSachSuatChieu) {
+            System.out.println("Lưu suất chiếu vào database: " + suatChieu);
+        }
+        return true;
     }
 }
