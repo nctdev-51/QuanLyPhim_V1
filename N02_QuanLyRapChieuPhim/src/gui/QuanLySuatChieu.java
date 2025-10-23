@@ -7,6 +7,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
 import ConnectDB.DataBase;
+import dao.QuanLyPhim_DAO;
 import dao.QuanLySuatChieu_DAO;
 import entity.SuatChieu;
 
@@ -22,16 +23,18 @@ import java.util.ArrayList;
 public class QuanLySuatChieu extends JPanel implements ActionListener {
     private QuanLySuatChieu_DAO quanLySuatChieu_DAO;
     private JTable tblSuatChieu;
-    private JTextField txtMaSuat, txtNgayChieu, txtThoiGian, txtGiaVe, txtTimSuat;
-    private JComboBox<String> cbPhim, cbPhong;
+    private JTextField txtMaSuat, txtNgayChieu, txtThoiGian, txtGiaVe, txtTimSuat, txtTenPhim, txtMaPhim;
+    private JComboBox<String> cbPhong;
     private JButton btnThem, btnSua, btnXoa, btnXoaRong, btnLuu, btnTim;
     private DefaultTableModel model;
     private JTree treeNgayChieu;
     private QuanLySuatChieu_DAO data;
+    protected QuanLyPhim_DAO dataPhim;
 
     public QuanLySuatChieu() {
         // Khởi tạo DAO trước khi sử dụng
         quanLySuatChieu_DAO = new QuanLySuatChieu_DAO();
+
         laydulieu();
 
         setLayout(new BorderLayout());
@@ -59,6 +62,7 @@ public class QuanLySuatChieu extends JPanel implements ActionListener {
         treeNgayChieu = new JTree(new DefaultTreeModel(root));
         JScrollPane scrollTree = new JScrollPane(treeNgayChieu);
         scrollTree.setPreferredSize(new Dimension(200, 0));
+
         // === Sự kiện khi nhấn vào một node trong cây ===
         treeNgayChieu.addTreeSelectionListener(e -> {
             DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) treeNgayChieu.getLastSelectedPathComponent();
@@ -92,7 +96,7 @@ public class QuanLySuatChieu extends JPanel implements ActionListener {
         pnBody.setBackground(Color.WHITE);
 
         // === Form nhập liệu ===
-        JPanel pnForm = new JPanel(new GridLayout(3, 2, 10, 10));
+        JPanel pnForm = new JPanel(new GridLayout(4, 2, 10, 10));
         pnForm.setBackground(Color.WHITE);
         pnForm.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
 
@@ -107,19 +111,23 @@ public class QuanLySuatChieu extends JPanel implements ActionListener {
         pnForm.add(new JLabel("Ngày Chiếu (dd/MM/yyyy):"));
         txtNgayChieu = new JTextField();
         pnForm.add(txtNgayChieu);
-        // ==============================================================================
-        pnForm.add(new JLabel("Phim:"));
-        cbPhim = new JComboBox<>(new String[] { "Phim 01", "Phim 02", "Phim 03", "Phim 04", "Phim 05" });
-        pnForm.add(cbPhim);
+
+        pnForm.add(new JLabel("Tên Phim:"));
+        txtTenPhim = new JTextField();
+        pnForm.add(txtTenPhim);
+
+        pnForm.add(new JLabel("Mã Phim:"));
+        txtMaPhim = new JTextField();
+        pnForm.add(txtMaPhim);
 
         pnForm.add(new JLabel("Thời Gian (HH:mm):"));
         txtThoiGian = new JTextField();
         pnForm.add(txtThoiGian);
-
-        pnForm.add(new JLabel("Phòng:"));
+        // ==============================================================================
+        pnForm.add(new JLabel("Mã Phòng:"));
         cbPhong = new JComboBox<>(
-                new String[] { "Phòng 01", "Phòng 02", "Phòng 03", "Phòng 04", "Phòng 05", "Phòng 06", "Phòng 07",
-                        "Phòng 08", "Phòng 09", "Phòng 10" });
+                new String[] { "phong01", "phong02", "phong03", "phong04", "phong05", "phong06", "phong07",
+                        "phong08", "phong09", "phong10" });
 
         pnForm.add(cbPhong);
 
@@ -127,7 +135,9 @@ public class QuanLySuatChieu extends JPanel implements ActionListener {
 
         // === Bảng suất chiếu ===
         model = new DefaultTableModel(
-                new String[] { "Mã Suất Chiếu", "Mã Phim", "Phòng", "Ngày chiếu", "Thời Gian", "Giá Vé" }, 0) {
+                new String[] { "Mã Suất Chiếu", "Mã Phim", "Tên Phim", "Mã Phòng", "Ngày chiếu", "Thời Gian",
+                        "Giá Vé" },
+                0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -148,17 +158,19 @@ public class QuanLySuatChieu extends JPanel implements ActionListener {
         for (int i = 0; i < tblSuatChieu.getColumnCount(); i++) {
             tblSuatChieu.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
+
         tblSuatChieu.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
                 int row = tblSuatChieu.getSelectedRow();
                 if (row != -1) {
                     txtMaSuat.setText(model.getValueAt(row, 0).toString());
-                    cbPhim.setSelectedItem(model.getValueAt(row, 1).toString());
-                    cbPhong.setSelectedItem(model.getValueAt(row, 2).toString());
-                    txtNgayChieu.setText(model.getValueAt(row, 3).toString());
-                    txtThoiGian.setText(model.getValueAt(row, 4).toString());
-                    txtGiaVe.setText(model.getValueAt(row, 5).toString());
+                    txtMaPhim.setText(model.getValueAt(row, 1).toString());
+                    txtTenPhim.setText(model.getValueAt(row, 2).toString());
+                    cbPhong.setSelectedItem(model.getValueAt(row, 3).toString());
+                    txtNgayChieu.setText(model.getValueAt(row, 4).toString());
+                    txtThoiGian.setText(model.getValueAt(row, 5).toString());
+                    txtGiaVe.setText(model.getValueAt(row, 6).toString());
                 }
             }
         });
@@ -194,13 +206,13 @@ public class QuanLySuatChieu extends JPanel implements ActionListener {
                 new Color(255, 140, 0) // cam (tìm)
         };
 
-        Font btnFont = new Font("Segoe UI", Font.BOLD, 20);
+        Font btnFont = new Font("Segoe UI", Font.BOLD, 18);
         for (int i = 0; i < arrBtns.length; i++) {
             arrBtns[i].setFont(btnFont);
             arrBtns[i].setBackground(colors[i]);
             arrBtns[i].setForeground(Color.WHITE);
             arrBtns[i].setFocusPainted(false);
-            arrBtns[i].setPreferredSize(new Dimension(140, 45));
+            arrBtns[i].setPreferredSize(new Dimension(120, 45));
             arrBtns[i].addActionListener(this); // 🔹 GẮN SỰ KIỆN CHO NÚT
         }
 
@@ -217,6 +229,12 @@ public class QuanLySuatChieu extends JPanel implements ActionListener {
     }
 
     // ================ XỬ LÝ SỰ KIỆN =======================
+    private String tenPhim(String maPhim) {
+        // lay ten phim tu database
+        dataPhim = DataBase.FakeMovieDB();
+        String ten = dataPhim.timPhim(maPhim).getTenPhim();
+        return ten;
+    }
 
     private void capNhatBang() {
         model.setRowCount(0); // Xóa dữ liệu cũ
@@ -225,6 +243,7 @@ public class QuanLySuatChieu extends JPanel implements ActionListener {
             model.addRow(new Object[] {
                     suatChieu.getMaSuatChieu(),
                     suatChieu.getMaPhim(),
+                    tenPhim(suatChieu.getMaPhim()),
                     suatChieu.getMaRap(),
                     suatChieu.getNgayChieu().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                     suatChieu.getGioChieu().format(DateTimeFormatter.ofPattern("HH:mm")),
@@ -239,6 +258,7 @@ public class QuanLySuatChieu extends JPanel implements ActionListener {
         Object src = e.getSource();
         if (src == btnThem) {
             them();
+
         } else if (src == btnSua) {
             sua();
         } else if (src == btnXoa) {
@@ -293,7 +313,7 @@ public class QuanLySuatChieu extends JPanel implements ActionListener {
         }
         quanLySuatChieu_DAO.addNewSuatChieu(new SuatChieu(
                 maSuat,
-                cbPhim.getSelectedItem().toString(),
+                txtMaPhim.getText().trim(),
                 cbPhong.getSelectedItem().toString(),
                 LocalDate.parse(ngayChieuStr, DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                 LocalTime.parse(thoiGianStr, DateTimeFormatter.ofPattern("HH:mm")),
@@ -301,14 +321,16 @@ public class QuanLySuatChieu extends JPanel implements ActionListener {
         // Thêm dữ liệu vào bảng
         model.addRow(new Object[] {
                 maSuat,
-                cbPhim.getSelectedItem(),
+                txtMaPhim.getText().trim(),
                 cbPhong.getSelectedItem(),
                 ngayChieuStr,
                 thoiGianStr,
                 giaVe
         });
+        capNhatBang();
         JOptionPane.showMessageDialog(this, "Thêm suất chiếu thành công!", "Thông báo",
                 JOptionPane.INFORMATION_MESSAGE);
+        xoaRong();
     }
 
     // === Sửa suất chiếu ===
@@ -321,15 +343,16 @@ public class QuanLySuatChieu extends JPanel implements ActionListener {
         }
 
         model.setValueAt(txtMaSuat.getText(), row, 0);
-        model.setValueAt(cbPhim.getSelectedItem(), row, 1);
-        model.setValueAt(cbPhong.getSelectedItem(), row, 2);
-        model.setValueAt(txtNgayChieu.getText(), row, 3);
-        model.setValueAt(txtThoiGian.getText(), row, 4);
-        model.setValueAt(txtGiaVe.getText(), row, 5);
+        model.setValueAt(txtMaPhim.getText().trim(), row, 1);
+        model.setValueAt(txtTenPhim.getText().trim(), row, 2);
+        model.setValueAt(cbPhong.getSelectedItem(), row, 3);
+        model.setValueAt(txtNgayChieu.getText(), row, 4);
+        model.setValueAt(txtThoiGian.getText(), row, 5);
+        model.setValueAt(txtGiaVe.getText(), row, 6);
         // Cập nhật trong DAO
         quanLySuatChieu_DAO.updateSuatChieu(new SuatChieu(
                 txtMaSuat.getText().trim(),
-                cbPhim.getSelectedItem().toString(),
+                txtMaPhim.getText().trim(),
                 cbPhong.getSelectedItem().toString(),
                 LocalDate.parse(txtNgayChieu.getText().trim(), DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                 LocalTime.parse(txtThoiGian.getText().trim(), DateTimeFormatter.ofPattern("HH:mm")),
@@ -355,7 +378,8 @@ public class QuanLySuatChieu extends JPanel implements ActionListener {
         txtNgayChieu.setText("");
         txtThoiGian.setText("");
         txtGiaVe.setText("");
-        cbPhim.setSelectedIndex(0);
+        txtMaPhim.setText("");
+        txtTenPhim.setText("");
         cbPhong.setSelectedIndex(0);
     }
 
@@ -400,6 +424,7 @@ public class QuanLySuatChieu extends JPanel implements ActionListener {
                 model.addRow(new Object[] {
                         suat.getMaSuatChieu(),
                         suat.getMaPhim(),
+                        " ",
                         suat.getMaRap(),
                         suat.getNgayChieu().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                         suat.getGioChieu().format(DateTimeFormatter.ofPattern("HH:mm")),
@@ -418,6 +443,7 @@ public class QuanLySuatChieu extends JPanel implements ActionListener {
     // === Lấy dữ liệu từ "database" ===
     public ArrayList<SuatChieu> laydulieu() {
         data = DataBase.FakeSuatChieuDB();
+
         // Giả lập lấy dữ liệu từ database
         for (SuatChieu suatChieu : data.getDanhSachSuatChieu()) {
             quanLySuatChieu_DAO.addNewSuatChieu(suatChieu);

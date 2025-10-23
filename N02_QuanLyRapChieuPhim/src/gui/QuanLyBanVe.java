@@ -340,7 +340,7 @@ public class QuanLyBanVe extends JPanel {
     }
 
     private void UnlockChooseRoom() {
-        ArrayList<SuatChieu> dsSuatChieu = suatChieuManager.getSuatChieuTheoPhim(suatChieu.getMaPhim());
+        ArrayList<SuatChieu> dsSuatChieu = suatChieuManager.getSuatChieuPhim(suatChieu.getMaPhim());
         cbPhong.setEnabled(true);
         cbPhong.removeAllItems();
         cbPhong.addItem("---Chọn phòng---");
@@ -378,7 +378,7 @@ public class QuanLyBanVe extends JPanel {
     }
 
     private void UnlockChoosMovieShowtime() {
-        ArrayList<SuatChieu> dsSuatChieu = suatChieuManager.getSuatChieuTheoPhim(this.suatChieu.getMaPhim());
+        ArrayList<SuatChieu> dsSuatChieu = suatChieuManager.getSuatChieuPhim(this.suatChieu.getMaPhim());
         cbSuatChieu.setEnabled(true);
         cbSuatChieu.removeAllItems();
         cbSuatChieu.addItem("---Chọn suất chiếu---");
