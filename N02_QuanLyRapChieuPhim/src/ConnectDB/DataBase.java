@@ -28,12 +28,12 @@ public class DataBase {
     }
 
     public static QuanLySuatChieu_DAO FakeSuatChieuDB() {
-        SuatChieu suat1 = new SuatChieu("suat01", "phim01", "phòng 01", LocalDate.of(2025, 10, 5), LocalTime.of(7, 20),
+        SuatChieu suat1 = new SuatChieu("suat01", "phim01", "phong01", LocalDate.of(2025, 10, 5), LocalTime.of(7, 20),
                 75000.0);
-        SuatChieu suat2 = new SuatChieu("suat02", "phim01", "phòng 02", LocalDate.of(2025, 11, 26),
+        SuatChieu suat2 = new SuatChieu("suat02", "phim01", "phong02", LocalDate.of(2025, 11, 26),
                 LocalTime.of(9, 30),
                 80000.0);
-        SuatChieu suat3 = new SuatChieu("suat03", "phim03", "phòng 02", LocalDate.of(2025, 11, 5), LocalTime.of(18, 00),
+        SuatChieu suat3 = new SuatChieu("suat03", "phim03", "phong03", LocalDate.of(2025, 11, 5), LocalTime.of(18, 00),
                 90000.0);
         QuanLySuatChieu_DAO suatChieuManager = new QuanLySuatChieu_DAO();
         suatChieuManager.addNewSuatChieu(suat1);

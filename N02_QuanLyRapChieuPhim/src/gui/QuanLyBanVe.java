@@ -347,15 +347,15 @@ public class QuanLyBanVe extends JPanel {
         roomIDSelectList = new ArrayList<>();
         roomIDSelectList.add("");
         // Lấy mã phòng không trùng lặp
-        HashSet<String> dsMaPhong = new HashSet<>();
+        HashSet<String> dsMaRap = new HashSet<>();
         for (SuatChieu suatChieu : dsSuatChieu) {
-            dsMaPhong.add(suatChieu.getMaRap());
+            dsMaRap.add(suatChieu.getMaRap());
         }
-        for (String maPhong : dsMaPhong) {
-            Rap phong = rapManager.findRapByID(maPhong);
-            if (phong != null) {
-                cbPhong.addItem(phong.getTenRap());
-                roomIDSelectList.add(maPhong);
+        for (String maRap : dsMaRap) {
+            Rap rap = rapManager.findRapByID(maRap);
+            if (rap != null) {
+                cbPhong.addItem(rap.getTenRap());
+                roomIDSelectList.add(maRap);
             }
         }
     }
