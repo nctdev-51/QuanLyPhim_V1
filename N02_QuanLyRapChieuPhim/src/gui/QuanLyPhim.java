@@ -14,11 +14,8 @@ public class QuanLyPhim extends JPanel implements ActionListener, MouseListener 
     private DefaultTableModel tableModel;
     private JTable table;
     private QuanLyPhim_DAO phim_dao;
-
-    // labels + fields
     JLabel lblMaPhim, lblTenPhim, lblNhaSX, lblTheLoai, lblThoiLuong, lblQuocGia;
     JTextField txtMaPhim, txtTenPhim, txtNhaSX, txtTheLoai, txtThoiLuong, txtQuocGia, txtTimKiem;
-    // buttons
     JButton btnThem, btnXoaTrang, btnXoa1Dong, btnLamMoi, btnSua, btnTimKiem;
 
     public QuanLyPhim() {
@@ -27,20 +24,18 @@ public class QuanLyPhim extends JPanel implements ActionListener, MouseListener 
         setLayout(new BorderLayout(0, 0));
         setSize(900, 600);
 
-        // pnNorth (title)
         JPanel pNorth = new JPanel();
-        pNorth.setBackground(new Color(220, 20, 60)); // giống style SuatChieu
+        pNorth.setBackground(new Color(220, 20, 60)); 
         add(pNorth, BorderLayout.NORTH);
         JLabel lblTieuDe = new JLabel("QUẢN LÝ PHIM");
         lblTieuDe.setFont(new Font("Arial", Font.BOLD, 24));
         lblTieuDe.setForeground(Color.WHITE);
         pNorth.add(lblTieuDe);
 
-        // main body (Box)
         Box b = Box.createVerticalBox();
         Box b1, b2, b3, b4, b5, b6;
 
-        Dimension txtSize = new Dimension(260, 34); // kiểu giống SuatChieu
+        Dimension txtSize = new Dimension(260, 34); 
 
         b.add(Box.createVerticalStrut(12));
         b.add(b1 = Box.createHorizontalBox());
@@ -75,7 +70,7 @@ public class QuanLyPhim extends JPanel implements ActionListener, MouseListener 
         txtTheLoai.setFont(new Font("Segoe UI", Font.PLAIN, 16));
 
         b.add(Box.createVerticalStrut(10));
-        b.add(b4 = Box.createHorizontalBox()); // reuse variable b4 for next row to keep ordering
+        b.add(b4 = Box.createHorizontalBox());
         b4.add(lblThoiLuong = new JLabel("Thời lượng (phút):"));
         b4.add(Box.createHorizontalStrut(10));
         b4.add(txtThoiLuong = new JTextField());
@@ -89,7 +84,6 @@ public class QuanLyPhim extends JPanel implements ActionListener, MouseListener 
         txtQuocGia.setPreferredSize(txtSize);
         txtQuocGia.setFont(new Font("Segoe UI", Font.PLAIN, 16));
 
-        // buttons row
         b.add(Box.createVerticalStrut(15));
         b.add(b5 = Box.createHorizontalBox());
 
@@ -127,7 +121,6 @@ public class QuanLyPhim extends JPanel implements ActionListener, MouseListener 
         b5.add(Box.createHorizontalStrut(10));
         b5.add(btnTimKiem);
 
-        // table area
         b.add(Box.createVerticalStrut(10));
         b.add(b6 = Box.createHorizontalBox());
 
@@ -140,7 +133,6 @@ public class QuanLyPhim extends JPanel implements ActionListener, MouseListener 
         scroll.setPreferredSize(new Dimension(880, 300));
         b6.add(scroll);
 
-        // align labels
         Dimension lblSize = new Dimension(150, 28);
         lblMaPhim.setPreferredSize(lblSize);
         lblTenPhim.setPreferredSize(lblSize);
@@ -152,7 +144,6 @@ public class QuanLyPhim extends JPanel implements ActionListener, MouseListener 
         add(b, BorderLayout.CENTER);
         b.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
-        // events
         table.addMouseListener(this);
         btnXoa1Dong.addActionListener(this);
         btnLamMoi.addActionListener(this);
@@ -164,10 +155,9 @@ public class QuanLyPhim extends JPanel implements ActionListener, MouseListener 
         DocDuLieuVaoTable();
     }
 
-    // Doc du lieu vao table
     private void DocDuLieuVaoTable() {
         tableModel.setRowCount(0);
-        List<Phim> list = phim_dao.getDanhSachPhim(); // giữ tên theo DAO của bạn
+        List<Phim> list = phim_dao.getDanhSachPhim(); 
         for (Phim p : list) {
             tableModel.addRow(new Object[]{
                     p.getMaPhim(),
@@ -309,7 +299,6 @@ public class QuanLyPhim extends JPanel implements ActionListener, MouseListener 
         if (!validData()) return;
         Phim p = revertFromField();
         if (phim_dao.suaPhim(p)) {
-            // cập nhật table
             tableModel.setValueAt(p.getTenPhim(), row, 1);
             tableModel.setValueAt(p.getNhaSanXuat(), row, 2);
             tableModel.setValueAt(p.getTheLoai(), row, 3);
@@ -321,7 +310,6 @@ public class QuanLyPhim extends JPanel implements ActionListener, MouseListener 
         }
     }
 
-    // xoa trang
     public void xoaTrang() {
         txtMaPhim.setText("");
         txtTenPhim.setText("");
@@ -333,7 +321,6 @@ public class QuanLyPhim extends JPanel implements ActionListener, MouseListener 
         table.clearSelection();
     }
 
-    // ActionListener
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnThem) themPhim();
@@ -348,7 +335,6 @@ public class QuanLyPhim extends JPanel implements ActionListener, MouseListener 
         }
     }
 
-    // MouseListener
     @Override
     public void mouseClicked(MouseEvent e) {
         int row = table.getSelectedRow();
@@ -362,8 +348,23 @@ public class QuanLyPhim extends JPanel implements ActionListener, MouseListener 
         }
     }
 
-    @Override public void mousePressed(MouseEvent e) {}
-    @Override public void mouseReleased(MouseEvent e) {}
-    @Override public void mouseEntered(MouseEvent e) {}
-    @Override public void mouseExited(MouseEvent e) {}
+    @Override 
+    public void mousePressed(MouseEvent e) {
+    	
+    }
+    
+    @Override 
+    public void mouseReleased(MouseEvent e) {
+    	
+    }
+    
+    @Override 
+    public void mouseEntered(MouseEvent e) {
+    	
+    }
+    
+    @Override 
+    public void mouseExited(MouseEvent e) {
+    	
+    }
 }

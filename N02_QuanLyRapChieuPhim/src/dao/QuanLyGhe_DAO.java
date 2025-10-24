@@ -18,7 +18,7 @@ public class QuanLyGhe_DAO {
         }
         Ghe ghe = TimGhe(gheMoi.getMaGhe(), gheMoi.getRap());
         if (ghe != null)
-            return false; 
+            return false; // đã tồn tại mã ghế ở rạp này
         danhSachGhe.add(gheMoi);
         return true;
     }

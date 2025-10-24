@@ -46,6 +46,13 @@ public class QuanLyPhim_DAO {
         }
         return null;
     }
+    
+    public Phim getPhim(int index) {
+        if (danhSachPhim == null || index < 0 || index >= danhSachPhim.size()) {
+            return null;
+        }
+        return danhSachPhim.get(index);
+    }
 
     public Phim search(String maPhim) {
         return timPhim(maPhim);
