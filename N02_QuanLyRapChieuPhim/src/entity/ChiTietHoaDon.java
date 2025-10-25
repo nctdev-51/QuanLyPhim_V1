@@ -2,16 +2,20 @@ package entity;
 
 public class ChiTietHoaDon {
     private HoaDon hoaDon;
-    private int soLuongVe;
+    private Ve ve;
+    private int soLuong;
     private double giaVe;
+    private float thanhTien;
 
     public ChiTietHoaDon() {
     }
 
-    public ChiTietHoaDon(HoaDon hoaDon, int soLuongVe, double giaVe) {
-        this.hoaDon = hoaDon;
-        this.soLuongVe = soLuongVe;
-        this.giaVe = giaVe;
+    public ChiTietHoaDon(HoaDon hoaDon, Ve ve, int soLuong, double giaVe) {
+        setGiaVe(giaVe);
+        setHoaDon(hoaDon);
+        setSoLuong(soLuong);
+        setVe(ve);
+        tinhThanhTien();
     }
 
     public HoaDon getHoaDon() {
@@ -22,12 +26,12 @@ public class ChiTietHoaDon {
         this.hoaDon = hoaDon;
     }
 
-    public int getVe() {
-        return soLuongVe;
+    public Ve getVe() {
+        return ve;
     }
 
-    public void setVe(int soLuongVe) {
-        this.soLuongVe = soLuongVe;
+    public void setVe(Ve ve) {
+        this.ve = ve;
     }
 
     public double getGiaVe() {
@@ -39,14 +43,26 @@ public class ChiTietHoaDon {
     }
 
     public double tinhThanhTien() {
-        return giaVe;
+        return giaVe * soLuong;
+    }
+    public int getSoLuong() {
+        return soLuong;
+    }
+
+    public void setSoLuong(int soLuong) {
+        this.soLuong = soLuong;
+    }
+
+    public float getThanhTien() {
+        return thanhTien;
     }
 
     @Override
     public String toString() {
         return "ChiTietHoaDon{" +
                 "hoaDon=" + (hoaDon != null ? hoaDon.getMaHoaDon() : "null") +
-                ", so luong ve=" + soLuongVe +
+                ", Ve=" + ve.getMaVe() +
+                ", so luong=" + soLuong +
                 ", giaVe=" + giaVe +
                 '}';
     }
