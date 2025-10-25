@@ -6,8 +6,8 @@ public class Ve {
     private String maVe;
     private Ghe ghe;
     private LocalDate ngayBan;
-    private String maKhachHang;
-    private String maNhanVien;
+    // private String maKhachHang;
+    // private String maNhanVien;
     private String maPhim;
     private String maRap;
     private String maSuatChieu;
@@ -19,13 +19,13 @@ public class Ve {
         this.daThanhToan = false;
     }
 
-    public Ve(String maVe, Ghe ghe, LocalDate ngayBan, String maKhachHang, 
-              String maNhanVien, String maPhim, String maRap, String maSuatChieu, boolean daThanhToan) {
+    public Ve(String maVe, Ghe ghe, LocalDate ngayBan, String maKhachHang,
+            String maNhanVien, String maPhim, String maRap, String maSuatChieu, boolean daThanhToan) {
         setMaVe(maVe);
         setGhe(ghe);
         setNgayBan(ngayBan);
-        setMaKhachHang(maKhachHang);
-        setMaNhanVien(maNhanVien);
+        // setMaKhachHang(maKhachHang);
+        // setMaNhanVien(maNhanVien);
         setMaPhim(maPhim);
         setMaRap(maRap);
         setMaSuatChieu(maSuatChieu);
@@ -59,21 +59,21 @@ public class Ve {
         this.ngayBan = ngayBan;
     }
 
-    public String getMaKhachHang() {
-        return maKhachHang;
-    }
+    // public String getMaKhachHang() {
+    //     return maKhachHang;
+    // }
 
-    public void setMaKhachHang(String maKhachHang) {
-        this.maKhachHang = maKhachHang;
-    }
+    // public void setMaKhachHang(String maKhachHang) {
+    //     this.maKhachHang = maKhachHang;
+    // }
 
-    public String getMaNhanVien() {
-        return maNhanVien;
-    }
+    // public String getMaNhanVien() {
+    //     return maNhanVien;
+    // }
 
-    public void setMaNhanVien(String maNhanVien) {
-        this.maNhanVien = maNhanVien;
-    }
+    // public void setMaNhanVien(String maNhanVien) {
+    //     this.maNhanVien = maNhanVien;
+    // }
 
     public String getMaPhim() {
         return maPhim;
@@ -113,8 +113,8 @@ public class Ve {
                 "Mã vé='" + maVe + '\'' +
                 ", Ghế=" + (ghe != null ? ghe.getMaGhe() : "Chưa chọn") +
                 ", Ngày bán=" + ngayBan +
-                ", Mã KH='" + maKhachHang + '\'' +
-                ", Mã NV='" + maNhanVien + '\'' +
+                // ", Mã KH='" + maKhachHang + '\'' +
+                // ", Mã NV='" + maNhanVien + '\'' +
                 ", Mã phim='" + maPhim + '\'' +
                 ", Mã rạp='" + maRap + '\'' +
                 ", Mã suất chiếu='" + maSuatChieu + '\'' +

@@ -38,12 +38,14 @@ public class DangNhap_DAO {
 				String tenNV = rs.getString(5);
 				String diaChi = rs.getString(6);
 				String sdt = rs.getString(7);
-				String trangThai = rs.getString(8);
+				String trangThai = rs.getString(8); //thuộc tính này đã bị xóa 
 				LocalDate ngaysinh = rs.getDate(9).toLocalDate();
-				String vaiTro = rs.getString(10);
+				String vaiTro = rs.getString(10); //Thuộc tính này đã bị xóa
 				String email = rs.getString(11);
 				String gioiTinh = rs.getString(12);
-				NhanVien nvien = new NhanVien(maNV, tenNV, diaChi, sdt, trangThai, ngaysinh, vaiTro, email, gioiTinh);
+				// NhanVien nvien = new NhanVien(maNV, tenNV, diaChi, sdt, trangThai, ngaysinh,
+				// vaiTro, email, gioiTinh);
+				NhanVien nvien = new NhanVien(maNV, tenNV, diaChi, sdt, ngaysinh, email, gioiTinh);
 				tkhoan = new TaiKhoan(nvien, tenDN, mk);
 				return tkhoan;
 			}

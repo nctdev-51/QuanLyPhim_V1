@@ -7,26 +7,39 @@ public class NhanVien {
 	private String tenNV;
 	private String diaChi;
 	private String soDienThoai;
-	private String trangThai;
+	// private String trangThai;
 	private LocalDate ngaySinh;
-	private String vaiTro;
+	// private String vaiTro;
 	private String email;
 	private String gioiTinh;
-	
+
 	public NhanVien() {
-		this("", "", "", "", "", LocalDate.now(), "Nhân viên", "", "");
+		// this("", "", "", "", "", LocalDate.now(), "Nhân viên", "", "");
+		this("", "", "", "", LocalDate.now(), "", "");
 	}
 
-	public NhanVien(String maNV, String tenNV, String diaChi, String soDienThoai, String trangThai, LocalDate ngaySinh,
-			String vaiTro, String email, String gioiTinh) {
+	// public NhanVien(String maNV, String tenNV, String diaChi, String soDienThoai,
+	// String trangThai, LocalDate ngaySinh,
+	// String vaiTro, String email, String gioiTinh) {
+	// super();
+	// this.maNV = maNV;
+	// this.tenNV = tenNV;
+	// this.diaChi = diaChi;
+	// this.soDienThoai = soDienThoai;
+	// this.trangThai = trangThai;
+	// this.ngaySinh = ngaySinh;
+	// this.vaiTro = vaiTro;
+	// this.email = email;
+	// this.gioiTinh = gioiTinh;
+	// }
+	public NhanVien(String maNV, String tenNV, String diaChi, String soDienThoai, LocalDate ngaySinh,
+			String email, String gioiTinh) {
 		super();
 		this.maNV = maNV;
 		this.tenNV = tenNV;
 		this.diaChi = diaChi;
 		this.soDienThoai = soDienThoai;
-		this.trangThai = trangThai;
 		this.ngaySinh = ngaySinh;
-		this.vaiTro = vaiTro;
 		this.email = email;
 		this.gioiTinh = gioiTinh;
 	}
@@ -63,13 +76,13 @@ public class NhanVien {
 		this.soDienThoai = soDienThoai;
 	}
 
-	public String getTrangThai() {
-		return trangThai;
-	}
+	// public String getTrangThai() {
+	// return trangThai;
+	// }
 
-	public void setTrangThai(String trangThai) {
-		this.trangThai = trangThai;
-	}
+	// public void setTrangThai(String trangThai) {
+	// this.trangThai = trangThai;
+	// }
 
 	public LocalDate getNgaySinh() {
 		return ngaySinh;
@@ -79,13 +92,13 @@ public class NhanVien {
 		this.ngaySinh = ngaySinh;
 	}
 
-	public String getVaiTro() {
-		return vaiTro;
-	}
+	// public String getVaiTro() {
+	// return vaiTro;
+	// }
 
-	public void setVaiTro(String vaiTro) {
-		this.vaiTro = vaiTro;
-	}
+	// public void setVaiTro(String vaiTro) {
+	// this.vaiTro = vaiTro;
+	// }
 
 	public String getEmail() {
 		return email;
@@ -106,7 +119,10 @@ public class NhanVien {
 	@Override
 	public String toString() {
 		return "NhanVien [maNV=" + maNV + ", tenNV=" + tenNV + ", diaChi=" + diaChi + ", soDienThoai=" + soDienThoai
-				+ ", trangThai=" + trangThai + ", ngaySinh=" + ngaySinh + ", vaiTro=" + vaiTro + ", email=" + email
+				// + ", trangThai=" + trangThai 
+				+ ", ngaySinh=" + ngaySinh 
+				// + ", vaiTro=" + vaiTro 
+				+ ", email=" + email
 				+ ", gioiTinh=" + gioiTinh + "]";
 	}
 }
