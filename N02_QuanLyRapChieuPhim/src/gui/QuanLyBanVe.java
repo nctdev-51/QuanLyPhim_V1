@@ -1,6 +1,7 @@
 package gui;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 
 import ConnectDB.DataBase;
 import dao.QuanLyGhe_DAO;
@@ -8,9 +9,11 @@ import dao.QuanLyKhachHang_DAO;
 import dao.QuanLyPhim_DAO;
 import dao.QuanLyRap_DAO;
 import dao.QuanLySuatChieu_DAO;
+import dao.QuanLyVe_DAO;
 
 import java.awt.*;
 import java.awt.Dialog.ModalExclusionType;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -35,6 +38,9 @@ public class QuanLyBanVe extends JPanel {
     private QuanLyRap_DAO rapManager;
     private QuanLyGhe_DAO chairManager;
     private QuanLyKhachHang_DAO customerManager;
+    private QuanLyVe_DAO ticketManager;
+    private Dimension modelDimension = new Dimension(500, 600);
+    private Font fChonGhe;
 
     public QuanLyBanVe() {
         setLayout(new BorderLayout(10, 10));
@@ -44,6 +50,7 @@ public class QuanLyBanVe extends JPanel {
         LoadRapManager();
         LoadChairManager();
         LoadCustomerManager();
+        LoadTicketManager();
         // ===== NORTH: Tiêu đề =====
         JLabel lblTitle = new JLabel("QUẢN LÝ BÁN VÉ", JLabel.CENTER);
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 28));
@@ -84,7 +91,7 @@ public class QuanLyBanVe extends JPanel {
         pSuat.setLayout(new BoxLayout(pSuat, BoxLayout.X_AXIS));
         pSuat.add(new JLabel("     Chọn suất chiếu:    "));
         pSuat.add(cbSuatChieu);
-        Font fChonGhe = new Font("Arial", Font.BOLD, 16);
+        this.fChonGhe = new Font("Arial", Font.BOLD, 16);
         btnChonGhe = new JButton("Chọn ghế");
         btnChonGhe.setEnabled(false);
         btnChonGhe.setBackground(Color.RED);
@@ -252,6 +259,8 @@ public class QuanLyBanVe extends JPanel {
         txtSDT.setText("");
 
         deleteTextMovieInfo();
+        this.suatChieu = null;
+        this.selectedChairs.clear();
     }
 
     private void acceptTicket() {
@@ -264,11 +273,9 @@ public class QuanLyBanVe extends JPanel {
                     JOptionPane.INFORMATION_MESSAGE);
             return;
         }
-        String regexHoten = "^[A-Z][a-z]+(\s[A-Z][a-z]+)*\\s[A-Z][a-z]+$"; // Gồm Họ và tên - chữ cái đầu phải viết hoa
+        String regexHoten = "^[A-Z][a-z]+(\s[A-Z][a-z]+)*\s[A-Z][a-z]+$"; // Gồm Họ và tên - chữ cái đầu phải viết hoa
         String regexSDT = "^[0-9]{10}$"; // số điện thoại - có 10 số
-        String regexDiaChi = "^([a-z0-9/\\s]+,\\s){3}[a-z0-9/\\s]+$"; // gồm: ấp/đường + xã/phường + quận/huyện +
-                                                                      // tỉnh/thành phố.
-                                                                      // ngăn cách bởi dấu phẩy + khoảng trắng
+        String regexDiaChi = "^[A-Za-z0-9/,\s]+$";
         if (!hoten.matches(regexHoten)) {
             JOptionPane.showMessageDialog(this, "Gồm phần họ và tên, chữ cái đầu phải viết hoa", "Lỗi cú pháp Họ tên",
                     JOptionPane.ERROR_MESSAGE);
@@ -280,30 +287,144 @@ public class QuanLyBanVe extends JPanel {
             return;
         }
         if (!diaChi.matches(regexDiaChi)) {
-            JOptionPane.showMessageDialog(this,
-                    "Gồm: ấp/đường + xã/phường + quận/huyện + tỉnh/thành phố.\nngăn cách bởi dấu phẩy + khoảng trắng ",
-                    "Lỗi cú pháp Họ tên", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Địa chỉ bao gồm các kí tự chữ, kí tự số, dấu phẩy, khoảng trắng",
+                    "Lỗi cú pháp địa chỉ", JOptionPane.ERROR_MESSAGE);
             return;
         }
         KhachHang khachHang = new KhachHang("AUTO_GENERATE", hoten, gioiTinh, sdt, diaChi);
+        // lưu khách hàng
         customerManager.add(khachHang);
-        resetForm();
-        Ve ve = new Ve("AUTO_GENERATE");
-        ve.setDaThanhToan(true);
+
         // chuyển danh sách ghế đã chọn sang tình trạng đã đặt
         if (this.selectedChairs == null || this.suatChieu == null) {
             JOptionPane.showMessageDialog(this, "Chưa chọn ghế !", "Lỗi đặt vé", JOptionPane.WARNING_MESSAGE);
             return;
         }
+
+        JOptionPane.showMessageDialog(this, "Đặt vé thành công!");
+        showTicketPanel();
+
+    }
+
+    private void showTicketPanel() {
+        if (this.suatChieu == null || this.selectedChairs == null)
+            return;
+        JFrame ticketFrame = new JFrame();
+        ticketFrame.setSize(this.modelDimension);
+        ticketFrame.setLocationRelativeTo(this);
+        ticketFrame.setLayout(new BorderLayout());
+        ticketFrame.setTitle("Thông tin vé");
+
+        JLabel lblTitle = new JLabel("KIỂM TRA THÔNG TIN VÉ");
+        Font fTitle = new Font("Arial", Font.BOLD, 20);
+        lblTitle.setFont(fTitle);
+        lblTitle.setForeground(Color.RED);
+        JPanel pNorth = new JPanel();
+        pNorth.add(lblTitle);
+
+        ticketFrame.add(pNorth, BorderLayout.NORTH);
+
+        JPanel pCenter = new JPanel();
+        pCenter.setLayout(new BoxLayout(pCenter, BoxLayout.Y_AXIS));
+        pCenter.setBorder(BorderFactory.createTitledBorder("THÔNG TIN VÉ"));
+        // mã vé, thời gian chiếu, tên phim, tên phòng chiếu, số ghế, số lượng vé, thời
+        // gian đặt vé
+        Ve ve = createTicket();
+        if (ve == null)
+            return;
+        String maVe = ve.getMaVe();
+        Phim phim = this.movieManager.timPhim(ve.getMaPhim());
+        String tenPhim = phim.getTenPhim();
+        Rap rap = this.rapManager.findRapByID(ve.getMaRap());
+        String tenPhong = rap.getTenRap();
+        String thoiGian = this.suatChieu.getGioChieu().toString() + ", " + this.suatChieu.getNgayChieu().toString();
+        String soVe = Integer.toString(this.selectedChairs.size());
+
+        String soGhe = String.join(", ", this.selectedChairs);
+        String thoiGianDatVe = ve.getNgayBan().toString();
+        String trangThai = ve.isDaThanhToan() ? "Đã thanh toán" : "Chưa thanh toán";
+
+        JLabel lblMaVe = new JLabel("  Mã vé:                  " + maVe);
+        JLabel lblTenPhim = new JLabel("  Tên phim:            " + tenPhim);
+        JLabel lblTenPhong = new JLabel("  Phòng chiếu:       " + tenPhong);
+        JLabel lblThoiGian = new JLabel("  Thời gian:            " + thoiGian);
+        JLabel lblSoVe = new JLabel("  Số vé:                   " + soVe);
+        JLabel lblSoGhe = new JLabel("  Số ghế:                 " + soGhe);
+        JLabel lblThoiGianDatVe = new JLabel("  Thời gian đặt vé: " + thoiGianDatVe);
+        JLabel lblTrangThai = new JLabel("  Trạng thái:           " + trangThai);
+        pCenter.add(Box.createVerticalStrut(10));
+        pCenter.add(lblMaVe);
+        pCenter.add(Box.createVerticalStrut(5));
+        pCenter.add(lblTenPhim);
+        pCenter.add(Box.createVerticalStrut(5));
+        pCenter.add(lblTenPhong);
+        pCenter.add(Box.createVerticalStrut(5));
+        pCenter.add(lblThoiGian);
+        pCenter.add(Box.createVerticalStrut(5));
+        pCenter.add(lblSoVe);
+        pCenter.add(Box.createVerticalStrut(5));
+        pCenter.add(lblSoGhe);
+        pCenter.add(Box.createVerticalStrut(5));
+        pCenter.add(lblThoiGianDatVe);
+        pCenter.add(Box.createVerticalStrut(5));
+        pCenter.add(lblTrangThai);
+        pCenter.add(Box.createVerticalStrut(10));
+
+        ticketFrame.add(pCenter, BorderLayout.CENTER);
+
+        JPanel pSouth = new JPanel();
+        JButton btnThanhToan = new JButton("Thanh toán");
+        btnThanhToan.setFont(fChonGhe);
+        btnThanhToan.setBackground(Color.GREEN);
+        JButton btnHuy = new JButton("Hủy đặt vé");
+        btnHuy.setFont(this.fChonGhe);
+        btnHuy.setBackground(Color.RED);
+        btnHuy.setForeground(Color.WHITE);
+
+        pSouth.add(btnHuy);
+        pSouth.add(btnThanhToan);
+
+        ticketFrame.add(pSouth, BorderLayout.SOUTH);
+        btnHuy.addActionListener(e -> huyDatVe(ticketFrame));
+        btnThanhToan.addActionListener(e -> thanhToan(ticketFrame, ve));
+
+        ticketFrame.setModalExclusionType(ModalExclusionType.APPLICATION_EXCLUDE);
+        ticketFrame.setVisible(true);
+    }
+
+    private void huyDatVe(JFrame ticketJFrame) {
+        ticketJFrame.dispose();
+        resetForm();
+    }
+
+    private void thanhToan(JFrame ticketJFrame, Ve ve) {
+        JOptionPane.showMessageDialog(this, "Thanh toán thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
         for (int i = 0; i < this.selectedChairs.size(); i++) {
             String maGhe = this.selectedChairs.get(i);
             Ghe ghe = this.chairManager.TimGheTheoMaRap(maGhe, this.suatChieu.getMaRap());
-            if (ghe != null)
+
+            if (ghe != null) {
                 ghe.setTinhTrang(true);
+                // tạo vé
+                Ve veMoi = createTicket();
+                veMoi.setDaThanhToan(true);
+                veMoi.setGhe(ghe);
+                this.ticketManager.add(ve);
+            }
         }
-        this.suatChieu = null;
-        this.selectedChairs.clear();
-        JOptionPane.showMessageDialog(this, "Đặt vé thành công!");
+        ticketJFrame.dispose();
+        resetForm();
+    }
+
+    private Ve createTicket() {
+        if (this.suatChieu == null)
+            return null;
+        Ve ve = new Ve(QuanLyVe_DAO.taoMaVeTuDong());
+        ve.setMaPhim(this.suatChieu.getMaPhim());
+        ve.setMaRap(this.suatChieu.getMaRap());
+        ve.setMaSuatChieu(this.suatChieu.getMaSuatChieu());
+        ve.setNgayBan(LocalDate.now());
+        return ve;
     }
 
     private void deleteTextMovieInfo() {
@@ -387,7 +508,7 @@ public class QuanLyBanVe extends JPanel {
         showtimeSelectList.add("");
         for (SuatChieu suatChieu : dsSuatChieu) {
             if (suatChieu.getMaRap().equals(this.suatChieu.getMaRap())) {
-                String dataSuatChieu = suatChieu.getNgayChieu().toString() + "T" + suatChieu.getGioChieu().toString();
+                String dataSuatChieu = suatChieu.getNgayChieu().toString() + ", " + suatChieu.getGioChieu().toString();
                 cbSuatChieu.addItem(dataSuatChieu);
                 showtimeSelectList.add(suatChieu.getMaSuatChieu());
             }
@@ -406,7 +527,7 @@ public class QuanLyBanVe extends JPanel {
         txtSuatChieu.setText("");
         txtSuatChieu.setText(cbSuatChieu.getSelectedItem().toString());
         int index = cbSuatChieu.getSelectedIndex();
-        this.suatChieu.setMaSuatChieu(showtimeSelectList.get(index));
+        this.suatChieu = this.suatChieuManager.timSuatChieu(showtimeSelectList.get(index));
         // Tới phần chọn ghế
         btnChonGhe.setEnabled(true);
     }
@@ -423,7 +544,7 @@ public class QuanLyBanVe extends JPanel {
         int col = row;
 
         JFrame chairFrame = new JFrame("Chọn ghế");
-        chairFrame.setSize(500, 600);
+        chairFrame.setSize(this.modelDimension);
         chairFrame.setLocationRelativeTo(this);
         chairFrame.setLayout(new BorderLayout());
 
@@ -512,5 +633,9 @@ public class QuanLyBanVe extends JPanel {
 
     private void LoadCustomerManager() {
         this.customerManager = DataBase.FakeKhachHangDB();
+    }
+
+    private void LoadTicketManager() {
+        this.ticketManager = new QuanLyVe_DAO();
     }
 }

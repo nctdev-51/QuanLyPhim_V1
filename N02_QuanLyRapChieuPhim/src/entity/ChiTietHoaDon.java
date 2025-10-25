@@ -2,15 +2,15 @@ package entity;
 
 public class ChiTietHoaDon {
     private HoaDon hoaDon;
-    private Ve ve;
+    private int soLuongVe;
     private double giaVe;
 
     public ChiTietHoaDon() {
     }
 
-    public ChiTietHoaDon(HoaDon hoaDon, Ve ve, double giaVe) {
+    public ChiTietHoaDon(HoaDon hoaDon, int soLuongVe, double giaVe) {
         this.hoaDon = hoaDon;
-        this.ve = ve;
+        this.soLuongVe = soLuongVe;
         this.giaVe = giaVe;
     }
 
@@ -22,12 +22,12 @@ public class ChiTietHoaDon {
         this.hoaDon = hoaDon;
     }
 
-    public Ve getVe() {
-        return ve;
+    public int getVe() {
+        return soLuongVe;
     }
 
-    public void setVe(Ve ve) {
-        this.ve = ve;
+    public void setVe(int soLuongVe) {
+        this.soLuongVe = soLuongVe;
     }
 
     public double getGiaVe() {
@@ -46,7 +46,7 @@ public class ChiTietHoaDon {
     public String toString() {
         return "ChiTietHoaDon{" +
                 "hoaDon=" + (hoaDon != null ? hoaDon.getMaHoaDon() : "null") +
-                ", ve=" + (ve != null ? ve.getMaVe() : "null") +
+                ", so luong ve=" + soLuongVe +
                 ", giaVe=" + giaVe +
                 '}';
     }
