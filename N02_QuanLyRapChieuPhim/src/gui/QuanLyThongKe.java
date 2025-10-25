@@ -17,18 +17,17 @@ import java.time.format.DateTimeFormatter;
 
 public class QuanLyThongKe extends JPanel implements ActionListener {
     private JTable tblThongKe;
-    private JButton btnLapBaoCao, btnHuy, btnXem;
+    private JButton btnXem;
     // Summary labels (thống kê tổng quan)
     private JLabel lblTotalPhimValue, lblTotalVeValue, lblTotalDoanhThuValue;
-    private JTextField txtTimSuat;
+    private JTextField txtTimKiem;
     private JButton btnTim;
     private JButton btnBaoCao;
-    private JButton btnSua;
     private JButton btnThemThuMuc; // nút thêm thư mục cho JTree
     private JTree treeNgayChieu;
-    private DefaultTableModel model;
     private DefaultMutableTreeNode root; // root của cây, lưu làm trường lớp
     private JLabel lblTotalNgayChieuValue;
+    private DefaultTableModel model;
 
     public QuanLyThongKe() {
         setLayout(new BorderLayout(10, 10));
@@ -153,7 +152,12 @@ public class QuanLyThongKe extends JPanel implements ActionListener {
                 { "MP005", "2025/06/10", "Đẹp từng Centimet", "2453", "54.002.000" }
         };
 
-        DefaultTableModel model = new DefaultTableModel(data, columns);
+        model = new DefaultTableModel(data, columns) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Không cho phép chỉnh sửa trực tiếp trong bảng
+            }
+        };
         tblThongKe = new JTable(model);
         tblThongKe.setRowHeight(25);
         tblThongKe.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
@@ -191,16 +195,17 @@ public class QuanLyThongKe extends JPanel implements ActionListener {
 
         JLabel lblTim = new JLabel("Tìm mã suất chiếu:");
         lblTim.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        txtTimSuat = new JTextField(15);
-        txtTimSuat.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+        txtTimKiem = new JTextField(15);
+        txtTimKiem.setFont(new Font("Segoe UI", Font.PLAIN, 18));
 
         btnTim = new JButton("Tìm");
         btnBaoCao = new JButton("Lập Báo cáo");
-        btnSua = new JButton("Sửa");
+        btnXem = new JButton("Xem");
+
         // nút thêm thư mục cho cây ngày chiếu
         btnThemThuMuc = new JButton("Thêm thư mục");
 
-        JButton[] arrBtns = { btnBaoCao, btnSua, btnTim };
+        JButton[] arrBtns = { btnBaoCao, btnXem, btnTim };
         Color[] colors = {
                 new Color(46, 204, 113), // xanh lá
                 new Color(52, 152, 219), // xanh dương
@@ -208,7 +213,7 @@ public class QuanLyThongKe extends JPanel implements ActionListener {
 
         };
 
-        Font btnFont = new Font("Segoe UI", Font.BOLD, 18);
+        Font btnFont = new Font("Segoe UI", Font.BOLD, 16);
         for (int i = 0; i < arrBtns.length; i++) {
             arrBtns[i].setFont(btnFont);
             arrBtns[i].setBackground(colors[i]);
@@ -227,100 +232,92 @@ public class QuanLyThongKe extends JPanel implements ActionListener {
         btnThemThuMuc.addActionListener(this);
 
         pnSouth.add(lblTim);
-        pnSouth.add(txtTimSuat);
+        pnSouth.add(txtTimKiem);
         pnSouth.add(btnTim);
         pnSouth.add(btnBaoCao);
-        pnSouth.add(btnSua);
+        pnSouth.add(btnXem);
         pnSouth.add(btnThemThuMuc);
 
         add(pnSouth, BorderLayout.SOUTH);
     }
 
     private void capNhatBang() {
-        // model.setRowCount(0); // Xóa dữ liệu cũ
-        // for (SuatChieu suatChieu : quanLySuatChieu_DAO.getDanhSachSuatChieu()) {
 
-        // model.addRow(new Object[] {
-        // });
-        // }
     }
 
     private void capNhatBangTheoNgay(LocalDate ngayChon) {
-        // model.setRowCount(0); // Xóa dữ liệu cũ
 
-        // for (SuatChieu suat : quanLySuatChieu_DAO.getDanhSachSuatChieu()) {
-        // if (suat.getNgayChieu().isEqual(ngayChon)) {
-        // model.addRow(new Object[] {
-        // suat.getMaSuatChieu(),
-        // suat.getMaPhim(),
-        // " ",
-        // suat.getMaRap(),
-        // suat.getNgayChieu().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-        // suat.getGioChieu().format(DateTimeFormatter.ofPattern("HH:mm")),
-        // suat.getGiaVe()
-        // });
-        // }
-        // }
-
-        // if (model.getRowCount() == 0) {
-        // JOptionPane.showMessageDialog(this, "Không có suất chiếu nào trong ngày "
-        // + ngayChon.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-        // "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-        // }
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
         if (source == btnXem) {
-            // Xử lý sự kiện nút Xem
-            JOptionPane.showMessageDialog(this, "Xem báo cáo từ ngày đã chọn.");
+            capNhatBang();
         } else if (source == btnTim) {
-            // Xử lý sự kiện nút Tìm
-            String maSuat = txtTimSuat.getText().trim();
-            JOptionPane.showMessageDialog(this, "Tìm kiếm suất chiếu với mã: " + maSuat);
+            timKiem();
         } else if (source == btnThemThuMuc) {
-            // Thêm node ngày chiếu: yêu cầu người dùng nhập ngày ở định dạng dd/MM/yyyy
-            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            String defaultDate = LocalDate.now().format(fmt);
-            while (true) {
-                String dateInput = (String) JOptionPane.showInputDialog(this,
-                        "Nhập ngày chiếu (dd/MM/yyyy):", "Thêm ngày chiếu",
-                        JOptionPane.PLAIN_MESSAGE, null, null, defaultDate);
-                if (dateInput == null) {
-                    // Người dùng hủy
-                    break;
-                }
-                dateInput = dateInput.trim();
-                if (dateInput.isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Vui lòng nhập ngày (dd/MM/yyyy).", "Lỗi",
-                            JOptionPane.ERROR_MESSAGE);
-                    continue;
-                }
-                try {
-                    LocalDate parsed = LocalDate.parse(dateInput, fmt);
-                    String nodeText = "Ngày chiếu: " + parsed.format(fmt);
-                    DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(nodeText);
-                    root.add(newNode);
-                    DefaultTreeModel treeModel = (DefaultTreeModel) treeNgayChieu.getModel();
-                    treeModel.reload(root);
-                    // Mở rộng root để thấy node mới
-                    treeNgayChieu.expandPath(new javax.swing.tree.TreePath(root.getPath()));
-                    break;
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(this, "Định dạng ngày không hợp lệ. Vui lòng nhập dd/MM/yyyy.",
-                            "Lỗi định dạng", JOptionPane.ERROR_MESSAGE);
-                }
-            }
+            themNodeNgayChieu();
         } else if (source == btnBaoCao) {
             // Xử lý sự kiện nút Lập Báo cáo
             JOptionPane.showMessageDialog(this, "Lập báo cáo thống kê.");
-        } else if (source == btnSua) {
-            // Xử lý sự kiện nút Sửa
-            JOptionPane.showMessageDialog(this, "Chức năng sửa báo cáo.");
         }
     }
 
+    private void timKiem() {
+        String maTim = txtTimKiem.getText().trim();
+        if (maTim.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập mã suất cần tìm!", "Thông báo",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        for (int i = 0; i < model.getRowCount(); i++) {
+            if (model.getValueAt(i, 0).toString().equalsIgnoreCase(maTim)) {
+                tblThongKe.setRowSelectionInterval(i, i);
+                JOptionPane.showMessageDialog(this, "Đã tìm thấy suất chiếu!", "Thông báo",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+        }
+
+        JOptionPane.showMessageDialog(this, "Không tìm thấy suất chiếu!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void themNodeNgayChieu() {
+        // Thêm node ngày chiếu: yêu cầu người dùng nhập ngày ở định dạng dd/MM/yyyy
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String defaultDate = LocalDate.now().format(fmt);
+        while (true) {
+            String dateInput = (String) JOptionPane.showInputDialog(this,
+                    "Nhập ngày chiếu (dd/MM/yyyy):", "Thêm ngày chiếu",
+                    JOptionPane.PLAIN_MESSAGE, null, null, defaultDate);
+            if (dateInput == null) {
+                // Người dùng hủy
+                break;
+            }
+            dateInput = dateInput.trim();
+            if (dateInput.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Vui lòng nhập ngày (dd/MM/yyyy).", "Lỗi",
+                        JOptionPane.ERROR_MESSAGE);
+                continue;
+            }
+            try {
+                LocalDate parsed = LocalDate.parse(dateInput, fmt);
+                String nodeText = "Ngày chiếu: " + parsed.format(fmt);
+                DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(nodeText);
+                root.add(newNode);
+                DefaultTreeModel treeModel = (DefaultTreeModel) treeNgayChieu.getModel();
+                treeModel.reload(root);
+                // Mở rộng root để thấy node mới
+                treeNgayChieu.expandPath(new javax.swing.tree.TreePath(root.getPath()));
+                break;
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Định dạng ngày không hợp lệ. Vui lòng nhập dd/MM/yyyy.",
+                        "Lỗi định dạng", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
     // (Các hàm tạo dữ liệu chọn ngày đã bị loại bỏ vì phần chọn ngày được thay thế
     // bằng thống kê tổng quan)
 

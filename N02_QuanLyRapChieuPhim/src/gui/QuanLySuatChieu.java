@@ -424,7 +424,7 @@ public class QuanLySuatChieu extends JPanel implements ActionListener {
                 model.addRow(new Object[] {
                         suat.getMaSuatChieu(),
                         suat.getMaPhim(),
-                        " ",
+                        tenPhim(suat.getMaPhim()),
                         suat.getMaRap(),
                         suat.getNgayChieu().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                         suat.getGioChieu().format(DateTimeFormatter.ofPattern("HH:mm")),
