@@ -300,8 +300,6 @@ public class QuanLyBanVe extends JPanel {
             JOptionPane.showMessageDialog(this, "Chưa chọn ghế !", "Lỗi đặt vé", JOptionPane.WARNING_MESSAGE);
             return;
         }
-
-        JOptionPane.showMessageDialog(this, "Đặt vé thành công!");
         showTicketPanel();
 
     }
@@ -344,14 +342,14 @@ public class QuanLyBanVe extends JPanel {
         String thoiGianDatVe = ve.getNgayBan().toString();
         String trangThai = ve.isDaThanhToan() ? "Đã thanh toán" : "Chưa thanh toán";
 
-        JLabel lblMaVe = new JLabel("  Mã vé:                  " + maVe);
-        JLabel lblTenPhim = new JLabel("  Tên phim:            " + tenPhim);
-        JLabel lblTenPhong = new JLabel("  Phòng chiếu:       " + tenPhong);
-        JLabel lblThoiGian = new JLabel("  Thời gian:            " + thoiGian);
-        JLabel lblSoVe = new JLabel("  Số vé:                   " + soVe);
-        JLabel lblSoGhe = new JLabel("  Số ghế:                 " + soGhe);
-        JLabel lblThoiGianDatVe = new JLabel("  Thời gian đặt vé: " + thoiGianDatVe);
-        JLabel lblTrangThai = new JLabel("  Trạng thái:           " + trangThai);
+        JLabel lblMaVe = new JLabel("  Mã vé:                   " + maVe);
+        JLabel lblTenPhim = new JLabel("  Tên phim:             " + tenPhim);
+        JLabel lblTenPhong = new JLabel("  Phòng chiếu:        " + tenPhong);
+        JLabel lblThoiGian = new JLabel("  Thời gian:             " + thoiGian);
+        JLabel lblSoVe = new JLabel("  Số vé:                     " + soVe);
+        JLabel lblSoGhe = new JLabel("  Số ghế:                   " + soGhe);
+        JLabel lblThoiGianDatVe = new JLabel("  Thời gian đặt vé:  " + thoiGianDatVe);
+        JLabel lblTrangThai = new JLabel("  Trạng thái:             " + trangThai);
         pCenter.add(Box.createVerticalStrut(10));
         pCenter.add(lblMaVe);
         pCenter.add(Box.createVerticalStrut(5));
