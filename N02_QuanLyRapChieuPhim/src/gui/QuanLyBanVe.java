@@ -412,6 +412,7 @@ public class QuanLyBanVe extends JPanel {
         }
         ticketJFrame.dispose();
         resetForm();
+        //Mở giao diện hóa đơn
     }
 
     private Ve createTicket() {
