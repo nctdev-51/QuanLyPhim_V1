@@ -2,43 +2,53 @@ package entity;
 
 public class Rap {
     private String maRap;
-    private int soLuongGhe;
     private String tenRap;
+    private String diaChi;
 
     public Rap(String maRap) {
         setMaRap(maRap);
-        this.soLuongGhe = 0;
         this.tenRap = "";
+        this.diaChi = "";
     }
 
-    public Rap(String maRap, int soLuongGhe, String tenRap) {
+    public Rap(String maRap, String tenRap, String diaChi) {
         setMaRap(maRap);
-        setSoLuongGhe(soLuongGhe);
         setTenRap(tenRap);
+        setDiaChi(diaChi);
     }
 
-    public String getMaRap() { return maRap; }
+    public String getMaRap() {
+        return maRap;
+    }
+
     public void setMaRap(String maRap) {
-        if (maRap == null || maRap.isEmpty()) throw new IllegalArgumentException("Mã rạp rỗng!");
-        this.maRap = maRap;
+        if (maRap == null || maRap.trim().isEmpty()) {
+            throw new IllegalArgumentException("Mã rạp không được rỗng!");
+        }
+        this.maRap = maRap.trim();
     }
 
-    public int getSoLuongGhe() { return soLuongGhe; }
-    public void setSoLuongGhe(int soLuongGhe) {
-        if (soLuongGhe <= 0) throw new IllegalArgumentException("Số lượng ghế phải > 0!");
-        this.soLuongGhe = soLuongGhe;
+    public String getTenRap() {
+        return tenRap;
     }
 
-    public String getTenRap() { return tenRap; }
     public void setTenRap(String tenRap) {
-        if (tenRap == null || tenRap.isEmpty()) throw new IllegalArgumentException("Tên rạp rỗng!");
-        this.tenRap = tenRap;
+        if (tenRap == null || tenRap.trim().isEmpty()) {
+            throw new IllegalArgumentException("Tên rạp không được rỗng!");
+        }
+        this.tenRap = tenRap.trim();
     }
 
-	@Override
-	public String toString() {
-		return "Rap [maRap=" + maRap + ", soLuongGhe=" + soLuongGhe + ", tenRap=" + tenRap + "]";
-	}
+    public String getDiaChi() {
+        return diaChi;
+    }
 
-    
+    public void setDiaChi(String diaChi) {
+        this.diaChi = (diaChi == null) ? "" : diaChi.trim();
+    }
+
+    @Override
+    public String toString() {
+        return "Rap [maRap=" + maRap + ", tenRap=" + tenRap + ", diaChi=" + diaChi + "]";
+    }
 }

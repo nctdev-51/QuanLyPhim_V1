@@ -2,6 +2,7 @@ package entity;
 
 import java.time.LocalDate;
 
+
 public class NhanVien {
 	private String maNV;
 	private String tenNV;

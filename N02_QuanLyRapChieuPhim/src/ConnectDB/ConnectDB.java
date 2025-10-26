@@ -12,7 +12,7 @@ public class ConnectDB {
 	  return instance;
   	}
   	public void connect() {
-  		String url = "jdbc:sqlserver://localhost:1433;databasename=QLRapChieuPhim";
+  		String url = "jdbc:sqlserver://localhost:1433;databaseName=QLRapChieuPhim";
   		String user = "sa";
   		String password = "sapassword";
   		try {
