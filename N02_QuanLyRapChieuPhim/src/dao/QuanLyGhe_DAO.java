@@ -16,19 +16,23 @@ public class QuanLyGhe_DAO {
         if (gheMoi == null || danhSachGhe.contains(gheMoi)) {
             return false;
         }
-        Ghe ghe = TimGhe(gheMoi.getMaGhe(), gheMoi.getRap());
+        Ghe ghe = TimGheTheoRap(gheMoi.getMaGhe(), gheMoi.getRap());
         if (ghe != null)
             return false; // đã tồn tại mã ghế ở rạp này
         danhSachGhe.add(gheMoi);
         return true;
     }
-    public Ghe TimGhe(String maGhe, Rap rap) {
+
+    public Ghe TimGheTheoRap(String maGhe, Rap rap) {
+        if (rap == null)
+            return null;
         for (Ghe ghe : danhSachGhe) {
             if (ghe.getMaGhe().equals(maGhe) && ghe.getRap().getMaRap().equals(rap.getMaRap()))
                 return ghe;
         }
         return null;
     }
+
     public Ghe TimGheTheoMaRap(String maGhe, String maRap) {
         for (Ghe ghe : danhSachGhe) {
             if (ghe.getMaGhe().equals(maGhe) && ghe.getRap().getMaRap().equals(maRap))
@@ -36,6 +40,7 @@ public class QuanLyGhe_DAO {
         }
         return null;
     }
+
     public ArrayList<Ghe> getDanhSachTatCaGhe() {
         return danhSachGhe;
     }
@@ -46,10 +51,10 @@ public class QuanLyGhe_DAO {
         return danhSachGhe.get(index);
     }
 
-    public ArrayList<Ghe> getDanhSachGheTheoRap(Rap rap){
-        ArrayList<Ghe> danhSachGhe = new ArrayList<>(); 
-        for(Ghe ghe : this.danhSachGhe){
-            if(ghe.getRap().getMaRap().equals(rap.getMaRap())){
+    public ArrayList<Ghe> getDanhSachGheTheoRap(Rap rap) {
+        ArrayList<Ghe> danhSachGhe = new ArrayList<>();
+        for (Ghe ghe : this.danhSachGhe) {
+            if (ghe.getRap().getMaRap().equals(rap.getMaRap())) {
                 danhSachGhe.add(ghe);
             }
         }

@@ -39,4 +39,9 @@ public class QuanLyKhachHang_DAO {
             return null;
         return danhSachKhachHang.get(index);
     }
+
+    public static String taoMaKHTuDong() {
+        long timeMillis = System.currentTimeMillis();
+        return "KH" + timeMillis;
+    }
 }

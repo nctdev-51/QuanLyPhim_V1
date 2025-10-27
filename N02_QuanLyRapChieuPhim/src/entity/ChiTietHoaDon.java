@@ -5,7 +5,6 @@ public class ChiTietHoaDon {
     private Ve ve;
     private int soLuong;
     private double giaVe;
-    private float thanhTien;
 
     public ChiTietHoaDon() {
     }
@@ -15,7 +14,6 @@ public class ChiTietHoaDon {
         setHoaDon(hoaDon);
         setSoLuong(soLuong);
         setVe(ve);
-        tinhThanhTien();
     }
 
     public HoaDon getHoaDon() {
@@ -45,16 +43,13 @@ public class ChiTietHoaDon {
     public double tinhThanhTien() {
         return giaVe * soLuong;
     }
+
     public int getSoLuong() {
         return soLuong;
     }
 
     public void setSoLuong(int soLuong) {
         this.soLuong = soLuong;
-    }
-
-    public float getThanhTien() {
-        return thanhTien;
     }
 
     @Override

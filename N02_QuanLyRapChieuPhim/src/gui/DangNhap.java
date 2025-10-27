@@ -10,7 +10,6 @@ import entity.TaiKhoan;
 
 public class DangNhap extends JFrame implements ActionListener {
     public static String tenNhanVien;
-    public static String vaiTro = "Nhân viên";
     private JTextField txtTaiKhoan;
     private JPasswordField txtMatKhau;
     private JLabel lblTaiKhoan, lblMatKhau, lblTieuDe;

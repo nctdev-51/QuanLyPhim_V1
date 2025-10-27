@@ -16,10 +16,11 @@ public class QuanLyVe_DAO {
         }
         Ve ticketFind = findVeByID(ve.getMaVe());
         if (ticketFind != null)
-            return false; // đã tồn tại mã rap này
+            return false; // đã tồn tại mã Ve này
         danhSachVe.add(ve);
         return true;
     }
+
     public Ve findVeByID(String maVe) {
         for (Ve ve : danhSachVe) {
             if (ve.getMaVe().equalsIgnoreCase(maVe))
@@ -27,6 +28,7 @@ public class QuanLyVe_DAO {
         }
         return null;
     }
+
     public static String taoMaVeTuDong() {
         long timeMillis = System.currentTimeMillis();
         return "VE" + timeMillis;
