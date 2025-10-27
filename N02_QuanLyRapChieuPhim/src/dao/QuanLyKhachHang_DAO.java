@@ -1,6 +1,7 @@
 package dao;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import entity.KhachHang;
 
@@ -42,6 +43,7 @@ public class QuanLyKhachHang_DAO {
 
     public static String taoMaKHTuDong() {
         long timeMillis = System.currentTimeMillis();
-        return "KH" + timeMillis;
+        int rand = new Random().nextInt(1000);
+        return "KH" + timeMillis + String.format("%03d", rand);
     }
 }

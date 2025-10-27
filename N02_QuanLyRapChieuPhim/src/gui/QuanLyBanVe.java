@@ -395,12 +395,16 @@ public class QuanLyBanVe extends JPanel {
         btnHuy.setFont(this.fChonGhe);
         btnHuy.setBackground(Color.RED);
         btnHuy.setForeground(Color.WHITE);
+        JButton btnDatVe = new JButton("Đặt vé");
+        btnDatVe.setFont(this.fChonGhe);
 
         pSouth.add(btnHuy);
+        pSouth.add(btnDatVe);
         pSouth.add(btnThanhToan);
 
         ticketFrame.add(pSouth, BorderLayout.SOUTH);
         btnHuy.addActionListener(e -> huyDatVe(ticketFrame));
+        btnDatVe.addActionListener(e -> datVe(ticketFrame));
         btnThanhToan.addActionListener(e -> thanhToan(ticketFrame, khachHang));
 
         ticketFrame.setModalExclusionType(ModalExclusionType.APPLICATION_EXCLUDE);
@@ -410,6 +414,10 @@ public class QuanLyBanVe extends JPanel {
     private void huyDatVe(JFrame ticketJFrame) {
         ticketJFrame.dispose();
         resetForm();
+    }
+
+    private void datVe(JFrame ticketJFrame) {
+
     }
 
     private void thanhToan(JFrame ticketJFrame, KhachHang khachHang) {
@@ -424,23 +432,23 @@ public class QuanLyBanVe extends JPanel {
             ghe.setTinhTrang(true);
         }
 
+        double giaVe = this.suatChieuDuocChon.getGiaVe();
+        HoaDon hoaDon = xuLyTaoHoaDon(khachHang, danhSachVeDaDat, giaVe);
+        // Thêm hóa đơn
+        this.billManager.add(hoaDon);
+        xuLyTaoChiTietHoaDon(hoaDon, danhSachVeDaDat, giaVe);
+
         int option = JOptionPane.showConfirmDialog(this, "Bạn có muốn xem hóa đơn không ?",
                 "Thanh toán thành công",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE);
-
-        double giaVe = this.suatChieuDuocChon.getGiaVe();
-        HoaDon hoaDon = xuLyTaoHoaDon(khachHang, danhSachVeDaDat, giaVe);
-        xuLyTaoChiTietHoaDon(hoaDon, danhSachVeDaDat, giaVe);
-        // Thêm hóa đơn
-        this.billManager.add(hoaDon);
-
-        if (option == JOptionPane.YES_OPTION) {
-
-        }
         resetForm();
         ticketJFrame.dispose();
-        // Mở giao diện hóa đơn
+        if (option == JOptionPane.YES_OPTION) {
+
+            new HoaDonUI(hoaDon, this.cthdManager, this.movieManager, this.suatChieuManager, this);
+        }
+
     }
 
     private HoaDon xuLyTaoHoaDon(KhachHang khachHang, ArrayList<Ve> danhSachVeDaDat, double giaVe) {

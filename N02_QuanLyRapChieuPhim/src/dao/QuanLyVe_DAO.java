@@ -1,6 +1,8 @@
 package dao;
 
 import java.util.ArrayList;
+import java.util.Random;
+
 import entity.Ve;
 
 public class QuanLyVe_DAO {
@@ -31,7 +33,8 @@ public class QuanLyVe_DAO {
 
     public static String taoMaVeTuDong() {
         long timeMillis = System.currentTimeMillis();
-        return "VE" + timeMillis;
+        int rand = new Random().nextInt(1000);
+        return "VE" + timeMillis + String.format("%03d", rand);
     }
 
     public ArrayList<Ve> getDanhSachVe() {

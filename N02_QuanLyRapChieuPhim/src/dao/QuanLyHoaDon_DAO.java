@@ -1,6 +1,7 @@
 package dao;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import entity.HoaDon;
 
@@ -21,6 +22,7 @@ public class QuanLyHoaDon_DAO {
         danhSachHoaDon.add(hoaDon);
         return true;
     }
+
     public HoaDon findHoaDonByID(String maHoaDon) {
         for (HoaDon hoaDon : danhSachHoaDon) {
             if (hoaDon.getMaHoaDon().equalsIgnoreCase(maHoaDon))
@@ -28,9 +30,11 @@ public class QuanLyHoaDon_DAO {
         }
         return null;
     }
+
     public static String taoMaHoaDonTuDong() {
         long timeMillis = System.currentTimeMillis();
-        return "HD" + timeMillis;
+        int rand = new Random().nextInt(1000);
+        return "HD" + timeMillis + String.format("%03d", rand);
     }
 
     public ArrayList<HoaDon> getDanhSachHoaDon() {

@@ -30,7 +30,7 @@ import entity.Ve;
 public class HoaDonUI extends JFrame {
     public HoaDonUI(HoaDon hoaDon, QuanLyCTHD_DAO cthdManager, QuanLyPhim_DAO movieManager,
             QuanLySuatChieu_DAO suatChieuManager, JPanel pOwner) {
-        setSize(500, 600);
+        setSize(800, 600);
         setLocationRelativeTo(pOwner);
         setLayout(new BorderLayout());
 
@@ -57,11 +57,9 @@ public class HoaDonUI extends JFrame {
         JLabel lblSoLuongVe = new JLabel("Số lượng vé: " + hoaDon.getSoLuongVe());
         JLabel lblTongTien = new JLabel("Tổng tiền: " + hoaDon.getTongTien());
 
-        JLabel lblTenCongTy = new JLabel("Đơn vị cung cấp: " +
-                "Hệ thống rạp chiếu phim 3T Cinema");
         JLabel lblNhanVien = new JLabel("Nhân viên bán vé: " + hoaDon.getNhanVien().getTenNV());
         JLabel lblSoDienThoai = new JLabel("Số liên hệ: " + hoaDon.getNhanVien().getSoDienThoai());
-        JLabel lblDiaChiRap = new JLabel("Địa chỉ: " +
+        JLabel lblDiaChiRap = new JLabel("Địa chỉ rạp chiếu: " +
                 "12 Nguyễn Văn Bảo, Phường 4, Quận Gò Vấp, TP. Hồ Chí Minh");
         JLabel lblEmail = new JLabel("Email: " + "3TCinema@gmail.com");
 
@@ -72,8 +70,6 @@ public class HoaDonUI extends JFrame {
         JPanel pThongTinNhanVien = new JPanel();
         pThongTinNhanVien.setLayout(new BoxLayout(pThongTinNhanVien, BoxLayout.Y_AXIS));
         pThongTinNhanVien.setBorder(BorderFactory.createTitledBorder("THÔNG TIN NHÀ CUNG CẤP DỊCH VỤ"));
-        pThongTinNhanVien.add(Box.createVerticalStrut(5));
-        pThongTinNhanVien.add(lblTenCongTy);
         pThongTinNhanVien.add(Box.createVerticalStrut(5));
         pThongTinNhanVien.add(lblNhanVien);
         pThongTinNhanVien.add(Box.createVerticalStrut(5));
