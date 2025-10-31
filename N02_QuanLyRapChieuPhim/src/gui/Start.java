@@ -16,6 +16,7 @@ public class Start extends JFrame implements ActionListener {
         setLocationRelativeTo(null);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
 
+        // ==== PANEL MENU BÊN TRÁI ====
         JPanel pnWest = new JPanel(new BorderLayout());
         pnWest.setPreferredSize(new Dimension(220, 1000));
         pnWest.setBackground(new Color(255, 56, 56));
@@ -25,6 +26,7 @@ public class Start extends JFrame implements ActionListener {
         pnWest.add(boxMenu);
         boxMenu.add(Box.createVerticalStrut(25));
 
+        // Logo
         ImageIcon logoIcon = new ImageIcon("icon/logo.jpg");
         Image logoImg = logoIcon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
         JLabel lblLogo = new JLabel(new ImageIcon(logoImg));
@@ -32,6 +34,7 @@ public class Start extends JFrame implements ActionListener {
         boxMenu.add(lblLogo);
         boxMenu.add(Box.createVerticalStrut(15));
 
+        // Nhãn nhân viên
         lblNhanVien = new JLabel("Xin chào, " + DangNhap.tenNhanVien);
         lblNhanVien.setFont(new Font("Arial", Font.BOLD, 18));
         lblNhanVien.setForeground(Color.WHITE);
@@ -76,6 +79,7 @@ public class Start extends JFrame implements ActionListener {
             });
         }
 
+        // Gán icon
         btnTrangChu.setIcon(resizeIcon("icon/home.png", 28, 28));
         btnBanVe.setIcon(resizeIcon("icon/ticket.png", 28, 28));
         btnPhim.setIcon(resizeIcon("icon/movie.png", 60, 28));
@@ -103,41 +107,46 @@ public class Start extends JFrame implements ActionListener {
 
         add(pnWest, BorderLayout.WEST);
 
-        JPanel pnCenter = new JPanel(new CardLayout());
-        add(pnCenter, BorderLayout.CENTER);
+        // ==== NỘI DUNG TRANG CHỦ (MẶC ĐỊNH) ====
+        add(new TrangChu(), BorderLayout.CENTER);
 
-        JPanel trangChuPanel = new TrangChu();
-        JPanel banVePanel = new QuanLyBanVe();
-        JPanel phimPanel = new QuanLyPhim();
-        JPanel suatChieuPanel = new QuanLySuatChieu();
-        JPanel khachHangPanel = new QuanLyKhachHang();
-        JPanel nhanVienPanel = new QuanLyNhanVien();
-        JPanel thongKePanel = new QuanLyThongKe();
+        // ==== GÁN SỰ KIỆN ====
+        btnTrangChu.addActionListener(e -> {
+            new Start().setVisible(true);
+        });
 
-        pnCenter.add(trangChuPanel, "TrangChu");
-        pnCenter.add(banVePanel, "BanVe");
-        pnCenter.add(phimPanel, "Phim");
-        pnCenter.add(suatChieuPanel, "SuatChieu");
-        pnCenter.add(khachHangPanel, "KhachHang");
-        pnCenter.add(nhanVienPanel, "NhanVien");
-        pnCenter.add(thongKePanel, "ThongKe");
+        btnBanVe.addActionListener(e -> {
+            new QuanLyBanVe().setVisible(true);
+        });
 
-        CardLayout cardLayout = (CardLayout) pnCenter.getLayout();
-        btnTrangChu.addActionListener(e -> cardLayout.show(pnCenter, "TrangChu"));
-        btnBanVe.addActionListener(e -> cardLayout.show(pnCenter, "BanVe"));
-        btnPhim.addActionListener(e -> cardLayout.show(pnCenter, "Phim"));
-        btnSuatChieu.addActionListener(e -> cardLayout.show(pnCenter, "SuatChieu"));
-        btnKhachHang.addActionListener(e -> cardLayout.show(pnCenter, "KhachHang"));
-        btnNhanVien.addActionListener(e -> cardLayout.show(pnCenter, "NhanVien"));
-        btnThongKe.addActionListener(e -> cardLayout.show(pnCenter, "ThongKe"));
+        btnPhim.addActionListener(e -> {
+            new QuanLyPhim().setVisible(true);
+        });
+
+        btnSuatChieu.addActionListener(e -> {
+            new QuanLySuatChieu().setVisible(true);
+        });
+
+        btnKhachHang.addActionListener(e -> {
+            new QuanLyKhachHang().setVisible(true);
+        });
+
+        btnNhanVien.addActionListener(e -> {
+            new QuanLyNhanVien().setVisible(true);
+        });
+
+        btnThongKe.addActionListener(e -> {
+            new QuanLyThongKe().setVisible(true);
+        });
+
         btnDangXuat.addActionListener(this);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnDangXuat) {
-            new DangNhap();
-            setVisible(false);
+            new DangNhap().setVisible(true);
+            dispose();
         }
     }
 
