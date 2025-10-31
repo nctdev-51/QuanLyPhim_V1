@@ -6,8 +6,6 @@ public class Ve {
     private String maVe;
     private Ghe ghe;
     private LocalDate ngayBan;
-    // private String maKhachHang;
-    // private String maNhanVien;
     private String maPhim;
     private String maRap;
     private String maSuatChieu;

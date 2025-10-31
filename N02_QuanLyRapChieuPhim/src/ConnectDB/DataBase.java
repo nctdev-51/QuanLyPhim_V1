@@ -5,7 +5,6 @@ import java.time.LocalTime;
 
 import dao.QuanLyGhe_DAO;
 import dao.QuanLyKhachHang_DAO;
-import dao.QuanLyPhim_DAO;
 import dao.QuanLyRap_DAO;
 import dao.QuanLySuatChieu_DAO;
 import entity.*;
