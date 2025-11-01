@@ -10,6 +10,7 @@ import entity.TaiKhoan;
 
 public class DangNhap extends JFrame implements ActionListener {
     public static String tenNhanVien;
+    public static String vaiTro = "Nhân viên";
     private JTextField txtTaiKhoan;
     private JPasswordField txtMatKhau;
     private JLabel lblTaiKhoan, lblMatKhau, lblTieuDe;
@@ -104,17 +105,16 @@ public class DangNhap extends JFrame implements ActionListener {
         String taiKhoan = txtTaiKhoan.getText().trim();
         String matKhauNhap = new String(txtMatKhau.getPassword());
 
-//        TaiKhoan tk = dangNhapDAO.ktDangNhap(taiKhoan, matKhauNhap);
-//        if (tk != null) {
-//            tenNhanVien = tk.getNhanVien().getTenNV();
-//            vaiTro = tk.getNhanVien().getVaiTro();
-//            JOptionPane.showMessageDialog(this, "Đăng nhập thành công!");
-//            new Start();
-//            dispose();
-//        } else {
-//            JOptionPane.showMessageDialog(this, "Tên tài khoản hoặc mật khẩu không đúng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-//            txtTaiKhoan.requestFocus();
-//        }
+        TaiKhoan tk = dangNhapDAO.ktDangNhap(taiKhoan, matKhauNhap);
+        if (tk != null) {
+            tenNhanVien = tk.getNhanVien().getTenNV();
+            JOptionPane.showMessageDialog(this, "Đăng nhập thành công!");
+            new Start();
+            dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, "Tên tài khoản hoặc mật khẩu không đúng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            txtTaiKhoan.requestFocus();
+        }
         new Start();
         setVisible(false);
     }

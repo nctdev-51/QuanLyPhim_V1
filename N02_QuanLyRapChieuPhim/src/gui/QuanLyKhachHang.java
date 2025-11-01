@@ -8,7 +8,7 @@ import java.util.List;
 import dao.QuanLyKhachHang_DAO;
 import entity.KhachHang;
 
-public class QuanLyKhachHang extends JPanel implements ActionListener, MouseListener {
+public class QuanLyKhachHang extends JFrame implements ActionListener, MouseListener {
 
     private QuanLyKhachHang_DAO kh_dao;
     private DefaultTableModel tableModel;
@@ -18,30 +18,30 @@ public class QuanLyKhachHang extends JPanel implements ActionListener, MouseList
     private JButton btnThem, btnXoaTrang, btnXoa1Dong, btnLamMoi, btnSua, btnTimKiem;
 
     public QuanLyKhachHang() {
-        kh_dao = new QuanLyKhachHang_DAO();
+        // ==== CẤU HÌNH FORM ====
+        setTitle("Quản lý hội viên");
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
         setPreferredSize(new Dimension(900, 600));
 
-        // ===== NORTH: Tiêu đề =====
+        // ==== TIÊU ĐỀ ====
         JPanel pNorth = new JPanel();
         pNorth.setBackground(new Color(30, 144, 255));
-        JLabel lblTieuDe = new JLabel("QUẢN LÝ KHÁCH HÀNG");
+        JLabel lblTieuDe = new JLabel("QUẢN LÝ HỘI VIÊN");
         lblTieuDe.setForeground(Color.WHITE);
         lblTieuDe.setFont(new Font("Segoe UI", Font.BOLD, 24));
         pNorth.add(lblTieuDe);
         add(pNorth, BorderLayout.NORTH);
 
-        // ===== CENTER: Form nhập liệu =====
+        // ==== NỘI DUNG CHÍNH ====
         Box b = Box.createVerticalBox();
         Box b1, b2, b3, b4, b5, b6;
         b.add(Box.createVerticalStrut(10));
 
-        Font fontTxt = new Font("Segoe UI", Font.PLAIN, 15); // chữ vừa
-        Dimension txtSize = new Dimension(200, 28); // giảm chiều cao textfield
-        Insets margin = new Insets(4, 8, 4, 8); // padding trong
+        Font fontTxt = new Font("Segoe UI", Font.PLAIN, 15); 
+        Dimension txtSize = new Dimension(200, 28); 
+        Insets margin = new Insets(4, 8, 4, 8); 
 
-        // Hàm tiện ích định dạng textfield
         java.util.function.Consumer<JTextField> styleTextField = txt -> {
             txt.setFont(fontTxt);
             txt.setPreferredSize(txtSize);
@@ -49,39 +49,36 @@ public class QuanLyKhachHang extends JPanel implements ActionListener, MouseList
             txt.setAlignmentY(Component.CENTER_ALIGNMENT);
         };
 
-        // === Mã khách hàng ===
+        // === MÃ KHÁCH HÀNG ===
         b.add(b1 = Box.createHorizontalBox());
         JLabel lblMaKH = new JLabel("Mã khách hàng:");
         lblMaKH.setFont(fontTxt);
         lblMaKH.setPreferredSize(new Dimension(120, 28));
         lblMaKH.setAlignmentY(Component.CENTER_ALIGNMENT);
-
         b1.add(lblMaKH);
         b1.add(Box.createHorizontalStrut(10));
         b1.add(txtMaKH = new JTextField());
         styleTextField.accept(txtMaKH);
         b.add(Box.createVerticalStrut(8));
 
-        // === Họ tên ===
+        // === HỌ TÊN ===
         b.add(b2 = Box.createHorizontalBox());
         JLabel lblHoTen = new JLabel("Họ tên:");
         lblHoTen.setFont(fontTxt);
         lblHoTen.setPreferredSize(new Dimension(120, 28));
         lblHoTen.setAlignmentY(Component.CENTER_ALIGNMENT);
-
         b2.add(lblHoTen);
         b2.add(Box.createHorizontalStrut(10));
         b2.add(txtHoTen = new JTextField());
         styleTextField.accept(txtHoTen);
         b.add(Box.createVerticalStrut(8));
 
-        // === Giới tính + Số điện thoại ===
+        // === GIỚI TÍNH + SĐT ===
         b.add(b3 = Box.createHorizontalBox());
         JLabel lblGioiTinh = new JLabel("Giới tính:");
         lblGioiTinh.setFont(fontTxt);
         lblGioiTinh.setPreferredSize(new Dimension(120, 28));
         lblGioiTinh.setAlignmentY(Component.CENTER_ALIGNMENT);
-
         b3.add(lblGioiTinh);
         b3.add(Box.createHorizontalStrut(10));
         cboGioiTinh = new JComboBox<>(new String[] { "Nam", "Nữ" });
@@ -89,26 +86,23 @@ public class QuanLyKhachHang extends JPanel implements ActionListener, MouseList
         cboGioiTinh.setPreferredSize(new Dimension(100, 28));
         cboGioiTinh.setAlignmentY(Component.CENTER_ALIGNMENT);
         b3.add(cboGioiTinh);
-
         b3.add(Box.createHorizontalStrut(20));
         JLabel lblSoDT = new JLabel("Số điện thoại:");
         lblSoDT.setFont(fontTxt);
         lblSoDT.setPreferredSize(new Dimension(100, 28));
         lblSoDT.setAlignmentY(Component.CENTER_ALIGNMENT);
-
         b3.add(lblSoDT);
         b3.add(Box.createHorizontalStrut(10));
         b3.add(txtSoDT = new JTextField());
         styleTextField.accept(txtSoDT);
         b.add(Box.createVerticalStrut(8));
 
-        // === Địa chỉ ===
+        // === ĐỊA CHỈ ===
         b.add(b4 = Box.createHorizontalBox());
         JLabel lblDiaChi = new JLabel("Địa chỉ:");
         lblDiaChi.setFont(fontTxt);
         lblDiaChi.setPreferredSize(new Dimension(120, 28));
         lblDiaChi.setAlignmentY(Component.CENTER_ALIGNMENT);
-
         b4.add(lblDiaChi);
         b4.add(Box.createHorizontalStrut(10));
         b4.add(txtDiaChi = new JTextField());
@@ -118,7 +112,7 @@ public class QuanLyKhachHang extends JPanel implements ActionListener, MouseList
         txtDiaChi.setAlignmentY(Component.CENTER_ALIGNMENT);
         b.add(Box.createVerticalStrut(15));
 
-        // ===== BUTTONS =====
+        // === CÁC NÚT CHỨC NĂNG ===
         b.add(b5 = Box.createHorizontalBox());
         btnThem = new JButton("Thêm");
         btnXoaTrang = new JButton("Xóa trắng");
@@ -158,7 +152,7 @@ public class QuanLyKhachHang extends JPanel implements ActionListener, MouseList
         b5.add(Box.createHorizontalStrut(10));
         b5.add(btnTimKiem);
 
-        // ===== TABLE =====
+        // === BẢNG DỮ LIỆU ===
         b.add(Box.createVerticalStrut(15));
         b.add(b6 = Box.createHorizontalBox());
         String[] headers = "Mã KH;Họ tên;Giới tính;Số ĐT;Địa chỉ".split(";");
@@ -174,22 +168,27 @@ public class QuanLyKhachHang extends JPanel implements ActionListener, MouseList
         add(b, BorderLayout.CENTER);
         b.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
-        b.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-
-        // ===== SỰ KIỆN =====
+        // === SỰ KIỆN ===
         table.addMouseListener(this);
         for (JButton btn : btns)
             btn.addActionListener(this);
         btnTimKiem.addActionListener(this);
 
+        // === LOAD DỮ LIỆU BAN ĐẦU ===
+        kh_dao = new QuanLyKhachHang_DAO();
         DocDuLieuVaoTable();
+
+        // === HIỂN THỊ FRAME ===
+        pack();
+        setLocationRelativeTo(null);
+        setVisible(true);
     }
 
     private void DocDuLieuVaoTable() {
         tableModel.setRowCount(0);
         List<KhachHang> ds = kh_dao.getDanhSachKhachHang();
         for (KhachHang kh : ds) {
-            tableModel.addRow(new Object[] {
+            tableModel.addRow(new Object[]{
                     kh.getMaKH(), kh.getHoTen(), kh.getGioiTinh(),
                     kh.getSoDT(), kh.getDiaChi()
             });
@@ -198,26 +197,18 @@ public class QuanLyKhachHang extends JPanel implements ActionListener, MouseList
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // TODO: Thêm các xử lý thêm / sửa / xóa / tìm như class phim
+        // TODO: Xử lý các nút thêm, xóa, sửa, tìm kiếm...
     }
 
     @Override
-    public void mouseClicked(MouseEvent e) {
-        /* TODO */ }
-
+    public void mouseClicked(MouseEvent e) { /* TODO */ }
     @Override
-    public void mousePressed(MouseEvent e) {
-    }
-
+    public void mousePressed(MouseEvent e) {}
     @Override
-    public void mouseReleased(MouseEvent e) {
-    }
-
+    public void mouseReleased(MouseEvent e) {}
     @Override
-    public void mouseEntered(MouseEvent e) {
-    }
-
+    public void mouseEntered(MouseEvent e) {}
     @Override
-    public void mouseExited(MouseEvent e) {
-    }
+    public void mouseExited(MouseEvent e) {}
+
 }

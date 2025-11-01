@@ -21,11 +21,12 @@ public class DataBase {
 
     // Database giả
     public static QuanLyPhim_DAO FakeMovieDB() {
-        Phim phim1 = new Phim("phim01", "Mưa đỏ", "Quân đội nhân dân Việt Nam", "Hành động", 210, "Việt Nam");
-        Phim phim2 = new Phim("phim02", "Tử chiến trên không", "Bộ công an Việt Nam", "Hành động", 240, "Việt Nam");
-        Phim phim3 = new Phim("phim03", "Kimetsu no Yaiba - pháo đài vô cực", "Ufotable", "2D - Hành động", 240,
+        Phim phim1 = new Phim("phim01", "Mưa đỏ", "Quân đội nhân dân Việt Nam", TheLoaiPhim.HANH_DONG, 210, "Việt Nam");
+        Phim phim2 = new Phim("phim02", "Tử chiến trên không", "Bộ công an Việt Nam", TheLoaiPhim.HANH_DONG, 240,
+                "Việt Nam");
+        Phim phim3 = new Phim("phim03", "Kimetsu no Yaiba - pháo đài vô cực", "Ufotable", TheLoaiPhim.HOAT_HINH, 240,
                 "Nhật Bản");
-        Phim phim4 = new Phim("phim04", "Cậu bé bóng cười", "NoHope", "Hài hước - Hành động", 180, "Trung quốc");
+        Phim phim4 = new Phim("phim04", "Cậu bé bóng cười", "NoHope", TheLoaiPhim.HAI_HUOC, 180, "Trung quốc");
         QuanLyPhim_DAO movieManager = new QuanLyPhim_DAO();
         movieManager.add(phim1);
         movieManager.add(phim2);

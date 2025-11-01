@@ -1,7 +1,6 @@
 package gui;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 
 import ConnectDB.DataBase;
 import dao.QuanLyCTHD_DAO;
@@ -30,7 +29,7 @@ import entity.KhachHang;
 import entity.NhanVien;
 import entity.Phim;
 
-public class QuanLyBanVe extends JPanel {
+public class QuanLyBanVe extends JFrame {
     private JComboBox<String> cbPhim, cbPhong, cbSuatChieu, cbGioiTinh;
     private JButton btnChonGhe, btnDatVe, btnXoaChon;
     private JTextField txtHoTen, txtSDT, txtDiaChi;
@@ -50,9 +49,14 @@ public class QuanLyBanVe extends JPanel {
     private QuanLyHoaDon_DAO billManager;
     private QuanLyNhanVien_DAO employeeManager;
     private Font fChonGhe;
+    private ArrayList<Phim> movieList;
 
     public QuanLyBanVe() {
+        setSize(new Dimension(900, 600));
         setLayout(new BorderLayout(10, 10));
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setTitle("Quản lý bán vé");
         // Load database
         LoadMovieManager();
         LoadSuatChieuManager();
@@ -73,7 +77,7 @@ public class QuanLyBanVe extends JPanel {
         pCenter.setLayout(new BoxLayout(pCenter, BoxLayout.Y_AXIS));
 
         cbPhim = new JComboBox<>(new String[] { "---Chọn phim---" });
-        for (Phim phim : movieManager.getDanhSachPhim()) {
+        for (Phim phim : movieList) {
             cbPhim.addItem(phim.getTenPhim());
         }
         cbPhong = new JComboBox<>(new String[] { "---Chọn phòng---" });
@@ -347,7 +351,7 @@ public class QuanLyBanVe extends JPanel {
         SuatChieu suatChieuFind = this.suatChieuManager.timSuatChieu(ve.getMaSuatChieu());
         if (suatChieuFind == null)
             return;
-        Phim phim = this.movieManager.timPhim(suatChieuFind.getMaPhim());
+        Phim phim = this.movieManager.timPhimTheoMa(suatChieuFind.getMaPhim());
         String tenPhim = phim.getTenPhim();
         Rap rap = this.rapManager.findRapByID(suatChieuFind.getMaRap());
         String tenPhong = rap.getTenRap();
@@ -427,8 +431,10 @@ public class QuanLyBanVe extends JPanel {
             Ghe ghe = this.chairManager.TimGheTheoMaRap(maGhe, this.suatChieuDuocChon.getMaRap());
 
             Ve ve = xuLyTaoVeTheoGhe(ghe);
-            if (ve != null)
+            if (ve != null) {
                 danhSachVeDaDat.add(ve);
+                this.ticketManager.add(ve);
+            }
             ghe.setTinhTrang(true);
         }
 
@@ -453,7 +459,7 @@ public class QuanLyBanVe extends JPanel {
 
     private HoaDon xuLyTaoHoaDon(KhachHang khachHang, ArrayList<Ve> danhSachVeDaDat, double giaVe) {
         // Get NhanVien đang đăng nhập vào hệ thống - giả sử có mã là NV01
-        NhanVien nhanVien = this.employeeManager.timNhanVienTheoMaNV("NV01");
+        NhanVien nhanVien = this.employeeManager.timTheoMa("NV01");
         int soLuongVe = danhSachVeDaDat.size();
         double tongTien = giaVe * soLuongVe;
 
@@ -511,9 +517,9 @@ public class QuanLyBanVe extends JPanel {
         txtTenPhim.setText("");
         txtTheLoai.setText("");
         txtThoiLuong.setText("");
-        Phim phim = movieManager.getPhim(cbPhim.getSelectedIndex() - 1);
+        Phim phim = this.movieList.get(cbPhim.getSelectedIndex() - 1);
         txtTenPhim.setText(phim.getTenPhim());
-        txtTheLoai.setText(phim.getTheLoai());
+        txtTheLoai.setText(phim.getTheLoai().getTenHienThi());
         txtThoiLuong.setText(Integer.toString(phim.getThoiLuong()) + " phút");
         this.suatChieuDuocChon = new SuatChieu("AUTO_GENERATE");
         this.suatChieuDuocChon.setMaPhim(phim.getMaPhim());
@@ -677,7 +683,8 @@ public class QuanLyBanVe extends JPanel {
 
     private void LoadMovieManager() {
         // load database movie
-        movieManager = DataBase.FakeMovieDB();
+        movieManager = new QuanLyPhim_DAO();
+        this.movieList = this.movieManager.getAllPhim();
     }
 
     private void LoadSuatChieuManager() {

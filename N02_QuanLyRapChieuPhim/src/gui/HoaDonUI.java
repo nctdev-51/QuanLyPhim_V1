@@ -29,7 +29,7 @@ import entity.Ve;
 
 public class HoaDonUI extends JFrame {
     public HoaDonUI(HoaDon hoaDon, QuanLyCTHD_DAO cthdManager, QuanLyPhim_DAO movieManager,
-            QuanLySuatChieu_DAO suatChieuManager, JPanel pOwner) {
+            QuanLySuatChieu_DAO suatChieuManager, JFrame pOwner) {
         setSize(800, 600);
         setLocationRelativeTo(pOwner);
         setLayout(new BorderLayout());
@@ -119,7 +119,7 @@ public class HoaDonUI extends JFrame {
             // Tìm phim dựa vào suất chiếu
             SuatChieu suatChieu = suatChieuManager.timSuatChieu(ve.getMaSuatChieu());
             if (suatChieu != null) {
-                Phim phim = movieManager.timPhim(suatChieu.getMaPhim());
+                Phim phim = movieManager.timPhimTheoMa(suatChieu.getMaPhim());
 
                 Object[] data = { ve.getMaVe(), phim.getTenPhim(), cthd.getSoLuong(), cthd.getGiaVe(),
                         cthd.tinhThanhTien() };
