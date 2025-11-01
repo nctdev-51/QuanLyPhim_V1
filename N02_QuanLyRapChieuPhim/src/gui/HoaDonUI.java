@@ -29,7 +29,7 @@ import entity.Ve;
 
 public class HoaDonUI extends JFrame {
     public HoaDonUI(HoaDon hoaDon, QuanLyCTHD_DAO cthdManager, QuanLyPhim_DAO movieManager,
-            QuanLySuatChieu_DAO suatChieuManager, JFrame pOwner) {
+            QuanLySuatChieu_DAO suatChieuManager, JPanel pOwner) {
         setSize(800, 600);
         setLocationRelativeTo(pOwner);
         setLayout(new BorderLayout());

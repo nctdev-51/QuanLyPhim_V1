@@ -19,22 +19,6 @@ import gui.QuanLyCTHD;
 
 public class DataBase {
 
-    // Database giả
-    public static QuanLyPhim_DAO FakeMovieDB() {
-        Phim phim1 = new Phim("phim01", "Mưa đỏ", "Quân đội nhân dân Việt Nam", TheLoaiPhim.HANH_DONG, 210, "Việt Nam");
-        Phim phim2 = new Phim("phim02", "Tử chiến trên không", "Bộ công an Việt Nam", TheLoaiPhim.HANH_DONG, 240,
-                "Việt Nam");
-        Phim phim3 = new Phim("phim03", "Kimetsu no Yaiba - pháo đài vô cực", "Ufotable", TheLoaiPhim.HOAT_HINH, 240,
-                "Nhật Bản");
-        Phim phim4 = new Phim("phim04", "Cậu bé bóng cười", "NoHope", TheLoaiPhim.HAI_HUOC, 180, "Trung quốc");
-        QuanLyPhim_DAO movieManager = new QuanLyPhim_DAO();
-        movieManager.add(phim1);
-        movieManager.add(phim2);
-        movieManager.add(phim3);
-        movieManager.add(phim4);
-        return movieManager;
-    }
-
     public static QuanLySuatChieu_DAO FakeSuatChieuDB() {
         SuatChieu suat1 = new SuatChieu("suat01", "phim01", "phong01", LocalDate.of(2025, 10, 5), LocalTime.of(7, 20),
                 75000.0);
@@ -119,18 +103,18 @@ public class DataBase {
         NhanVien nv03 = new NhanVien("NV03", "Nguyễn Chí Tâm", "Hóc-môn, TPHCM", "0356344576",
                 LocalDate.of(2005, 2, 14), "tan2005tg@gmail.com", "Nam");
         QuanLyNhanVien_DAO employeeManager = new QuanLyNhanVien_DAO();
-        employeeManager.add(nv01);
-        employeeManager.add(nv02);
-        employeeManager.add(nv03);
+        // employeeManager.add(nv01);
+        // employeeManager.add(nv02);
+        // employeeManager.add(nv03);
         return employeeManager;
     }
 
     public static QuanLyHoaDon_DAO FakeHoaDonDB() {
         QuanLyKhachHang_DAO customerManager = FakeKhachHangDB();
         QuanLyNhanVien_DAO employeeManager = FakeNhanVienDB();
-        HoaDon hd01 = new HoaDon("HD01", LocalDate.of(2005, 2, 14), employeeManager.timNhanVienTheoMaNV("NV01"),
+        HoaDon hd01 = new HoaDon("HD01", LocalDate.of(2005, 2, 14), employeeManager.timTheoMa("NV01"),
                 customerManager.findKhachHang("KH04"), 4, 120000);
-        HoaDon hd02 = new HoaDon("HD02", LocalDate.of(2005, 9, 2), employeeManager.timNhanVienTheoMaNV("NV02"),
+        HoaDon hd02 = new HoaDon("HD02", LocalDate.of(2005, 9, 2), employeeManager.timTheoMa("NV02"),
                 customerManager.findKhachHang("KH01"), 2, 90000);
         QuanLyHoaDon_DAO billManager = new QuanLyHoaDon_DAO();
         billManager.add(hd01);

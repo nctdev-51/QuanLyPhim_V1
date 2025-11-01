@@ -4,10 +4,13 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+import entity.LoadData;
+
 public class Start extends JFrame implements ActionListener {
     private JLabel lblNhanVien;
     private JButton btnTrangChu, btnBanVe, btnPhim, btnSuatChieu,
             btnKhachHang, btnNhanVien, btnThongKe, btnDangXuat;
+    private CardLayout cardLayout;
 
     public Start() {
         setTitle("Hệ thống quản lý bán vé rạp chiếu phim");
@@ -107,39 +110,40 @@ public class Start extends JFrame implements ActionListener {
 
         add(pnWest, BorderLayout.WEST);
 
-        // ==== NỘI DUNG TRANG CHỦ (MẶC ĐỊNH) ====
-        add(new TrangChu(), BorderLayout.CENTER);
+        JPanel pnCenter = new JPanel(new CardLayout());
+        add(pnCenter, BorderLayout.CENTER);
 
-        // ==== GÁN SỰ KIỆN ====
-        btnTrangChu.addActionListener(e -> {
-            new Start().setVisible(true);
-        });
+        JPanel trangChuPanel = new TrangChu();
+        JPanel banVePanel = new QuanLyBanVe();
+        JPanel phimPanel = new QuanLyPhim();
+        JPanel suatChieuPanel = new QuanLySuatChieu();
+        JPanel khachHangPanel = new QuanLyKhachHang();
+        JPanel nhanVienPanel = new QuanLyNhanVien();
+        JPanel thongKePanel = new QuanLyThongKe();
 
-        btnBanVe.addActionListener(e -> {
-            new QuanLyBanVe().setVisible(true);
-        });
+        pnCenter.add(trangChuPanel, "TrangChu");
+        pnCenter.add(banVePanel, "BanVe");
+        pnCenter.add(phimPanel, "Phim");
+        pnCenter.add(suatChieuPanel, "SuatChieu");
+        pnCenter.add(khachHangPanel, "KhachHang");
+        pnCenter.add(nhanVienPanel, "NhanVien");
+        pnCenter.add(thongKePanel, "ThongKe");
 
-        btnPhim.addActionListener(e -> {
-            new QuanLyPhim().setVisible(true);
-        });
-
-        btnSuatChieu.addActionListener(e -> {
-            new QuanLySuatChieu().setVisible(true);
-        });
-
-        btnKhachHang.addActionListener(e -> {
-            new QuanLyKhachHang().setVisible(true);
-        });
-
-        btnNhanVien.addActionListener(e -> {
-            new QuanLyNhanVien().setVisible(true);
-        });
-
-        btnThongKe.addActionListener(e -> {
-            new QuanLyThongKe().setVisible(true);
-        });
-
+        this.cardLayout = (CardLayout) pnCenter.getLayout();
+        btnTrangChu.addActionListener(e -> showPanel(pnCenter, "TrangChu", null));
+        btnBanVe.addActionListener(e -> showPanel(pnCenter, "BanVe", (LoadData) banVePanel));
+        btnPhim.addActionListener(e -> showPanel(pnCenter, "Phim", (LoadData) phimPanel));
+        btnSuatChieu.addActionListener(e -> showPanel(pnCenter, "SuatChieu", (LoadData) suatChieuPanel));
+        btnKhachHang.addActionListener(e -> showPanel(pnCenter, "KhachHang", (LoadData) khachHangPanel));
+        btnNhanVien.addActionListener(e -> showPanel(pnCenter, "NhanVien", (LoadData) nhanVienPanel));
+        btnThongKe.addActionListener(e -> showPanel(pnCenter, "ThongKe", (LoadData) thongKePanel));
         btnDangXuat.addActionListener(this);
+    }
+
+    private void showPanel(JPanel pnCenter, String name, LoadData loadData) {
+        this.cardLayout.show(pnCenter, name);
+        if (loadData != null)
+            loadData.loadData();
     }
 
     @Override

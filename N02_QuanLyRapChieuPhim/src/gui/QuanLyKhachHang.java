@@ -7,22 +7,26 @@ import java.awt.event.*;
 import java.util.List;
 import dao.QuanLyKhachHang_DAO;
 import entity.KhachHang;
+import entity.LoadData;
 
-public class QuanLyKhachHang extends JFrame implements ActionListener, MouseListener {
+public class QuanLyKhachHang extends JPanel implements ActionListener, MouseListener, LoadData {
 
     private QuanLyKhachHang_DAO kh_dao;
     private DefaultTableModel tableModel;
     private JTable table;
+    @Override
+    public void loadData() {
+        // TODO Auto-generated method stub
+        DocDuLieuVaoTable();
+    }
     private JTextField txtMaKH, txtHoTen, txtSoDT, txtDiaChi, txtTimKiem;
     private JComboBox<String> cboGioiTinh;
     private JButton btnThem, btnXoaTrang, btnXoa1Dong, btnLamMoi, btnSua, btnTimKiem;
 
     public QuanLyKhachHang() {
         // ==== CẤU HÌNH FORM ====
-        setTitle("Quản lý hội viên");
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
-        setPreferredSize(new Dimension(900, 600));
 
         // ==== TIÊU ĐỀ ====
         JPanel pNorth = new JPanel();
@@ -177,11 +181,6 @@ public class QuanLyKhachHang extends JFrame implements ActionListener, MouseList
         // === LOAD DỮ LIỆU BAN ĐẦU ===
         kh_dao = new QuanLyKhachHang_DAO();
         DocDuLieuVaoTable();
-
-        // === HIỂN THỊ FRAME ===
-        pack();
-        setLocationRelativeTo(null);
-        setVisible(true);
     }
 
     private void DocDuLieuVaoTable() {

@@ -11,20 +11,24 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-public class QuanLyNhanVien extends JFrame {
+import entity.LoadData;
+
+public class QuanLyNhanVien extends JPanel implements LoadData {
     private QuanLyNhanVien_DAO daoNV;
     private JTable table;
     private DefaultTableModel model;
+    @Override
+    public void loadData() {
+        // TODO Auto-generated method stub
+        loadNhanVien();
+    }
+
     private JTextField txtMa, txtTen, txtDiaChi, txtSdt, txtEmail, txtNgaySinh, txtTim;
     private JComboBox<String> cboGioiTinh;
     private JButton btnThem, btnSua, btnXoa, btnTaiLai, btnTim;
     private DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     public QuanLyNhanVien() {
-        setTitle("Quản lý nhân viên");
-        setExtendedState(JFrame.MAXIMIZED_BOTH); // ✅ Tự giãn full màn hình
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
 
         daoNV = new QuanLyNhanVien_DAO();
         Font font = new Font("Segoe UI", Font.PLAIN, 14);
@@ -33,7 +37,7 @@ public class QuanLyNhanVien extends JFrame {
         JPanel pnlMain = new JPanel(new BorderLayout(15, 15));
         pnlMain.setBorder(new EmptyBorder(10, 15, 10, 15));
         pnlMain.setBackground(Color.WHITE);
-        getContentPane().add(pnlMain);
+        add(pnlMain);
 
         // ====== TIÊU ĐỀ ======
         JLabel lblTitle = new JLabel("QUẢN LÝ NHÂN VIÊN", SwingConstants.CENTER);

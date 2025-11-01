@@ -54,5 +54,5 @@ public class DangNhap_DAO {
 		}
 		return tkhoan;
 	}
-
+	//lấy nhan vien đang đăng nhập
 }

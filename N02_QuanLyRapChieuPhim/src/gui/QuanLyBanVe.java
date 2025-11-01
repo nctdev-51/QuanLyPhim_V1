@@ -19,17 +19,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import entity.Ve;
-import entity.SuatChieu;
-import entity.Rap;
-import entity.ChiTietHoaDon;
-import entity.Ghe;
-import entity.HoaDon;
-import entity.KhachHang;
-import entity.NhanVien;
-import entity.Phim;
+import entity.*;
 
-public class QuanLyBanVe extends JFrame {
+public class QuanLyBanVe extends JPanel implements LoadData {
     private JComboBox<String> cbPhim, cbPhong, cbSuatChieu, cbGioiTinh;
     private JButton btnChonGhe, btnDatVe, btnXoaChon;
     private JTextField txtHoTen, txtSDT, txtDiaChi;
@@ -52,21 +44,9 @@ public class QuanLyBanVe extends JFrame {
     private ArrayList<Phim> movieList;
 
     public QuanLyBanVe() {
-        setSize(new Dimension(900, 600));
         setLayout(new BorderLayout(10, 10));
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setTitle("Quản lý bán vé");
         // Load database
-        LoadMovieManager();
-        LoadSuatChieuManager();
-        LoadRapManager();
-        LoadChairManager();
-        LoadCustomerManager();
-        LoadTicketManager();
-        LoadBillManager();
-        LoadEmployeeManager();
-        LoadCthdManager();
+        loadData();
         // ===== NORTH: Tiêu đề =====
         JLabel lblTitle = new JLabel("QUẢN LÝ BÁN VÉ", JLabel.CENTER);
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 28));
@@ -451,7 +431,6 @@ public class QuanLyBanVe extends JFrame {
         resetForm();
         ticketJFrame.dispose();
         if (option == JOptionPane.YES_OPTION) {
-
             new HoaDonUI(hoaDon, this.cthdManager, this.movieManager, this.suatChieuManager, this);
         }
 
@@ -662,6 +641,20 @@ public class QuanLyBanVe extends JFrame {
         chairFrame.add(confirmPanel, BorderLayout.SOUTH);
         chairFrame.setModalExclusionType(ModalExclusionType.APPLICATION_EXCLUDE);
         chairFrame.setVisible(true);
+    }
+
+    @Override
+    public void loadData() {
+        // TODO Auto-generated method stub
+        LoadMovieManager();
+        LoadSuatChieuManager();
+        LoadRapManager();
+        LoadChairManager();
+        LoadCustomerManager();
+        LoadTicketManager();
+        LoadBillManager();
+        LoadEmployeeManager();
+        LoadCthdManager();
     }
 
     private void hanldeSelectChair(ArrayList<String> selectedChairs, JButton btn) {

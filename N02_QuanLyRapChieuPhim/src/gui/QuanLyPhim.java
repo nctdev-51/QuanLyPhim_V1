@@ -11,8 +11,9 @@ import ConnectDB.ConnectDB;
 import dao.QuanLyPhim_DAO;
 import entity.Phim;
 import entity.TheLoaiPhim;
+import entity.LoadData;
 
-public class QuanLyPhim extends JFrame {
+public class QuanLyPhim extends JPanel implements LoadData {
     private JTable table;
     private DefaultTableModel model;
     private JTextField txtMaPhim, txtTenPhim, txtNhaSX, txtThoiLuong, txtQuocGia, txtTimPhim;
@@ -22,13 +23,15 @@ public class QuanLyPhim extends JFrame {
     private QuanLyPhim_DAO phimDAO;
     private ArrayList<Phim> dsPhim;
 
+    @Override
+    public void loadData() {
+        // TODO Auto-generated method stub
+        loadDataToTable();
+    }
+
     public QuanLyPhim() {
-        setTitle("Quản lý phim");
-        setSize(1300, 750);
-        setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
-        getContentPane().setBackground(Color.WHITE);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setBackground(Color.WHITE);
 
         // ======= KẾT NỐI DATABASE =======
         try {

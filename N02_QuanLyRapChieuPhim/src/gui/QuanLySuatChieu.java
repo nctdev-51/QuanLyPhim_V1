@@ -19,8 +19,9 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import entity.LoadData;
 
-public class QuanLySuatChieu extends JFrame implements ActionListener {
+public class QuanLySuatChieu extends JPanel implements ActionListener, LoadData {
     private QuanLySuatChieu_DAO quanLySuatChieu_DAO;
     private JTable tblSuatChieu;
     private JTextField txtMaSuat, txtNgayChieu, txtThoiGian, txtGiaVe, txtTimSuat, txtTenPhim, txtMaPhim;
@@ -28,22 +29,24 @@ public class QuanLySuatChieu extends JFrame implements ActionListener {
     private JButton btnThem, btnSua, btnXoa, btnXoaRong, btnLuu, btnTim;
     private DefaultTableModel model;
     private JTree treeNgayChieu;
-    private QuanLySuatChieu_DAO data;
+    // private QuanLySuatChieu_DAO data; -- Tân chỉnh sửa: không cần qua trung gian nữa trực tiếp dùng con trỏ quanLySuatChieu_DAO trỏ tới dữ liệu từ FakeSuatChieuDB()
     protected QuanLyPhim_DAO dataPhim;
 
+    @Override
+    public void loadData() {
+        // TODO Auto-generated method stub
+        quanLySuatChieu_DAO = DataBase.FakeSuatChieuDB();
+        //Hiển thị dữ liệu lên bảng
+        capNhatBang();
+    }
+
     public QuanLySuatChieu() {
-        // ===== Cấu hình Frame =====
-        setTitle("Quản lý Suất chiếu");
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setSize(1200, 700);
-        setLocationRelativeTo(null);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
-        getContentPane().setBackground(Color.WHITE);
+        // ===== Cấu hình =====
+        setBackground(Color.WHITE);
         setLayout(new BorderLayout());
 
         // ===== Khởi tạo DAO =====
-        quanLySuatChieu_DAO = new QuanLySuatChieu_DAO();
-        laydulieu();
+        quanLySuatChieu_DAO = DataBase.FakeSuatChieuDB();
 
         // ===== Tiêu đề =====
         JLabel lblTitle = new JLabel("QUẢN LÝ SUẤT CHIẾU", SwingConstants.CENTER);
@@ -103,7 +106,7 @@ public class QuanLySuatChieu extends JFrame implements ActionListener {
         pnForm.add(txtThoiGian);
 
         pnForm.add(new JLabel("Phòng chiếu:"));
-        cbPhong = new JComboBox<>(new String[]{
+        cbPhong = new JComboBox<>(new String[] {
                 "phong01", "phong02", "phong03", "phong04", "phong05",
                 "phong06", "phong07", "phong08", "phong09", "phong10"
         });
@@ -113,8 +116,7 @@ public class QuanLySuatChieu extends JFrame implements ActionListener {
 
         // ===== Bảng suất chiếu =====
         model = new DefaultTableModel(
-                new String[]{"Mã Suất", "Mã Phim", "Tên Phim", "Phòng", "Ngày chiếu", "Thời gian", "Giá vé"}, 0
-        ) {
+                new String[] { "Mã Suất", "Mã Phim", "Tên Phim", "Phòng", "Ngày chiếu", "Thời gian", "Giá vé" }, 0) {
             @Override
             public boolean isCellEditable(int r, int c) {
                 return false;
@@ -149,7 +151,7 @@ public class QuanLySuatChieu extends JFrame implements ActionListener {
         btnXoaRong = new JButton("Xóa rỗng");
         btnLuu = new JButton("Lưu");
 
-        JButton[] arrBtns = {btnTim, btnThem, btnSua, btnXoa, btnXoaRong, btnLuu};
+        JButton[] arrBtns = { btnTim, btnThem, btnSua, btnXoa, btnXoaRong, btnLuu };
         Color[] colors = {
                 new Color(255, 140, 0),
                 new Color(46, 204, 113),
@@ -177,7 +179,8 @@ public class QuanLySuatChieu extends JFrame implements ActionListener {
         // ===== Sự kiện chọn node trên cây =====
         treeNgayChieu.addTreeSelectionListener(e -> {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) treeNgayChieu.getLastSelectedPathComponent();
-            if (node == null) return;
+            if (node == null)
+                return;
             String text = node.toString();
             if (text.startsWith("Ngày chiếu:")) {
                 try {
@@ -202,7 +205,7 @@ public class QuanLySuatChieu extends JFrame implements ActionListener {
     private void capNhatBang() {
         model.setRowCount(0);
         for (SuatChieu suat : quanLySuatChieu_DAO.getDanhSachSuatChieu()) {
-            model.addRow(new Object[]{
+            model.addRow(new Object[] {
                     suat.getMaSuatChieu(),
                     suat.getMaPhim(),
                     tenPhim(suat.getMaPhim()),
@@ -218,7 +221,7 @@ public class QuanLySuatChieu extends JFrame implements ActionListener {
         model.setRowCount(0);
         for (SuatChieu suat : quanLySuatChieu_DAO.getDanhSachSuatChieu()) {
             if (suat.getNgayChieu().isEqual(ngay)) {
-                model.addRow(new Object[]{
+                model.addRow(new Object[] {
                         suat.getMaSuatChieu(),
                         suat.getMaPhim(),
                         tenPhim(suat.getMaPhim()),
@@ -230,14 +233,16 @@ public class QuanLySuatChieu extends JFrame implements ActionListener {
             }
         }
     }
+    // Được sửa bởi Minh Tân: Loại bỏ hàm này vì quá rườm rà. Cứ lấy dữ liệu trực tiếp từ FakeSuatChieuDB() khỏi qua trung gian. 
+    // Nguyên nhân: Làm theo nguyên lí con trỏ (ptr) 
 
-    public ArrayList<SuatChieu> laydulieu() {
-        data = DataBase.FakeSuatChieuDB();
-        for (SuatChieu s : data.getDanhSachSuatChieu()) {
-            quanLySuatChieu_DAO.addNewSuatChieu(s);
-        }
-        return quanLySuatChieu_DAO.getDanhSachSuatChieu();
-    }
+    // public ArrayList<SuatChieu> laydulieu() {
+    //     data = DataBase.FakeSuatChieuDB();
+    //     for (SuatChieu s : data.getDanhSachSuatChieu()) {
+    //         quanLySuatChieu_DAO.addNewSuatChieu(s);
+    //     }
+    //     return quanLySuatChieu_DAO.getDanhSachSuatChieu();
+    // }
 
     @Override
     public void actionPerformed(ActionEvent e) {

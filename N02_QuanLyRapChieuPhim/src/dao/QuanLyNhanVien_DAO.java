@@ -8,8 +8,8 @@ import ConnectDB.ConnectDB;
 import entity.NhanVien;
 
 public class QuanLyNhanVien_DAO {
-
-    public ArrayList<NhanVien> getAllNhanVien() {
+    
+    public static ArrayList<NhanVien> getAllNhanVien() {
         ArrayList<NhanVien> ds = new ArrayList<>();
         try {
             Connection con = ConnectDB.getConnection();

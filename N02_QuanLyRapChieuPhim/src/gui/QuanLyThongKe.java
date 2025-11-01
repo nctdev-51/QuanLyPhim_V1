@@ -10,9 +10,18 @@ import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-public class QuanLyThongKe extends JFrame implements ActionListener {
+import entity.LoadData;
+
+public class QuanLyThongKe extends JPanel implements ActionListener, LoadData {
     private JTable tblThongKe;
     private JButton btnXem, btnBaoCao, btnTim, btnThemThuMuc;
+
+    @Override
+    public void loadData() {
+        // TODO Auto-generated method stub
+        capNhatBang();
+    }
+
     private JLabel lblTotalPhimValue, lblTotalVeValue, lblTotalDoanhThuValue, lblTotalNgayChieuValue;
     private JTextField txtTimKiem;
     private JTree treeNgayChieu;
@@ -20,11 +29,8 @@ public class QuanLyThongKe extends JFrame implements ActionListener {
     private DefaultTableModel model;
 
     public QuanLyThongKe() {
-        setTitle("Báo cáo thống kê");
-        setSize(1400, 700);
-        setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
-        getContentPane().setBackground(Color.WHITE);
+        setBackground(Color.WHITE);
 
         // ===== NORTH =====
         JLabel lblTitle = new JLabel("BÁO CÁO THỐNG KÊ", SwingConstants.CENTER);
@@ -48,7 +54,8 @@ public class QuanLyThongKe extends JFrame implements ActionListener {
         // === Lắng nghe chọn node ===
         treeNgayChieu.addTreeSelectionListener(e -> {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) treeNgayChieu.getLastSelectedPathComponent();
-            if (node == null) return;
+            if (node == null)
+                return;
             String nodeText = node.toString();
             if (nodeText.startsWith("Ngày chiếu:")) {
                 String ngayStr = nodeText.replace("Ngày chiếu:", "").trim();
@@ -56,9 +63,11 @@ public class QuanLyThongKe extends JFrame implements ActionListener {
                     LocalDate ngay = LocalDate.parse(ngayStr, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
                     capNhatBangTheoNgay(ngay);
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(this, "Định dạng ngày không hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Định dạng ngày không hợp lệ!", "Lỗi",
+                            JOptionPane.ERROR_MESSAGE);
                 }
-            } else capNhatBang();
+            } else
+                capNhatBang();
         });
 
         // ===== CENTER =====
@@ -92,7 +101,10 @@ public class QuanLyThongKe extends JFrame implements ActionListener {
         };
 
         model = new DefaultTableModel(data, columns) {
-            @Override public boolean isCellEditable(int row, int col) { return false; }
+            @Override
+            public boolean isCellEditable(int row, int col) {
+                return false;
+            }
         };
         tblThongKe = new JTable(model);
         tblThongKe.setFont(new Font("Segoe UI", Font.PLAIN, 15));
@@ -182,14 +194,16 @@ public class QuanLyThongKe extends JFrame implements ActionListener {
     private void timKiem() {
         String maTim = txtTimKiem.getText().trim();
         if (maTim.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập mã suất cần tìm!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập mã suất cần tìm!", "Thông báo",
+                    JOptionPane.WARNING_MESSAGE);
             return;
         }
         for (int i = 0; i < model.getRowCount(); i++) {
             if (model.getValueAt(i, 0).toString().equalsIgnoreCase(maTim)) {
                 tblThongKe.setRowSelectionInterval(i, i);
                 tblThongKe.scrollRectToVisible(tblThongKe.getCellRect(i, 0, true));
-                JOptionPane.showMessageDialog(this, "Đã tìm thấy suất chiếu!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Đã tìm thấy suất chiếu!", "Thông báo",
+                        JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
         }
@@ -201,7 +215,8 @@ public class QuanLyThongKe extends JFrame implements ActionListener {
         String defaultDate = LocalDate.now().format(fmt);
         while (true) {
             String dateInput = JOptionPane.showInputDialog(this, "Nhập ngày chiếu (dd/MM/yyyy):", defaultDate);
-            if (dateInput == null) break;
+            if (dateInput == null)
+                break;
             try {
                 LocalDate parsed = LocalDate.parse(dateInput.trim(), fmt);
                 DefaultMutableTreeNode newNode = new DefaultMutableTreeNode("Ngày chiếu: " + parsed.format(fmt));
@@ -219,10 +234,14 @@ public class QuanLyThongKe extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         Object src = e.getSource();
-        if (src == btnXem) capNhatBang();
-        else if (src == btnTim) timKiem();
-        else if (src == btnThemThuMuc) themNodeNgayChieu();
-        else if (src == btnBaoCao) JOptionPane.showMessageDialog(this, "Đã lập báo cáo thống kê!");
+        if (src == btnXem)
+            capNhatBang();
+        else if (src == btnTim)
+            timKiem();
+        else if (src == btnThemThuMuc)
+            themNodeNgayChieu();
+        else if (src == btnBaoCao)
+            JOptionPane.showMessageDialog(this, "Đã lập báo cáo thống kê!");
     }
 
 }
