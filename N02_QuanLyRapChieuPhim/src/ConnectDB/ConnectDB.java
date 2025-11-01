@@ -16,7 +16,7 @@ public class ConnectDB {
     }
 
     public void connect() {
-        String url = "jdbc:sqlserver://localhost:1433;databaseName=QLRapChieuPhim;encrypt=false";
+        String url = "jdbc:sqlserver://localhost:1433;databaseName=QLRapChieuPhim";
         String user = "sa";
         String password = "sapassword";
 
@@ -53,6 +53,7 @@ public class ConnectDB {
         }
         return con;
     }
+
     public static void main(String[] args) {
         ConnectDB.getInstance().connect();
     }

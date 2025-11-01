@@ -3,7 +3,6 @@ package gui;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-
 import entity.LoadData;
 
 public class Start extends JFrame implements ActionListener {

@@ -20,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import entity.LoadData;
+import entity.Phim;
 
 public class QuanLySuatChieu extends JPanel implements ActionListener, LoadData {
     private QuanLySuatChieu_DAO quanLySuatChieu_DAO;
@@ -199,7 +200,12 @@ public class QuanLySuatChieu extends JPanel implements ActionListener, LoadData 
     // ================= Các hàm xử lý ====================
     private String tenPhim(String maPhim) {
         dataPhim = new QuanLyPhim_DAO();
-        return dataPhim.timPhimTheoMa(maPhim).getTenPhim();
+        Phim phim = dataPhim.timPhimTheoMa(maPhim);
+        // return dataPhim.timPhimTheoMa(maPhim).getTenPhim();
+        if(phim != null){
+            return phim.getTenPhim();
+        }
+        return null;
     }
 
     private void capNhatBang() {

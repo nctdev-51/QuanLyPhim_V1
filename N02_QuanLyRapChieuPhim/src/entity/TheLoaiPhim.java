@@ -7,7 +7,8 @@ public enum TheLoaiPhim {
     KINH_DI("Kinh dị"),
     HOAT_HINH("Hoạt hình"),
     TAM_LY("Tâm lý"),
-    VIEN_TUONG("Viễn tưởng");
+    VIEN_TUONG("Viễn tưởng"),
+    CHUA_RO("Chưa rõ");
 
     private final String tenHienThi;
 
@@ -30,6 +31,6 @@ public enum TheLoaiPhim {
                 return tl;
             }
         }
-        throw new IllegalArgumentException("Không tìm thấy thể loại: " + ten);
+        return CHUA_RO;
     }
 }

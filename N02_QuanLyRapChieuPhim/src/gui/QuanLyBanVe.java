@@ -57,7 +57,7 @@ public class QuanLyBanVe extends JPanel implements LoadData {
         pCenter.setLayout(new BoxLayout(pCenter, BoxLayout.Y_AXIS));
 
         cbPhim = new JComboBox<>(new String[] { "---Chọn phim---" });
-        for (Phim phim : movieList) {
+        for (Phim phim : this.movieList) {
             cbPhim.addItem(phim.getTenPhim());
         }
         cbPhong = new JComboBox<>(new String[] { "---Chọn phòng---" });
@@ -498,7 +498,11 @@ public class QuanLyBanVe extends JPanel implements LoadData {
         txtThoiLuong.setText("");
         Phim phim = this.movieList.get(cbPhim.getSelectedIndex() - 1);
         txtTenPhim.setText(phim.getTenPhim());
-        txtTheLoai.setText(phim.getTheLoai().getTenHienThi());
+        if (phim.getTheLoai() != null) {
+            txtTheLoai.setText(phim.getTheLoai().getTenHienThi());
+        } else {
+            throw new NullPointerException("Thể loại của phim " + phim.getTenPhim() + " bị null");
+        }
         txtThoiLuong.setText(Integer.toString(phim.getThoiLuong()) + " phút");
         this.suatChieuDuocChon = new SuatChieu("AUTO_GENERATE");
         this.suatChieuDuocChon.setMaPhim(phim.getMaPhim());

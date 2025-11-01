@@ -127,8 +127,7 @@ public class QuanLyPhim_DAO {
                         rs.getString("nhaSanXuat"),
                         theLoai,
                         rs.getInt("thoiLuong"),
-                        rs.getString("quocGia")
-                );
+                        rs.getString("quocGia"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -141,8 +140,10 @@ public class QuanLyPhim_DAO {
     // ====== HÀM TIỆN ÍCH ======
     private void close(ResultSet rs, Statement stmt) {
         try {
-            if (rs != null) rs.close();
-            if (stmt != null) stmt.close();
+            if (rs != null)
+                rs.close();
+            if (stmt != null)
+                stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
