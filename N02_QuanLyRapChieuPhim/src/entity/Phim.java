@@ -4,7 +4,7 @@ public class Phim {
     private String maPhim;
     private String tenPhim;
     private String nhaSanXuat;
-    private String theLoai;
+    private TheLoaiPhim theLoai;
     private int thoiLuong;
     private String quocGia;
 
@@ -12,12 +12,12 @@ public class Phim {
         setMaPhim(maPhim);
         this.tenPhim = "";
         this.nhaSanXuat = "";
-        this.theLoai = "";
+        this.theLoai = TheLoaiPhim.HANH_DONG; // giá trị mặc định
         this.thoiLuong = 60;
         this.quocGia = "";
     }
 
-    public Phim(String maPhim, String tenPhim, String nhaSanXuat, String theLoai, int thoiLuong, String quocGia) {
+    public Phim(String maPhim, String tenPhim, String nhaSanXuat, TheLoaiPhim theLoai, int thoiLuong, String quocGia) {
         setMaPhim(maPhim);
         setTenPhim(tenPhim);
         setNhaSanXuat(nhaSanXuat);
@@ -44,9 +44,9 @@ public class Phim {
         this.nhaSanXuat = nhaSanXuat;
     }
 
-    public String getTheLoai() { return theLoai; }
-    public void setTheLoai(String theLoai) {
-        if (theLoai == null || theLoai.isEmpty()) throw new IllegalArgumentException("Thể loại rỗng!");
+    public TheLoaiPhim getTheLoai() { return theLoai; }
+    public void setTheLoai(TheLoaiPhim theLoai) {
+        if (theLoai == null) throw new IllegalArgumentException("Thể loại không được null!");
         this.theLoai = theLoai;
     }
 
@@ -62,11 +62,9 @@ public class Phim {
         this.quocGia = quocGia;
     }
 
-	@Override
-	public String toString() {
-		return "Phim [maPhim=" + maPhim + ", tenPhim=" + tenPhim + ", nhaSanXuat=" + nhaSanXuat + ", theLoai=" + theLoai
-				+ ", thoiLuong=" + thoiLuong + ", quocGia=" + quocGia + "]";
-	}
-
-    
+    @Override
+    public String toString() {
+        return "Phim [maPhim=" + maPhim + ", tenPhim=" + tenPhim + ", nhaSanXuat=" + nhaSanXuat +
+               ", theLoai=" + theLoai + ", thoiLuong=" + thoiLuong + ", quocGia=" + quocGia + "]";
+    }
 }

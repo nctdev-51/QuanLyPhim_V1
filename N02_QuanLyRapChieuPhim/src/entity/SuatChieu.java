@@ -9,7 +9,6 @@ public class SuatChieu {
     private String maRap;
     private LocalDate ngayChieu;
     private LocalTime gioChieu;
-
     private Double giaVe;
 
     public SuatChieu(String maSuatChieu) {
