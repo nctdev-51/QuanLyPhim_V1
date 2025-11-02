@@ -109,7 +109,7 @@ public class DangNhap extends JFrame implements ActionListener {
         if (tk != null) {
             tenNhanVien = tk.getNhanVien().getTenNV();
             JOptionPane.showMessageDialog(this, "Đăng nhập thành công!");
-            new Start();
+            new Start().setVisible(true);
             dispose();
         } else {
             JOptionPane.showMessageDialog(this, "Tên tài khoản hoặc mật khẩu không đúng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
