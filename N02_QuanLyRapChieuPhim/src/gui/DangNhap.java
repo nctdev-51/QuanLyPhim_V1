@@ -6,11 +6,11 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import dao.DangNhap_DAO;
+import entity.NhanVien;
 import entity.TaiKhoan;
 
 public class DangNhap extends JFrame implements ActionListener {
-    public static String tenNhanVien;
-    public static String vaiTro = "Nhân viên";
+    public static NhanVien nhanVienDangNhap;
     private JTextField txtTaiKhoan;
     private JPasswordField txtMatKhau;
     private JLabel lblTaiKhoan, lblMatKhau, lblTieuDe;
@@ -107,16 +107,22 @@ public class DangNhap extends JFrame implements ActionListener {
 
         TaiKhoan tk = dangNhapDAO.ktDangNhap(taiKhoan, matKhauNhap);
         if (tk != null) {
-            tenNhanVien = tk.getNhanVien().getTenNV();
+            this.nhanVienDangNhap = tk.getNhanVien();
             JOptionPane.showMessageDialog(this, "Đăng nhập thành công!");
             new Start().setVisible(true);
             dispose();
         } else {
-            JOptionPane.showMessageDialog(this, "Tên tài khoản hoặc mật khẩu không đúng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Tên tài khoản hoặc mật khẩu không đúng!", "Lỗi",
+                    JOptionPane.ERROR_MESSAGE);
             txtTaiKhoan.requestFocus();
+            return;
         }
         new Start();
         setVisible(false);
+    }
+
+    public DangNhap_DAO getDangNhapDAO() {
+        return this.dangNhapDAO;
     }
 
     public static void main(String[] args) {

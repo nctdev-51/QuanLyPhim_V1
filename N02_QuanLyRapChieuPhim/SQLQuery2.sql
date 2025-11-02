@@ -341,3 +341,18 @@ INSERT INTO Ghe (maGhe, tenGhe, maRap, tinhTrang) VALUES
 ('RAP004_G29', N'Ghế 29', 'RAP004', 1),
 ('RAP004_G30', N'Ghế 30', 'RAP004', 1);
 GO
+-- Thêm 3 nhân viên vào bảng NhanVien
+INSERT INTO NhanVien (maNV, tenNV, diaChi, soDienThoai, ngaySinh, email, gioiTinh)
+VALUES
+('NV01', N'Lê Minh Tân', N'123 Lê Lợi, Quận 1, TP.HCM', '0905123456', '1998-03-15', 'an.nguyen@example.com', N'Nam'),
+('NV02', N'Nguyễn Chí Tâm', N'45 Hai Bà Trưng, Hà Nội', '0987654321', '2000-07-22', 'binh.tran@example.com', N'Nữ'),
+('NV03', N'Đỗ Thanh Tường', N'78 Nguyễn Huệ, Đà Nẵng', '0912345678', '1995-11-09', 'phuc.le@example.com', N'Nam');
+GO
+
+--Thêm 3 tài khoản
+
+INSERT INTO TaiKhoan (maNV, taiKhoan, matKhau)
+VALUES
+('NV01', N'leminhtan', N'123455'),
+('NV02', N'nguyenchitam', N'123455'),
+('NV03', N'dothanhtuong', N'123455');
