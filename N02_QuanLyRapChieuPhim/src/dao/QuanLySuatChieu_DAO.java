@@ -55,7 +55,7 @@ public class QuanLySuatChieu_DAO {
                 String maRap = rs.getString("maRap");
                 LocalDate ngayChieu = rs.getDate("ngayChieu").toLocalDate();
                 LocalTime gioChieu = rs.getTime("gioChieu").toLocalTime();
-                double giaVe = rs.getDouble("giaVe");
+                float giaVe = rs.getFloat("giaVe");
                 suatChieu = new SuatChieu(maSuatChieu, maPhim, maRap, ngayChieu, gioChieu, giaVe);
             }
         } catch (Exception e) {
@@ -82,7 +82,7 @@ public class QuanLySuatChieu_DAO {
                 String maRap = rs.getString("maRap");
                 LocalDate ngayChieu = rs.getDate("ngayChieu").toLocalDate();
                 LocalTime gioChieu = rs.getTime("gioChieu").toLocalTime();
-                double giaVe = rs.getDouble("giaVe");
+                float giaVe = rs.getFloat("giaVe");
                 SuatChieu suatChieu = new SuatChieu(maSuatChieu, maPhim, maRap, ngayChieu, gioChieu, giaVe);
                 danhSachSuatChieu.add(suatChieu);
             }
@@ -110,7 +110,7 @@ public class QuanLySuatChieu_DAO {
                 String maRap = rs.getString("maRap");
                 LocalDate ngayChieu = rs.getDate("ngayChieu").toLocalDate();
                 LocalTime gioChieu = rs.getTime("gioChieu").toLocalTime();
-                double giaVe = rs.getDouble("giaVe");
+                float giaVe = rs.getFloat("giaVe");
                 SuatChieu suatChieu = new SuatChieu(maSuatChieu, maPhim, maRap, ngayChieu, gioChieu, giaVe);
                 danhSachSuatChieu.add(suatChieu);
             }
@@ -164,7 +164,9 @@ public class QuanLySuatChieu_DAO {
         }
         return n > 0;
     }
-    //Tân comment: bỏ chức năng lưu luôn đi mình add là add trực tiếp vô database luôn
+
+    // Tân comment: bỏ chức năng lưu luôn đi mình add là add trực tiếp vô database
+    // luôn
     // Lưu vào database
     public boolean saveToDatabase() {
         // Giả lập lưu vào database

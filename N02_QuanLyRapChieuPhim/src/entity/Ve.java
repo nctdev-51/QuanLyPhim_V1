@@ -6,10 +6,6 @@ public class Ve {
     private String maVe;
     private Ghe ghe;
     private LocalDate ngayBan;
-    // private String maKhachHang; bỏ thuộc tính khách hàng
-    // private String maNhanVien; bỏ thuộc tính Nhân Viên
-    // private String maPhim; có thể truy suất mã phim dựa vào suất chiếu
-    // private String maRap; có thể truy suất mã rạp dựa vào suất chiếu
     private String maSuatChieu;
     private boolean daThanhToan;
 
@@ -18,19 +14,6 @@ public class Ve {
         this.ngayBan = LocalDate.now();
         this.daThanhToan = false;
     }
-
-    // public Ve(String maVe, Ghe ghe, LocalDate ngayBan, String maKhachHang,
-    //         String maNhanVien, String maPhim, String maRap, String maSuatChieu, boolean daThanhToan) {
-    //     setMaVe(maVe);
-    //     setGhe(ghe);
-    //     setNgayBan(ngayBan);
-    //     setMaKhachHang(maKhachHang);
-    //     setMaNhanVien(maNhanVien);
-    //     setMaPhim(maPhim);
-    //     setMaRap(maRap);
-    //     setMaSuatChieu(maSuatChieu);
-    //     setDaThanhToan(daThanhToan);
-    // }
      public Ve(String maVe, Ghe ghe, LocalDate ngayBan, String maSuatChieu, boolean daThanhToan) {
         setMaVe(maVe);
         setGhe(ghe);
@@ -65,38 +48,6 @@ public class Ve {
         this.ngayBan = ngayBan;
     }
 
-    // public String getMaKhachHang() {
-    //     return maKhachHang;
-    // }
-
-    // public void setMaKhachHang(String maKhachHang) {
-    //     this.maKhachHang = maKhachHang;
-    // }
-
-    // public String getMaNhanVien() {
-    //     return maNhanVien;
-    // }
-
-    // public void setMaNhanVien(String maNhanVien) {
-    //     this.maNhanVien = maNhanVien;
-    // }
-
-    // public String getMaPhim() {
-    //     return maPhim;
-    // }
-
-    // public void setMaPhim(String maPhim) {
-    //     this.maPhim = maPhim;
-    // }
-
-    // public String getMaRap() {
-    //     return maRap;
-    // }
-
-    // public void setMaRap(String maRap) {
-    //     this.maRap = maRap;
-    // }
-
     public String getMaSuatChieu() {
         return maSuatChieu;
     }
@@ -119,10 +70,6 @@ public class Ve {
                 "Mã vé='" + maVe + '\'' +
                 ", Ghế=" + (ghe != null ? ghe.getMaGhe() : "Chưa chọn") +
                 ", Ngày bán=" + ngayBan +
-                // ", Mã KH='" + maKhachHang + '\'' +
-                // ", Mã NV='" + maNhanVien + '\'' +
-                // ", Mã phim='" + maPhim + '\'' +
-                // ", Mã rạp='" + maRap + '\'' +
                 ", Mã suất chiếu='" + maSuatChieu + '\'' +
                 ", Đã thanh toán=" + daThanhToan +
                 '}';

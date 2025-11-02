@@ -45,7 +45,7 @@ GO
 	-- BẢNG KHÁCH HÀNG
 	-- ==========================================
 	CREATE TABLE KhachHang (
-    maKH NVARCHAR(10) PRIMARY KEY,
+    maKH NVARCHAR(50) PRIMARY KEY,
     hoTen NVARCHAR(100) NOT NULL,
     gioiTinh NVARCHAR(10),
     soDT NVARCHAR(15),
@@ -86,17 +86,13 @@ GO
 -- BẢNG VÉ
 -- ==========================================
 CREATE TABLE Ve (
-    maVe NVARCHAR(20) PRIMARY KEY,
+    maVe NVARCHAR(50) PRIMARY KEY,
     maGhe NVARCHAR(20) NOT NULL,
     ngayBan DATE NOT NULL DEFAULT GETDATE(),
-    maPhim NVARCHAR(10) NOT NULL,
-    maRap NVARCHAR(10) NOT NULL,
     maSuatChieu NVARCHAR(10) NOT NULL,
     daThanhToan BIT DEFAULT 0,
 
     CONSTRAINT FK_VE_GHE FOREIGN KEY (maGhe) REFERENCES Ghe(maGhe),
-    CONSTRAINT FK_VE_PHIM FOREIGN KEY (maPhim) REFERENCES Phim(maPhim),
-    CONSTRAINT FK_VE_RAP FOREIGN KEY (maRap) REFERENCES Rap(maRap),
     CONSTRAINT FK_VE_SUATCHIEU FOREIGN KEY (maSuatChieu) REFERENCES SuatChieu(maSuatChieu)
 );
 GO
@@ -105,10 +101,11 @@ GO
 -- BẢNG HÓA ĐƠN
 -- ==========================================
 CREATE TABLE HoaDon (
-    maHoaDon NVARCHAR(20) PRIMARY KEY,
+    maHoaDon NVARCHAR(50) PRIMARY KEY,
     ngayLap DATE DEFAULT GETDATE(),
     maNV NVARCHAR(10) NOT NULL,
-    maKH NVARCHAR(10) NOT NULL,
+    maKH NVARCHAR(50) NOT NULL,
+	soLuongVe INT NOT NULL,
     tongTien FLOAT CHECK (tongTien >= 0),
 
     CONSTRAINT FK_HOADON_NV FOREIGN KEY (maNV) REFERENCES NhanVien(maNV),
@@ -120,9 +117,9 @@ GO
 -- BẢNG CHI TIẾT HÓA ĐƠN
 -- ==========================================
 CREATE TABLE ChiTietHoaDon (
-    maHoaDon NVARCHAR(20) NOT NULL,
-    maVe NVARCHAR(20) NOT NULL,
-    soLuongVe INT CHECK (soLuongVe > 0),
+    maHoaDon NVARCHAR(50) NOT NULL,
+    maVe NVARCHAR(50) NOT NULL,
+    soLuong INT CHECK (soLuong > 0),
     giaVe FLOAT CHECK (giaVe > 0),
 
     CONSTRAINT PK_CTHD PRIMARY KEY (maHoaDon, maVe),
@@ -353,6 +350,6 @@ GO
 
 INSERT INTO TaiKhoan (maNV, taiKhoan, matKhau)
 VALUES
-('NV01', N'leminhtan', N'123455'),
-('NV02', N'nguyenchitam', N'123455'),
-('NV03', N'dothanhtuong', N'123455');
+('NV01', N'leminhtan', N'123456'),
+('NV02', N'nguyenchitam', N'123456'),
+('NV03', N'dothanhtuong', N'123456');

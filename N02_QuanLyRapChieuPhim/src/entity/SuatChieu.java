@@ -10,14 +10,14 @@ public class SuatChieu {
     private LocalDate ngayChieu;
     private LocalTime gioChieu;
 
-    private Double giaVe;
+    private float giaVe;
 
     public SuatChieu(String maSuatChieu) {
         setMaSuatChieu(maSuatChieu);
     }
 
     public SuatChieu(String maSuatChieu, String maPhim, String maRap, LocalDate ngayChieu, LocalTime gioChieu,
-            Double giaVe) {
+            float giaVe) {
         setMaSuatChieu(maSuatChieu);
         setMaPhim(maPhim);
         setMaRap(maRap);
@@ -68,11 +68,11 @@ public class SuatChieu {
         this.gioChieu = gioChieu;
     }
 
-    public Double getGiaVe() {
+    public float getGiaVe() {
         return giaVe;
     }
 
-    public void setGiaVe(Double giaVe) {
+    public void setGiaVe(float giaVe) {
         this.giaVe = giaVe;
     }
 

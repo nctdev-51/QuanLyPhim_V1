@@ -300,7 +300,6 @@ public class QuanLyBanVe extends JPanel implements LoadData {
             return;
         }
         showTicketPanel(khachHang);
-
     }
 
     private void showTicketPanel(KhachHang khachHang) {
@@ -421,7 +420,7 @@ public class QuanLyBanVe extends JPanel implements LoadData {
             this.chairManager.capNhatTinhTrangGhe(ghe);
         }
 
-        double giaVe = this.suatChieuDuocChon.getGiaVe();
+        float giaVe = this.suatChieuDuocChon.getGiaVe();
         HoaDon hoaDon = xuLyTaoHoaDon(khachHang, danhSachVeDaDat, giaVe);
         // Thêm hóa đơn
         this.billManager.add(hoaDon);
@@ -439,11 +438,11 @@ public class QuanLyBanVe extends JPanel implements LoadData {
 
     }
 
-    private HoaDon xuLyTaoHoaDon(KhachHang khachHang, ArrayList<Ve> danhSachVeDaDat, double giaVe) {
+    private HoaDon xuLyTaoHoaDon(KhachHang khachHang, ArrayList<Ve> danhSachVeDaDat, float giaVe) {
         // Get NhanVien đang đăng nhập vào hệ thống - giả sử có mã là NV01
         NhanVien nhanVien = DangNhap.nhanVienDangNhap;
         int soLuongVe = danhSachVeDaDat.size();
-        double tongTien = giaVe * soLuongVe;
+        float tongTien = giaVe * soLuongVe;
 
         HoaDon hoaDon = new HoaDon(this.billManager.taoMaHoaDonTuDong(), LocalDate.now(), nhanVien, khachHang,
                 soLuongVe, tongTien);
