@@ -2,7 +2,6 @@ package gui;
 
 import javax.swing.*;
 
-import ConnectDB.DataBase;
 import dao.QuanLyCTHD_DAO;
 import dao.QuanLyGhe_DAO;
 import dao.QuanLyHoaDon_DAO;
@@ -256,7 +255,7 @@ public class QuanLyBanVe extends JPanel implements LoadData {
 
         deleteTextMovieInfo();
         this.suatChieuDuocChon = null;
-        this.selectedChairs.clear();
+        if(this.selectedChairs != null) this.selectedChairs.clear();
     }
 
     private void acceptTicket() {
@@ -407,8 +406,8 @@ public class QuanLyBanVe extends JPanel implements LoadData {
     private void thanhToan(JFrame ticketJFrame, KhachHang khachHang) {
         ArrayList<Ve> danhSachVeDaDat = new ArrayList<>();
         for (int i = 0; i < this.selectedChairs.size(); i++) {
-            String maGhe = this.selectedChairs.get(i);
-            Ghe ghe = this.chairManager.TimGheTheoMaRap(maGhe, this.suatChieuDuocChon.getMaRap());
+            String tenGhe = this.selectedChairs.get(i);
+            Ghe ghe = this.chairManager.TimGheTheoTen(tenGhe, this.suatChieuDuocChon.getMaRap());
 
             Ve ve = xuLyTaoVeTheoGhe(ghe);
             if (ve != null) {
@@ -438,7 +437,8 @@ public class QuanLyBanVe extends JPanel implements LoadData {
 
     private HoaDon xuLyTaoHoaDon(KhachHang khachHang, ArrayList<Ve> danhSachVeDaDat, double giaVe) {
         // Get NhanVien đang đăng nhập vào hệ thống - giả sử có mã là NV01
-        NhanVien nhanVien = this.employeeManager.timTheoMa("NV01");
+        NhanVien nhanVien = new NhanVien("NV01", "Lê Minh Tân", "Phú Nhuận", "0349099412", LocalDate.of(2005, 11, 5),
+                "tan2005tg@gmail.com", "Nam");
         int soLuongVe = danhSachVeDaDat.size();
         double tongTien = giaVe * soLuongVe;
 
@@ -515,6 +515,7 @@ public class QuanLyBanVe extends JPanel implements LoadData {
         cbPhong.setEnabled(true);
         cbPhong.removeAllItems();
         cbPhong.addItem("---Chọn phòng---");
+        // lưu danh sách mã rạp
         roomIDSelectList = new ArrayList<>();
         roomIDSelectList.add("");
         // Lấy mã phòng không trùng lặp
@@ -525,6 +526,7 @@ public class QuanLyBanVe extends JPanel implements LoadData {
         for (String maRap : dsMaRap) {
             Rap rap = rapManager.findRapByID(maRap);
             if (rap != null) {
+                // lưu danh sách tên rạp
                 cbPhong.addItem(rap.getTenRap());
                 roomIDSelectList.add(maRap);
             }
@@ -622,7 +624,7 @@ public class QuanLyBanVe extends JPanel implements LoadData {
         ArrayList<String> selectedChairs = new ArrayList<>();
         for (i = 0; i < soGhe; i++) {
             Ghe ghe = chairList.get(i);
-            JButton btn = new JButton(ghe.getMaGhe());
+            JButton btn = new JButton(ghe.getTenGhe());
             if (ghe.isDaDat()) {
                 btn.setBackground(Color.LIGHT_GRAY);
                 btn.setEnabled(false);
@@ -675,6 +677,7 @@ public class QuanLyBanVe extends JPanel implements LoadData {
         txtSoGhe.setText(String.join(", ", selectedChairs));
         btnDatVe.setEnabled(!selectedChairs.isEmpty());
         chairFrame.dispose();
+        if(this.selectedChairs != null) this.selectedChairs.clear();
         this.selectedChairs = selectedChairs;
     }
 
@@ -685,19 +688,19 @@ public class QuanLyBanVe extends JPanel implements LoadData {
     }
 
     private void LoadSuatChieuManager() {
-        suatChieuManager = DataBase.FakeSuatChieuDB();
+        suatChieuManager = new QuanLySuatChieu_DAO();
     }
 
     private void LoadRapManager() {
-        rapManager = DataBase.FakeRapDB();
+        rapManager = new QuanLyRap_DAO();
     }
 
     private void LoadChairManager() {
-        this.chairManager = DataBase.FakeGheDB();
+        this.chairManager = new QuanLyGhe_DAO();
     }
 
     private void LoadCustomerManager() {
-        this.customerManager = DataBase.FakeKhachHangDB();
+        this.customerManager = new QuanLyKhachHang_DAO();
     }
 
     private void LoadTicketManager() {
@@ -713,6 +716,6 @@ public class QuanLyBanVe extends JPanel implements LoadData {
     }
 
     private void LoadEmployeeManager() {
-        this.employeeManager = DataBase.FakeNhanVienDB();
+        this.employeeManager = new QuanLyNhanVien_DAO();
     }
 }

@@ -8,7 +8,7 @@ import entity.TheLoaiPhim;
 
 public class QuanLyPhim_DAO {
 
-    // Lấy toàn bộ danh sách phim
+    // Lấy toàn bộ danh sách phimsrc/dao/QuanLyPhim_DAO.java
     public ArrayList<Phim> getAllPhim() {
         ArrayList<Phim> dsPhim = new ArrayList<>();
         Connection con = ConnectDB.getConnection();

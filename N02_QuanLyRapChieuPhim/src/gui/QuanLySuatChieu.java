@@ -5,8 +5,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-
-import ConnectDB.DataBase;
 import dao.QuanLyPhim_DAO;
 import dao.QuanLySuatChieu_DAO;
 import entity.SuatChieu;
@@ -36,7 +34,7 @@ public class QuanLySuatChieu extends JPanel implements ActionListener, LoadData 
     @Override
     public void loadData() {
         // TODO Auto-generated method stub
-        quanLySuatChieu_DAO = DataBase.FakeSuatChieuDB();
+        quanLySuatChieu_DAO = new QuanLySuatChieu_DAO();
         //Hiển thị dữ liệu lên bảng
         capNhatBang();
     }
@@ -47,7 +45,7 @@ public class QuanLySuatChieu extends JPanel implements ActionListener, LoadData 
         setLayout(new BorderLayout());
 
         // ===== Khởi tạo DAO =====
-        quanLySuatChieu_DAO = DataBase.FakeSuatChieuDB();
+        quanLySuatChieu_DAO = new QuanLySuatChieu_DAO();
 
         // ===== Tiêu đề =====
         JLabel lblTitle = new JLabel("QUẢN LÝ SUẤT CHIẾU", SwingConstants.CENTER);
@@ -210,7 +208,7 @@ public class QuanLySuatChieu extends JPanel implements ActionListener, LoadData 
 
     private void capNhatBang() {
         model.setRowCount(0);
-        for (SuatChieu suat : quanLySuatChieu_DAO.getDanhSachSuatChieu()) {
+        for (SuatChieu suat : quanLySuatChieu_DAO.getAllSuatChieu()) {
             model.addRow(new Object[] {
                     suat.getMaSuatChieu(),
                     suat.getMaPhim(),
@@ -225,7 +223,7 @@ public class QuanLySuatChieu extends JPanel implements ActionListener, LoadData 
 
     private void capNhatBangTheoNgay(LocalDate ngay) {
         model.setRowCount(0);
-        for (SuatChieu suat : quanLySuatChieu_DAO.getDanhSachSuatChieu()) {
+        for (SuatChieu suat : quanLySuatChieu_DAO.getAllSuatChieu()) {
             if (suat.getNgayChieu().isEqual(ngay)) {
                 model.addRow(new Object[] {
                         suat.getMaSuatChieu(),
