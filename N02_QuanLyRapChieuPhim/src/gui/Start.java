@@ -37,7 +37,7 @@ public class Start extends JFrame implements ActionListener {
         boxMenu.add(Box.createVerticalStrut(15));
 
         // Nhãn nhân viên
-        lblNhanVien = new JLabel("Xin chào, " + DangNhap.tenNhanVien);
+        lblNhanVien = new JLabel("Xin chào, " + DangNhap.nhanVienDangNhap.getTenNV());
         lblNhanVien.setFont(new Font("Arial", Font.BOLD, 18));
         lblNhanVien.setForeground(Color.WHITE);
         lblNhanVien.setAlignmentX(Component.CENTER_ALIGNMENT);

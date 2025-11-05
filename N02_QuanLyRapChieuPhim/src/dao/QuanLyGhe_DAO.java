@@ -41,7 +41,8 @@ public class QuanLyGhe_DAO {
         }
         return ghe;
     }
-    public Ghe TimGheTheoTen(String tenGhe, String maRap){
+
+    public Ghe TimGheTheoTen(String tenGhe, String maRap) {
         if (this.conn == null || tenGhe == null || tenGhe.trim().isEmpty() || maRap == null || maRap.trim().isEmpty())
             return null;
         PreparedStatement stmt = null;
@@ -67,7 +68,7 @@ public class QuanLyGhe_DAO {
         }
         return ghe;
     }
-    
+
     public ArrayList<Ghe> getDanhSachTatCaGhe() {
         if (this.conn == null)
             return null;
@@ -123,6 +124,25 @@ public class QuanLyGhe_DAO {
             close(rs, stmt);
         }
         return danhSachGhe;
+    }
+
+    public boolean capNhatTinhTrangGhe(Ghe ghe) {
+        if (this.conn == null || ghe == null)
+            return false;
+        PreparedStatement stmt = null;
+        try {
+            String sql = "Update Ghe set tinhTrang = ? where maGhe = ?";
+            stmt = this.conn.prepareStatement(sql);
+            stmt.setBoolean(1, ghe.isDaDat());
+            stmt.setString(2, ghe.getMaGhe());
+            int rowsUpdated = stmt.executeUpdate();
+            return rowsUpdated > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            close(null, stmt);
+        }
+        return false;
     }
 
     // ====== HÀM TIỆN ÍCH ======

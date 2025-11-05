@@ -3,32 +3,74 @@ package dao;
 import java.util.ArrayList;
 import java.util.Random;
 
+import ConnectDB.ConnectDB;
+
+import java.sql.*;
 import entity.HoaDon;
+import entity.KhachHang;
+import entity.NhanVien;
 
 public class QuanLyHoaDon_DAO {
-    private ArrayList<HoaDon> danhSachHoaDon;
+    private Connection conn;
 
     public QuanLyHoaDon_DAO() {
-        this.danhSachHoaDon = new ArrayList<>();
+        this.conn = ConnectDB.getConnection();
     }
 
     public boolean add(HoaDon hoaDon) {
-        if (hoaDon == null || danhSachHoaDon.contains(hoaDon)) {
+        if (this.conn == null || hoaDon == null)
             return false;
+        PreparedStatement stmt = null;
+        int n = 0;
+        try {
+            String sql = "Insert into HoaDon(maHoaDon, ngayLap, maNV, maKH, soLuongVe, tongTien) "
+                    + "values(?,?,?,?,?,?)";
+            stmt = this.conn.prepareStatement(sql);
+            stmt.setString(1, hoaDon.getMaHoaDon());
+            stmt.setDate(2, Date.valueOf(hoaDon.getNgayLap()));
+            stmt.setString(3, hoaDon.getNhanVien().getMaNV());
+            stmt.setString(4, hoaDon.getKhachHang().getMaKH());
+            stmt.setInt(5, hoaDon.getSoLuongVe());
+            stmt.setFloat(6, hoaDon.getTongTien());
+            n = stmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            close(null, stmt);
         }
-        HoaDon hoaDonFind = findHoaDonByID(hoaDon.getMaHoaDon());
-        if (hoaDonFind != null)
-            return false; // đã tồn tại mã hoa don này
-        danhSachHoaDon.add(hoaDon);
-        return true;
+        return n > 0;
     }
 
     public HoaDon findHoaDonByID(String maHoaDon) {
-        for (HoaDon hoaDon : danhSachHoaDon) {
-            if (hoaDon.getMaHoaDon().equalsIgnoreCase(maHoaDon))
-                return hoaDon;
+        if (this.conn == null || maHoaDon == null || maHoaDon.trim().isEmpty())
+            return null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        HoaDon hoaDon = null;
+        try {
+            String sql = "Select * from HoaDon where maHoaDon = ?";
+            stmt = this.conn.prepareStatement(sql);
+            stmt.setString(1, maHoaDon);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                Date ngayLapDate = rs.getDate("ngayLap");
+                String maNV = rs.getString("maNV");
+                String maKH = rs.getString("maKH");
+                int soLuongVe = rs.getInt("soLuongVe");
+                float tongTien = rs.getFloat("tongTien");
+
+                QuanLyNhanVien_DAO nhanVienDAO = new QuanLyNhanVien_DAO();
+                QuanLyKhachHang_DAO khachHangDAO = new QuanLyKhachHang_DAO();
+                NhanVien nv = nhanVienDAO.timTheoMa(maNV);
+                KhachHang kh = khachHangDAO.findKhachHang(maKH);
+                hoaDon = new HoaDon(maHoaDon, ngayLapDate.toLocalDate(), nv, kh, soLuongVe, tongTien);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            close(rs, stmt);
         }
-        return null;
+        return hoaDon;
     }
 
     public static String taoMaHoaDonTuDong() {
@@ -38,6 +80,47 @@ public class QuanLyHoaDon_DAO {
     }
 
     public ArrayList<HoaDon> getDanhSachHoaDon() {
-        return this.danhSachHoaDon;
+        if (this.conn == null)
+            return null;
+        ArrayList<HoaDon> danhSachHoaDon = new ArrayList<>();
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            String sql = "Select * from HoaDon";
+            stmt = this.conn.prepareStatement(sql);
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                String maHoaDon = rs.getString("maHoaDon");
+                Date ngayLapDate = rs.getDate("ngayLap");
+                String maNV = rs.getString("maNV");
+                String maKH = rs.getString("maKH");
+                int soLuongVe = rs.getInt("soLuongVe");
+                float tongTien = rs.getFloat("tongTien");
+
+                QuanLyNhanVien_DAO nhanVienDAO = new QuanLyNhanVien_DAO();
+                QuanLyKhachHang_DAO khachHangDAO = new QuanLyKhachHang_DAO();
+                NhanVien nv = nhanVienDAO.timTheoMa(maNV);
+                KhachHang kh = khachHangDAO.findKhachHang(maKH);
+                HoaDon hoaDon = new HoaDon(maHoaDon, ngayLapDate.toLocalDate(), nv, kh, soLuongVe, tongTien);
+                danhSachHoaDon.add(hoaDon);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            close(rs, stmt);
+        }
+        return danhSachHoaDon;
+    }
+
+    // ====== HÀM TIỆN ÍCH ======
+    private void close(ResultSet rs, Statement stmt) {
+        try {
+            if (rs != null)
+                rs.close();
+            if (stmt != null)
+                stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

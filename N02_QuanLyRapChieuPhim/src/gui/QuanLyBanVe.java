@@ -2,6 +2,7 @@ package gui;
 
 import javax.swing.*;
 
+import dao.DangNhap_DAO;
 import dao.QuanLyCTHD_DAO;
 import dao.QuanLyGhe_DAO;
 import dao.QuanLyHoaDon_DAO;
@@ -41,6 +42,7 @@ public class QuanLyBanVe extends JPanel implements LoadData {
     private QuanLyNhanVien_DAO employeeManager;
     private Font fChonGhe;
     private ArrayList<Phim> movieList;
+    private DangNhap_DAO loginDAO;
 
     public QuanLyBanVe() {
         setLayout(new BorderLayout(10, 10));
@@ -255,7 +257,8 @@ public class QuanLyBanVe extends JPanel implements LoadData {
 
         deleteTextMovieInfo();
         this.suatChieuDuocChon = null;
-        if(this.selectedChairs != null) this.selectedChairs.clear();
+        if (this.selectedChairs != null)
+            this.selectedChairs.clear();
     }
 
     private void acceptTicket() {
@@ -297,7 +300,6 @@ public class QuanLyBanVe extends JPanel implements LoadData {
             return;
         }
         showTicketPanel(khachHang);
-
     }
 
     private void showTicketPanel(KhachHang khachHang) {
@@ -415,9 +417,10 @@ public class QuanLyBanVe extends JPanel implements LoadData {
                 this.ticketManager.add(ve);
             }
             ghe.setTinhTrang(true);
+            this.chairManager.capNhatTinhTrangGhe(ghe);
         }
 
-        double giaVe = this.suatChieuDuocChon.getGiaVe();
+        float giaVe = this.suatChieuDuocChon.getGiaVe();
         HoaDon hoaDon = xuLyTaoHoaDon(khachHang, danhSachVeDaDat, giaVe);
         // Thêm hóa đơn
         this.billManager.add(hoaDon);
@@ -435,12 +438,11 @@ public class QuanLyBanVe extends JPanel implements LoadData {
 
     }
 
-    private HoaDon xuLyTaoHoaDon(KhachHang khachHang, ArrayList<Ve> danhSachVeDaDat, double giaVe) {
+    private HoaDon xuLyTaoHoaDon(KhachHang khachHang, ArrayList<Ve> danhSachVeDaDat, float giaVe) {
         // Get NhanVien đang đăng nhập vào hệ thống - giả sử có mã là NV01
-        NhanVien nhanVien = new NhanVien("NV01", "Lê Minh Tân", "Phú Nhuận", "0349099412", LocalDate.of(2005, 11, 5),
-                "tan2005tg@gmail.com", "Nam");
+        NhanVien nhanVien = DangNhap.nhanVienDangNhap;
         int soLuongVe = danhSachVeDaDat.size();
-        double tongTien = giaVe * soLuongVe;
+        float tongTien = giaVe * soLuongVe;
 
         HoaDon hoaDon = new HoaDon(this.billManager.taoMaHoaDonTuDong(), LocalDate.now(), nhanVien, khachHang,
                 soLuongVe, tongTien);
@@ -649,20 +651,6 @@ public class QuanLyBanVe extends JPanel implements LoadData {
         chairFrame.setVisible(true);
     }
 
-    @Override
-    public void loadData() {
-        // TODO Auto-generated method stub
-        LoadMovieManager();
-        LoadSuatChieuManager();
-        LoadRapManager();
-        LoadChairManager();
-        LoadCustomerManager();
-        LoadTicketManager();
-        LoadBillManager();
-        LoadEmployeeManager();
-        LoadCthdManager();
-    }
-
     private void hanldeSelectChair(ArrayList<String> selectedChairs, JButton btn) {
         if (selectedChairs.contains(btn.getText())) {
             selectedChairs.remove(btn.getText());
@@ -677,8 +665,23 @@ public class QuanLyBanVe extends JPanel implements LoadData {
         txtSoGhe.setText(String.join(", ", selectedChairs));
         btnDatVe.setEnabled(!selectedChairs.isEmpty());
         chairFrame.dispose();
-        if(this.selectedChairs != null) this.selectedChairs.clear();
+        if (this.selectedChairs != null)
+            this.selectedChairs.clear();
         this.selectedChairs = selectedChairs;
+    }
+
+    @Override
+    public void loadData() {
+        // TODO Auto-generated method stub
+        LoadMovieManager();
+        LoadSuatChieuManager();
+        LoadRapManager();
+        LoadChairManager();
+        LoadCustomerManager();
+        LoadTicketManager();
+        LoadBillManager();
+        LoadEmployeeManager();
+        LoadCthdManager();
     }
 
     private void LoadMovieManager() {
