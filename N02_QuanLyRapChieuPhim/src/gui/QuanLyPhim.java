@@ -23,12 +23,6 @@ public class QuanLyPhim extends JPanel implements LoadData {
     private QuanLyPhim_DAO phimDAO;
     private ArrayList<Phim> dsPhim;
 
-    @Override
-    public void loadData() {
-        // TODO Auto-generated method stub
-        loadDataToTable();
-    }
-
     public QuanLyPhim() {
         setLayout(new BorderLayout(10, 10));
         setBackground(Color.WHITE);
@@ -283,7 +277,6 @@ public class QuanLyPhim extends JPanel implements LoadData {
             txtQuocGia.setText(p.getQuocGia());
         }
     }
-
     private void xoaRong() {
         txtMaPhim.setText("");
         txtTenPhim.setText("");
@@ -294,9 +287,12 @@ public class QuanLyPhim extends JPanel implements LoadData {
         txtTimPhim.setText("");
         txtMaPhim.requestFocus();
     }
-
     private void luu() {
         JOptionPane.showMessageDialog(this, "💾 Dữ liệu đã được lưu vào CSDL!");
     }
-
+    @Override
+    public void loadData() {
+        // TODO Auto-generated method stub
+        loadDataToTable();
+    }
 }

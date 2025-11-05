@@ -112,6 +112,24 @@ public class QuanLyHoaDon_DAO {
         return danhSachHoaDon;
     }
 
+    public boolean XoaHoaDonTheoMa(String maHD) {
+        if (this.conn == null)
+            return false;
+        PreparedStatement stmt = null;
+        int n = 0;
+        try {
+            String sql = "DELETE FROM Phim WHERE maPhim=?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, maHD);
+            n = stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close(null, stmt);
+        }
+        return n > 0;
+    }
+
     // ====== HÀM TIỆN ÍCH ======
     private void close(ResultSet rs, Statement stmt) {
         try {

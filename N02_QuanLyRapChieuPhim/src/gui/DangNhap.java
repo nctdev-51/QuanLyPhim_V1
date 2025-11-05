@@ -79,6 +79,9 @@ public class DangNhap extends JFrame implements ActionListener {
         btnThoat.addActionListener(this);
         chkHienMatKhau.addActionListener(this);
 
+        // Xu li dang nhap khi user nhan enter tren password field
+        this.txtMatKhau.addActionListener(e -> xuLyDangNhap());
+
         setSize(600, 350);
         setLocationRelativeTo(null);
         setVisible(true);

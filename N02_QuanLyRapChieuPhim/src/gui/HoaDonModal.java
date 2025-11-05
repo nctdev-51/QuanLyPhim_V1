@@ -27,10 +27,17 @@ import entity.Phim;
 import entity.SuatChieu;
 import entity.Ve;
 
-public class HoaDonUI extends JFrame {
-    public HoaDonUI(HoaDon hoaDon, QuanLyCTHD_DAO cthdManager, QuanLyPhim_DAO movieManager,
-            QuanLySuatChieu_DAO suatChieuManager, JPanel pOwner) {
-        setSize(800, 600);
+public class HoaDonModal extends JFrame {
+    private QuanLyCTHD_DAO cthdManager;
+    private QuanLySuatChieu_DAO suatChieuManager;
+    private QuanLyPhim_DAO movieManager;
+
+    public HoaDonModal(HoaDon hoaDon, JPanel pOwner) {
+        this.suatChieuManager = new QuanLySuatChieu_DAO();
+        this.movieManager = new QuanLyPhim_DAO();
+        this.cthdManager = new QuanLyCTHD_DAO();
+
+        setSize(800, 700);
         setLocationRelativeTo(pOwner);
         setLayout(new BorderLayout());
 
@@ -112,8 +119,9 @@ public class HoaDonUI extends JFrame {
         add(pNorth, BorderLayout.NORTH);
 
         ArrayList<ChiTietHoaDon> cthdList = cthdManager.timCTHDTheoMaHoaDon(hoaDon.getMaHoaDon());
-        Object[] columns = { "Mã vé", "Tên phim", "Số lượng", "Giá vé", "Thành tiền" };
+        Object[] columns = { "STT", "Mã vé", "Tên phim", "Số lượng", "Giá vé", "Thành tiền" };
         DefaultTableModel model = new DefaultTableModel(null, columns);
+        int stt = 1;
         for (ChiTietHoaDon cthd : cthdList) {
             Ve ve = cthd.getVe();
             // Tìm phim dựa vào suất chiếu
@@ -121,14 +129,20 @@ public class HoaDonUI extends JFrame {
             if (suatChieu != null) {
                 Phim phim = movieManager.timPhimTheoMa(suatChieu.getMaPhim());
 
-                Object[] data = { ve.getMaVe(), phim.getTenPhim(), cthd.getSoLuong(), cthd.getGiaVe(),
+                Object[] data = { stt, ve.getMaVe(), phim.getTenPhim(), cthd.getSoLuong(), cthd.getGiaVe(),
                         cthd.tinhThanhTien() };
                 model.addRow(data);
             }
         }
         JTable table = new JTable(model);
         JScrollPane scrollTable = new JScrollPane(table);
-
+        JPanel pCenter = new JPanel(new BorderLayout());
+        JPanel pCen_title = new JPanel();
+        JLabel lblChiTietHoaDon = new JLabel("CHI TIẾT HÓA ĐƠN");
+        lblChiTietHoaDon.setFont(new Font("Arial", Font.BOLD, 18));
+        pCen_title.add(lblChiTietHoaDon);
+        pCenter.add(pCen_title, BorderLayout.NORTH);
+        pCenter.add(scrollTable, BorderLayout.CENTER);
         JPanel pSouth = new JPanel();
         Font fButton = new Font("Arial", Font.BOLD, 16);
 
@@ -144,7 +158,7 @@ public class HoaDonUI extends JFrame {
         btnPrint.addActionListener(e -> handleInHoaDon());
 
         add(pNorth, BorderLayout.NORTH);
-        add(scrollTable, BorderLayout.CENTER);
+        add(pCenter, BorderLayout.CENTER);
         add(pSouth, BorderLayout.SOUTH);
 
         setModalExclusionType(ModalExclusionType.APPLICATION_EXCLUDE);

@@ -7,6 +7,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import dao.QuanLyPhim_DAO;
 import dao.QuanLySuatChieu_DAO;
+import dao.QuanLyRap_DAO;
 import entity.SuatChieu;
 
 import java.awt.*;
@@ -19,23 +20,27 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import entity.LoadData;
 import entity.Phim;
+import entity.Rap;
 
 public class QuanLySuatChieu extends JPanel implements ActionListener, LoadData {
     private QuanLySuatChieu_DAO quanLySuatChieu_DAO;
     private JTable tblSuatChieu;
-    private JTextField txtMaSuat, txtNgayChieu, txtThoiGian, txtGiaVe, txtTimSuat, txtTenPhim, txtMaPhim;
-    private JComboBox<String> cbPhong;
+    private JTextField txtMaSuat, txtNgayChieu, txtThoiGian, txtGiaVe, txtTimSuat, txtMaPhim;
+    private JComboBox<String> cbPhong, cbTenPhim;
     private JButton btnThem, btnSua, btnXoa, btnXoaRong, btnLuu, btnTim;
     private DefaultTableModel model;
     private JTree treeNgayChieu;
-    // private QuanLySuatChieu_DAO data; -- Tân chỉnh sửa: không cần qua trung gian nữa trực tiếp dùng con trỏ quanLySuatChieu_DAO trỏ tới dữ liệu từ FakeSuatChieuDB()
+    // private QuanLySuatChieu_DAO data; -- Tân chỉnh sửa: không cần qua trung gian
+    // nữa trực tiếp dùng con trỏ quanLySuatChieu_DAO trỏ tới dữ liệu từ
+    // FakeSuatChieuDB()
     protected QuanLyPhim_DAO dataPhim;
+    private QuanLyRap_DAO dataRap;
 
     @Override
     public void loadData() {
         // TODO Auto-generated method stub
         quanLySuatChieu_DAO = new QuanLySuatChieu_DAO();
-        //Hiển thị dữ liệu lên bảng
+        // Hiển thị dữ liệu lên bảng
         capNhatBang();
     }
 
@@ -57,7 +62,7 @@ public class QuanLySuatChieu extends JPanel implements ActionListener, LoadData 
         // ===== Panel trái: Cây ngày chiếu =====
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("Danh sách ngày chiếu");
         String[] ngayList = {
-                "04/10/2025", "12/09/2025", "05/08/2025", "14/07/2025",
+                "04/11/2025", "05/11/2025", "05/08/2025", "14/07/2025",
                 "02/06/2025", "05/05/2025", "30/04/2025", "02/03/2025",
                 "05/02/2025", "29/01/2025"
         };
@@ -73,11 +78,12 @@ public class QuanLySuatChieu extends JPanel implements ActionListener, LoadData 
         // ===== Panel trung tâm =====
         JPanel pnBody = new JPanel(new BorderLayout());
         pnBody.setBackground(Color.WHITE);
-        pnBody.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        pnBody.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
         add(pnBody, BorderLayout.CENTER);
 
         // ===== Form nhập liệu =====
         JPanel pnForm = new JPanel(new GridLayout(4, 4, 10, 10));
+        pnForm.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
         pnForm.setBackground(Color.WHITE);
 
         pnForm.add(new JLabel("Mã Suất Chiếu:"));
@@ -86,11 +92,13 @@ public class QuanLySuatChieu extends JPanel implements ActionListener, LoadData 
 
         pnForm.add(new JLabel("Mã Phim:"));
         txtMaPhim = new JTextField();
+        txtMaPhim.setEditable(false);
         pnForm.add(txtMaPhim);
 
         pnForm.add(new JLabel("Tên Phim:"));
-        txtTenPhim = new JTextField();
-        pnForm.add(txtTenPhim);
+        cbTenPhim = new JComboBox<>();
+        loadTenPhim();
+        pnForm.add(cbTenPhim);
 
         pnForm.add(new JLabel("Giá vé:"));
         txtGiaVe = new JTextField();
@@ -105,10 +113,9 @@ public class QuanLySuatChieu extends JPanel implements ActionListener, LoadData 
         pnForm.add(txtThoiGian);
 
         pnForm.add(new JLabel("Phòng chiếu:"));
-        cbPhong = new JComboBox<>(new String[] {
-                "phong01", "phong02", "phong03", "phong04", "phong05",
-                "phong06", "phong07", "phong08", "phong09", "phong10"
-        });
+        cbPhong = new JComboBox<>();
+        // Load phòng (rạp) từ database
+        loadPhong();
         pnForm.add(cbPhong);
 
         pnBody.add(pnForm, BorderLayout.NORTH);
@@ -128,50 +135,55 @@ public class QuanLySuatChieu extends JPanel implements ActionListener, LoadData 
 
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-        for (int i = 0; i < tblSuatChieu.getColumnCount(); i++) {
-            tblSuatChieu.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
-        }
-
+        tblSuatChieu.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        chonSuatChieu();
         pnBody.add(new JScrollPane(tblSuatChieu), BorderLayout.CENTER);
 
         // ===== Panel dưới: nút chức năng =====
-        JPanel pnSouth = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 12));
+        JPanel pnSouth = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
         pnSouth.setBackground(Color.WHITE);
-        add(pnSouth, BorderLayout.SOUTH);
 
-        JLabel lblTim = new JLabel("Tìm suất:");
-        lblTim.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        JLabel lblTim = new JLabel("Tìm mã suất:");
+        lblTim.setFont(new Font("Segoe UI", Font.BOLD, 18));
         txtTimSuat = new JTextField(15);
+        txtTimSuat.setFont(new Font("Segoe UI", Font.PLAIN, 18));
 
         btnTim = new JButton("Tìm");
         btnThem = new JButton("Thêm");
         btnSua = new JButton("Sửa");
         btnXoa = new JButton("Xóa");
         btnXoaRong = new JButton("Xóa rỗng");
-        btnLuu = new JButton("Lưu");
 
-        JButton[] arrBtns = { btnTim, btnThem, btnSua, btnXoa, btnXoaRong, btnLuu };
+        JButton[] arrBtns = { btnThem, btnSua, btnXoa, btnXoaRong, btnTim };
         Color[] colors = {
-                new Color(255, 140, 0),
-                new Color(46, 204, 113),
-                new Color(52, 152, 219),
-                new Color(231, 76, 60),
-                new Color(155, 89, 182),
-                new Color(241, 196, 15)
+                new Color(46, 204, 113), // xanh lá
+                new Color(52, 152, 219), // xanh dương
+                new Color(231, 76, 60), // đỏ
+                new Color(155, 89, 182), // tím
+                new Color(241, 196, 15), // vàng
+                new Color(255, 140, 0) // cam
         };
+
+        Font btnFont = new Font("Segoe UI", Font.BOLD, 18);
         for (int i = 0; i < arrBtns.length; i++) {
+            arrBtns[i].setFont(btnFont);
             arrBtns[i].setBackground(colors[i]);
             arrBtns[i].setForeground(Color.WHITE);
             arrBtns[i].setFocusPainted(false);
-            arrBtns[i].setPreferredSize(new Dimension(120, 40));
-            arrBtns[i].setFont(new Font("Segoe UI", Font.BOLD, 16));
+            arrBtns[i].setPreferredSize(new Dimension(130, 45));
+            // Đăng ký listener cho các nút để actionPerformed được gọi
             arrBtns[i].addActionListener(this);
-            pnSouth.add(arrBtns[i]);
         }
 
         pnSouth.add(lblTim);
         pnSouth.add(txtTimSuat);
+        pnSouth.add(btnTim);
+        pnSouth.add(btnThem);
+        pnSouth.add(btnSua);
+        pnSouth.add(btnXoa);
+        pnSouth.add(btnXoaRong);
 
+        add(pnSouth, BorderLayout.SOUTH);
         // ===== Gọi hàm hiển thị dữ liệu =====
         capNhatBang();
 
@@ -195,15 +207,118 @@ public class QuanLySuatChieu extends JPanel implements ActionListener, LoadData 
         });
     }
 
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        Object src = e.getSource();
+        if (src == btnThem) {
+            them();
+        } else if (src == btnSua) {
+            sua();
+        } else if (src == btnXoa) {
+            xoa();
+        } else if (src == btnXoaRong) {
+            xoaRong();
+        } else if (src == btnTim) {
+            tim();
+        }
+    }
+
     // ================= Các hàm xử lý ====================
     private String tenPhim(String maPhim) {
         dataPhim = new QuanLyPhim_DAO();
         Phim phim = dataPhim.timPhimTheoMa(maPhim);
         // return dataPhim.timPhimTheoMa(maPhim).getTenPhim();
-        if(phim != null){
+        if (phim != null) {
             return phim.getTenPhim();
         }
         return null;
+    }
+
+    private void chonSuatChieu() {
+        tblSuatChieu.getSelectionModel().addListSelectionListener(e -> {
+            if (e.getValueIsAdjusting())
+                return; // tránh xử lý 2 lần
+            int row = tblSuatChieu.getSelectedRow();
+            if (row < 0)
+                return;
+            try {
+                String maSuat = String.valueOf(model.getValueAt(row, 0));
+                String maPhim = String.valueOf(model.getValueAt(row, 1));
+                String tenPhim = model.getValueAt(row, 2) != null ? model.getValueAt(row, 2).toString() : "";
+                String maRap = model.getValueAt(row, 3) != null ? model.getValueAt(row, 3).toString() : "";
+                String ngay = model.getValueAt(row, 4) != null ? model.getValueAt(row, 4).toString() : "";
+                String gio = model.getValueAt(row, 5) != null ? model.getValueAt(row, 5).toString() : "";
+                String gia = model.getValueAt(row, 6) != null ? model.getValueAt(row, 6).toString() : "";
+
+                txtMaSuat.setText(maSuat);
+                txtMaPhim.setText(maPhim);
+                // chọn tên phim trong combobox (nếu tồn tại)
+                if (tenPhim != null && !tenPhim.isEmpty()) {
+                    cbTenPhim.setSelectedItem(tenPhim);
+                }
+                txtNgayChieu.setText(ngay);
+                txtThoiGian.setText(gio);
+                txtGiaVe.setText(gia);
+
+                // Chọn phòng tương ứng trong cbPhong. cbPhong chứa các mục dạng "ma - ten"
+                boolean found = false;
+                for (int i = 0; i < cbPhong.getItemCount(); i++) {
+                    String item = cbPhong.getItemAt(i);
+                    if (item != null) {
+                        // kiểm tra bắt đầu bằng mã
+                        if (item.startsWith(maRap + " -") || item.startsWith(maRap + "-")
+                                || item.startsWith(maRap + " ")) {
+                            cbPhong.setSelectedIndex(i);
+                            found = true;
+                            break;
+                        }
+                        // hoặc chứa mã ở đầu nếu có khoảng trắng khác
+                        if (item.startsWith(maRap)) {
+                            cbPhong.setSelectedIndex(i);
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                if (!found) {
+                    // nếu không tìm thấy, giữ nguyên hoặc chọn mục đầu
+                    if (cbPhong.getItemCount() > 0)
+                        cbPhong.setSelectedIndex(0);
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+    }
+
+    private void loadTenPhim() {
+        try {
+            dataPhim = new QuanLyPhim_DAO();
+            ArrayList<Phim> danhSach = dataPhim.getAllPhim();
+            cbTenPhim.removeAllItems();
+            if (danhSach == null || danhSach.isEmpty()) {
+                cbTenPhim.addItem("(Chưa có phim)");
+                return;
+            }
+            for (Phim p : danhSach) {
+                // Hiển thị dạng: mã - tên
+                cbTenPhim.addItem(p.getTenPhim());
+            }
+            // khichọn1phimthìtựdộngđiềnmãphim
+            cbTenPhim.addActionListener(e -> {
+                String selectedTenPhim = (String) cbTenPhim.getSelectedItem();
+                for (Phim p : danhSach) {
+                    if (p.getTenPhim().equals(selectedTenPhim)) {
+                        txtMaPhim.setText(p.getMaPhim());
+                        break;
+                    }
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            cbTenPhim.removeAllItems();
+            cbTenPhim.addItem("(Lỗi tải phim)");
+        }
     }
 
     private void capNhatBang() {
@@ -237,32 +352,217 @@ public class QuanLySuatChieu extends JPanel implements ActionListener, LoadData 
             }
         }
     }
-    // Được sửa bởi Minh Tân: Loại bỏ hàm này vì quá rườm rà. Cứ lấy dữ liệu trực tiếp từ FakeSuatChieuDB() khỏi qua trung gian. 
-    // Nguyên nhân: Làm theo nguyên lí con trỏ (ptr) 
 
-    // public ArrayList<SuatChieu> laydulieu() {
-    //     data = DataBase.FakeSuatChieuDB();
-    //     for (SuatChieu s : data.getDanhSachSuatChieu()) {
-    //         quanLySuatChieu_DAO.addNewSuatChieu(s);
-    //     }
-    //     return quanLySuatChieu_DAO.getDanhSachSuatChieu();
-    // }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        Object src = e.getSource();
-        if (src == btnThem) {
-            // gọi hàm thêm
-        } else if (src == btnSua) {
-            // gọi hàm sửa
-        } else if (src == btnXoa) {
-            // gọi hàm xóa
-        } else if (src == btnXoaRong) {
-            // gọi hàm xóa rỗng
-        } else if (src == btnTim) {
-            // gọi hàm tìm
-        } else if (src == btnLuu) {
-            // gọi hàm lưu
+    // Load danh sách phòng (rạp) từ database vào combobox
+    private void loadPhong() {
+        try {
+            dataRap = new QuanLyRap_DAO();
+            ArrayList<Rap> danhSach = dataRap.getAllRap();
+            cbPhong.removeAllItems();
+            if (danhSach == null || danhSach.isEmpty()) {
+                cbPhong.addItem("(Chưa có phòng)");
+                return;
+            }
+            for (Rap r : danhSach) {
+                // Hiển thị dạng: mã - tên
+                cbPhong.addItem(r.getMaRap() + " - " + r.getTenRap());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            cbPhong.removeAllItems();
+            cbPhong.addItem("(Lỗi tải phòng)");
         }
     }
+
+    private void tim() {
+        String maSuatTim = txtTimSuat.getText().trim();
+        if (maSuatTim.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập mã suất cần tìm.");
+            return;
+        }
+        boolean found = false;
+        for (int i = 0; i < model.getRowCount(); i++) {
+            String maSuat = String.valueOf(model.getValueAt(i, 0));
+            if (maSuat.equalsIgnoreCase(maSuatTim)) {
+                tblSuatChieu.setRowSelectionInterval(i, i);
+                tblSuatChieu.scrollRectToVisible(new Rectangle(tblSuatChieu.getCellRect(i, 0, true)));
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            JOptionPane.showMessageDialog(this, "Không tìm thấy suất chiếu với mã: " + maSuatTim);
+        }
+    }
+
+    private void xoaRong() {
+
+        txtMaSuat.setText("");
+        txtMaPhim.setText("");
+        if (cbTenPhim.getItemCount() > 0)
+            cbTenPhim.setSelectedIndex(0);
+        txtNgayChieu.setText("");
+        txtThoiGian.setText("");
+        txtGiaVe.setText("");
+        if (cbPhong.getItemCount() > 0)
+            cbPhong.setSelectedIndex(0);
+        tblSuatChieu.clearSelection();
+    }
+
+    private void xoa() {
+        int selectedRow = tblSuatChieu.getSelectedRow();
+        if (selectedRow < 0) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn suất chiếu cần xóa.");
+            return;
+        }
+        String maSuat = String.valueOf(model.getValueAt(selectedRow, 0));
+        SuatChieu suatChieu = quanLySuatChieu_DAO.timSuatChieu(maSuat);
+        quanLySuatChieu_DAO.removeSuatChieu(suatChieu);
+
+        model.removeRow(selectedRow);
+        xoaRong();
+    }
+
+    private void sua() {
+        String maSuat = txtMaSuat.getText().trim();
+        String maPhim = txtMaPhim.getText().trim();
+
+        // Validate required fields early
+        if (maSuat.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập mã suất.");
+            return;
+        }
+        if (maPhim.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn phim.");
+            return;
+        }
+
+        Object phongObj = cbPhong.getSelectedItem();
+        if (phongObj == null) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn phòng chiếu.");
+            return;
+        }
+
+        String phongStr = phongObj.toString();
+        String ngayChieuStr = txtNgayChieu.getText().trim();
+        String thoiGianStr = txtThoiGian.getText().trim();
+        String giaVeStr = txtGiaVe.getText().trim();
+
+        try {
+            // UI uses dd/MM/yyyy (label shows this); parse accordingly
+            LocalDate ngayChieu = LocalDate.parse(ngayChieuStr, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            LocalTime thoiGian = LocalTime.parse(thoiGianStr, DateTimeFormatter.ofPattern("HH:mm"));
+            float giaVe = Float.parseFloat(giaVeStr);
+
+            String maRap = phongStr.contains("-") ? phongStr.split("-")[0].trim() : phongStr.trim();
+
+            SuatChieu suatChieu = new SuatChieu(maSuat, maPhim, maRap, ngayChieu, thoiGian, giaVe);
+
+            // Cập nhật xuống database qua DAO
+            boolean updated = quanLySuatChieu_DAO.updateSuatChieu(suatChieu);
+            if (updated) {
+                JOptionPane.showMessageDialog(this, "Cập nhật suất chiếu thành công.");
+                // Cập nhật lại bảng từ DB
+                capNhatBang();
+                xoaRong();
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Cập nhật suất chiếu thất bại. Kiểm tra kết nối DB hoặc dữ liệu trùng.");
+            }
+        } catch (DateTimeParseException ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Định dạng ngày/thời gian không hợp lệ. Ngày phải là dd/MM/yyyy, thời gian HH:mm.");
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Giá vé không hợp lệ. Vui lòng nhập số.");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật suất chiếu: " + ex.getMessage());
+        }
+    }
+
+    private void them() {
+        String maSuat = txtMaSuat.getText().trim();
+        String maPhim = txtMaPhim.getText().trim();
+
+        // Validate required fields early
+        if (maSuat.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập mã suất.");
+            return;
+        }
+        if (maPhim.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn phim.");
+            return;
+        }
+
+        Object phongObj = cbPhong.getSelectedItem();
+        if (phongObj == null) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn phòng chiếu.");
+            return;
+        }
+
+        String phongStr = phongObj.toString();
+        String ngayChieuStr = txtNgayChieu.getText().trim();
+        String thoiGianStr = txtThoiGian.getText().trim();
+        String giaVeStr = txtGiaVe.getText().trim();
+
+        // === Biểu thức chính quy (có thể điều chỉnh theo qui tắc dự án) ===
+        // Mã suất: chữ/ số/ gạch ngang/underscore, 1-20 ký tự. Thay đổi tuỳ ý.
+        String reMaSuat = "^[A-Za-z0-9_-]{1,20}$";
+        // Ngày dd/MM/yyyy
+        String reNgay = "^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/\\d{4}$";
+        // Giờ HH:mm (00-23:00-59)
+        String reGio = "^([01]?\\d|2[0-3]):[0-5]\\d$";
+        // Giá vé: số nguyên hoặc thập phân (tối đa 2 chữ số thập phân)
+        String reGiaVe = "^\\d+(\\\\.\\d{1,2})?$";
+
+        if (!maSuat.matches(reMaSuat)) {
+            JOptionPane.showMessageDialog(this, "Mã suất không hợp lệ. Chỉ chữ, số, '-' hoặc '_' (1-20 ký tự).");
+            return;
+        }
+        if (!ngayChieuStr.matches(reNgay)) {
+            JOptionPane.showMessageDialog(this, "Ngày không hợp lệ. Vui lòng nhập theo định dạng dd/MM/yyyy.");
+            return;
+        }
+        if (!thoiGianStr.matches(reGio)) {
+            JOptionPane.showMessageDialog(this,
+                    "Thời gian không hợp lệ. Vui lòng nhập theo định dạng HH:mm (00-23:59).");
+            return;
+        }
+        if (!giaVeStr.matches(reGiaVe)) {
+            JOptionPane.showMessageDialog(this, "Giá vé không hợp lệ. Nhập số, có thể có 1-2 chữ số thập phân.");
+            return;
+        }
+
+        try {
+            // UI uses dd/MM/yyyy (label shows this); parse accordingly
+            LocalDate ngayChieu = LocalDate.parse(ngayChieuStr, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            LocalTime thoiGian = LocalTime.parse(thoiGianStr, DateTimeFormatter.ofPattern("HH:mm"));
+            float giaVe = Float.parseFloat(giaVeStr);
+
+            String maRap = phongStr.contains("-") ? phongStr.split("-")[0].trim() : phongStr.trim();
+
+            SuatChieu suatChieu = new SuatChieu(maSuat, maPhim, maRap, ngayChieu, thoiGian, giaVe);
+
+            // Ghi xuống database qua DAO
+            boolean added = quanLySuatChieu_DAO.addNewSuatChieu(suatChieu);
+            if (added) {
+                JOptionPane.showMessageDialog(this, "Thêm suất chiếu thành công.");
+                // Cập nhật lại bảng từ DB
+                capNhatBang();
+                xoaRong();
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Thêm suất chiếu thất bại. Kiểm tra kết nối DB hoặc dữ liệu trùng.");
+            }
+        } catch (DateTimeParseException ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Định dạng ngày/thời gian không hợp lệ. Ngày phải là dd/MM/yyyy, thời gian HH:mm.");
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Giá vé không hợp lệ. Vui lòng nhập số.");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Lỗi khi thêm suất chiếu: " + ex.getMessage());
+        }
+    }
+
 }

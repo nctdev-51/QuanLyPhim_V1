@@ -10,6 +10,7 @@ public class Start extends JFrame implements ActionListener {
     private JButton btnTrangChu, btnBanVe, btnPhim, btnSuatChieu,
             btnKhachHang, btnNhanVien, btnThongKe, btnDangXuat;
     private CardLayout cardLayout;
+    private JButton btnHoaDon;
 
     public Start() {
         setTitle("Hệ thống quản lý bán vé rạp chiếu phim");
@@ -55,10 +56,11 @@ public class Start extends JFrame implements ActionListener {
         btnKhachHang = new JButton("Khách hàng");
         btnNhanVien = new JButton("Nhân viên");
         btnThongKe = new JButton("Thống kê");
+        btnHoaDon = new JButton("Hóa đơn");
         btnDangXuat = new JButton("Đăng xuất");
 
         JButton[] menuButtons = {
-                btnTrangChu, btnBanVe, btnPhim, btnSuatChieu, btnKhachHang, btnNhanVien, btnThongKe
+                btnTrangChu, btnBanVe, btnPhim, btnSuatChieu, btnKhachHang, btnNhanVien, btnThongKe, btnHoaDon
         };
 
         for (JButton btn : menuButtons) {
@@ -119,6 +121,7 @@ public class Start extends JFrame implements ActionListener {
         JPanel khachHangPanel = new QuanLyKhachHang();
         JPanel nhanVienPanel = new QuanLyNhanVien();
         JPanel thongKePanel = new QuanLyThongKe();
+        JPanel hoaDonPanel = new QuanLyHoaDon();
 
         pnCenter.add(trangChuPanel, "TrangChu");
         pnCenter.add(banVePanel, "BanVe");
@@ -127,6 +130,7 @@ public class Start extends JFrame implements ActionListener {
         pnCenter.add(khachHangPanel, "KhachHang");
         pnCenter.add(nhanVienPanel, "NhanVien");
         pnCenter.add(thongKePanel, "ThongKe");
+        pnCenter.add(hoaDonPanel, "HoaDon");
 
         this.cardLayout = (CardLayout) pnCenter.getLayout();
         btnTrangChu.addActionListener(e -> showPanel(pnCenter, "TrangChu", null));
@@ -136,6 +140,8 @@ public class Start extends JFrame implements ActionListener {
         btnKhachHang.addActionListener(e -> showPanel(pnCenter, "KhachHang", (LoadData) khachHangPanel));
         btnNhanVien.addActionListener(e -> showPanel(pnCenter, "NhanVien", (LoadData) nhanVienPanel));
         btnThongKe.addActionListener(e -> showPanel(pnCenter, "ThongKe", (LoadData) thongKePanel));
+        btnHoaDon.addActionListener(e -> showPanel(pnCenter, "HoaDon", (LoadData) hoaDonPanel));
+
         btnDangXuat.addActionListener(this);
     }
 
