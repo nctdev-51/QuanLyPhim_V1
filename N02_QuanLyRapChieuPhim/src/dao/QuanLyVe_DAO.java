@@ -8,6 +8,7 @@ import ConnectDB.ConnectDB;
 import java.sql.*;
 import java.time.LocalDate;
 
+import entity.ChiTietHoaDon;
 import entity.Ve;
 
 public class QuanLyVe_DAO {
@@ -66,7 +67,34 @@ public class QuanLyVe_DAO {
         }
         return ve;
     }
-
+    //Tìm danh sách vé theo mã suất chiếu
+    public ArrayList<Ve> timVeTheoMaSuatChieu(String maSuatChieu) {
+        if (this.conn == null || maSuatChieu == null || maSuatChieu.trim().isEmpty())
+            return null;
+        ArrayList<Ve> ticketList = new ArrayList<>();
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            String sql = "Select * from Ve where maSuatChieu = ?";
+            stmt = this.conn.prepareStatement(sql);
+            stmt.setString(1, maSuatChieu);
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                String maVe = rs.getString("maVe");
+                String maGhe = rs.getString("maGhe");
+                LocalDate ngayBan = rs.getDate("ngayBan").toLocalDate();
+                boolean daThanhToan = rs.getBoolean("daThanhToan");
+                QuanLyGhe_DAO gheManager = new QuanLyGhe_DAO();
+                Ve ve = new Ve(maVe, gheManager.TimGheTheoMa(maGhe), ngayBan, maSuatChieu, daThanhToan);
+                ticketList.add(ve);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            close(rs, stmt);
+        }
+        return ticketList;
+    }
     public static String taoMaVeTuDong() {
         long timeMillis = System.currentTimeMillis();
         int rand = new Random().nextInt(1000);

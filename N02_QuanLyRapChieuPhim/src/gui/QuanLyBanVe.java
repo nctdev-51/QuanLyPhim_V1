@@ -37,6 +37,7 @@ public class QuanLyBanVe extends JPanel implements LoadData, ResetForm {
     private QuanLyGhe_DAO chairManager = new QuanLyGhe_DAO();
     private QuanLyKhachHang_DAO customerManager = new QuanLyKhachHang_DAO();
     private QuanLyHoaDon_DAO billManager = new QuanLyHoaDon_DAO();
+    private QuanLyVe_DAO ticketManager = new QuanLyVe_DAO();
 
     private Dimension modalDimension = new Dimension(500, 600);
     private Font fChonGhe;
@@ -473,11 +474,12 @@ public class QuanLyBanVe extends JPanel implements LoadData, ResetForm {
             i++;
         }
         ArrayList<Ghe> chairList = this.chairManager.getDanhSachGheTheoRap(rap);
+        ArrayList<Ve> ticketList = this.ticketManager.timVeTheoMaSuatChieu(this.suatChieuDuocChon.getMaSuatChieu());
         ArrayList<String> selectedChairs = new ArrayList<>();
         for (i = 0; i < soGhe; i++) {
             Ghe ghe = chairList.get(i);
             JButton btn = new JButton(ghe.getTenGhe());
-            if (ghe.isDaDat()) {
+            if (isGheDaDat(ghe, ticketList)) {
                 btn.setBackground(Color.LIGHT_GRAY);
                 btn.setEnabled(false);
             } else {
@@ -558,5 +560,15 @@ public class QuanLyBanVe extends JPanel implements LoadData, ResetForm {
         this.txtHoTen.setText(khachHang.getHoTen());
         this.txtDiaChi.setText(khachHang.getDiaChi());
         this.cbGioiTinh.setSelectedItem(khachHang.getGioiTinh());
+    }
+
+    // Tìm trong danh sách vé có tồn tại mã ghế này không
+    private boolean isGheDaDat(Ghe ghe, ArrayList<Ve> ticketList) {
+        for (Ve ve : ticketList) {
+            if (ve.getGhe().getMaGhe().equalsIgnoreCase(ghe.getMaGhe())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
