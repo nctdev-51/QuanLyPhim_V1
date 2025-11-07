@@ -21,7 +21,7 @@ import java.util.HashSet;
 
 import entity.*;
 
-public class QuanLyBanVe extends JPanel implements LoadData {
+public class QuanLyBanVe extends JPanel implements LoadData, ResetForm {
     private JComboBox<String> cbPhim, cbPhong, cbSuatChieu, cbGioiTinh;
     private JButton btnChonGhe, btnDatVe, btnXoaChon;
     private JTextField txtHoTen, txtSDT, txtDiaChi;
@@ -36,6 +36,7 @@ public class QuanLyBanVe extends JPanel implements LoadData {
     private QuanLyRap_DAO rapManager = new QuanLyRap_DAO();
     private QuanLyGhe_DAO chairManager = new QuanLyGhe_DAO();
     private QuanLyKhachHang_DAO customerManager = new QuanLyKhachHang_DAO();
+    private QuanLyHoaDon_DAO billManager = new QuanLyHoaDon_DAO();
 
     private Dimension modalDimension = new Dimension(500, 600);
     private Font fChonGhe;
@@ -231,8 +232,10 @@ public class QuanLyBanVe extends JPanel implements LoadData {
         cbPhim.addActionListener(e -> CapNhatThongTinPhim());
         cbPhong.addActionListener(e -> CapNhatPhong());
         cbSuatChieu.addActionListener(e -> CapNhatSuatChieu());
+        txtSDT.addActionListener(e -> AutoFillCustomer());
     }
 
+    @Override
     public void resetForm() {
         cbPhim.setSelectedIndex(0);
         cbPhong.setSelectedIndex(0);
@@ -294,18 +297,21 @@ public class QuanLyBanVe extends JPanel implements LoadData {
             JOptionPane.showMessageDialog(this, "Chưa chọn ghế !", "Lỗi đặt vé", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        ThongTinVeModal thongTinVeModal = new ThongTinVeModal(khachHang, this.suatChieuDuocChon,
-                this.selectedChairs, this);
+        Ve ve = createTicket();
+        float giaVe = this.suatChieuDuocChon.getGiaVe();
+        HoaDon hoaDon = xuLyTaoHoaDon(khachHang, this.selectedChairs.size(), giaVe);
+
+        // Show thong tin ve
+        new ThongTinVeModal(hoaDon, ve, this, this.selectedChairs);
     }
 
-    public Ve xuLyTaoVeTheoGhe(Ghe ghe) {
-        if (ghe == null)
-            return null;
-
-        Ve ve = createTicket();
-        ve.setDaThanhToan(true);
-        ve.setGhe(ghe);
-        return ve;
+    private HoaDon xuLyTaoHoaDon(KhachHang khachHang, int soLuongVe, float giaVe) {
+        // Get NhanVien đang đăng nhập vào hệ thống - giả sử có mã là NV01
+        NhanVien nhanVien = DangNhap.nhanVienDangNhap;
+        float tongTien = giaVe * soLuongVe;
+        HoaDon hoaDon = new HoaDon(this.billManager.taoMaHoaDonTuDong(), LocalDate.now(), nhanVien, khachHang,
+                soLuongVe, tongTien);
+        return hoaDon;
     }
 
     public Ve createTicket() {
@@ -314,6 +320,7 @@ public class QuanLyBanVe extends JPanel implements LoadData {
         Ve ve = new Ve(QuanLyVe_DAO.taoMaVeTuDong());
         ve.setMaSuatChieu(this.suatChieuDuocChon.getMaSuatChieu());
         ve.setNgayBan(LocalDate.now());
+        ve.setDaThanhToan(false);
         return ve;
     }
 
@@ -328,7 +335,6 @@ public class QuanLyBanVe extends JPanel implements LoadData {
 
     private void CapNhatThongTinPhim() {
         if (this.cbPhim.getItemCount() == 0) {
-            System.out.println("Khong co item nao");
             return;
         }
         if (this.cbPhim.getSelectedIndex() == 0) {
@@ -337,7 +343,6 @@ public class QuanLyBanVe extends JPanel implements LoadData {
             this.cbSuatChieu.setEnabled(false);
             this.btnChonGhe.setEnabled(false);
             this.btnDatVe.setEnabled(false);
-            System.out.println("Chon index = 0");
             return;
         }
         this.txtTenPhim.setText("");
@@ -539,4 +544,19 @@ public class QuanLyBanVe extends JPanel implements LoadData {
         }
     }
 
+    private void AutoFillCustomer() {
+        String sdt = this.txtSDT.getText().trim();
+        String regexSDT = "^(03|05|07|08|09)[0-9]{8}$"; // số điện thoại - có 10 số
+        if (!sdt.matches(regexSDT)) {
+            JOptionPane.showMessageDialog(this,
+                    "số điện thoại phải có 10 số và 2 số đầu phải khớp với nhà mạng Việt Nam (03, 05, 07,...)",
+                    "Lỗi cú pháp số điện thoại",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        KhachHang khachHang = this.customerManager.timKhachHangTheoSDT(sdt);
+        this.txtHoTen.setText(khachHang.getHoTen());
+        this.txtDiaChi.setText(khachHang.getDiaChi());
+        this.cbGioiTinh.setSelectedItem(khachHang.getGioiTinh());
+    }
 }

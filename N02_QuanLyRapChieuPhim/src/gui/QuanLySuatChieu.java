@@ -15,6 +15,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -27,12 +28,9 @@ public class QuanLySuatChieu extends JPanel implements ActionListener, LoadData 
     private JTable tblSuatChieu;
     private JTextField txtMaSuat, txtNgayChieu, txtThoiGian, txtGiaVe, txtTimSuat, txtMaPhim;
     private JComboBox<String> cbPhong, cbTenPhim;
-    private JButton btnThem, btnSua, btnXoa, btnXoaRong, btnLuu, btnTim;
+    private JButton btnThem, btnSua, btnXoa, btnXoaRong, btnTim;
     private DefaultTableModel model;
     private JTree treeNgayChieu;
-    // private QuanLySuatChieu_DAO data; -- Tân chỉnh sửa: không cần qua trung gian
-    // nữa trực tiếp dùng con trỏ quanLySuatChieu_DAO trỏ tới dữ liệu từ
-    // FakeSuatChieuDB()
     protected QuanLyPhim_DAO dataPhim;
     private QuanLyRap_DAO dataRap;
 
@@ -59,15 +57,13 @@ public class QuanLySuatChieu extends JPanel implements ActionListener, LoadData 
         lblTitle.setBorder(BorderFactory.createEmptyBorder(15, 0, 15, 0));
         add(lblTitle, BorderLayout.NORTH);
 
-        // ===== Panel trái: Cây ngày chiếu =====
-        DefaultMutableTreeNode root = new DefaultMutableTreeNode("Danh sách ngày chiếu");
-        String[] ngayList = {
-                "04/11/2025", "05/11/2025", "05/08/2025", "14/07/2025",
-                "02/06/2025", "05/05/2025", "30/04/2025", "02/03/2025",
-                "05/02/2025", "29/01/2025"
+        // ===== Panel trái: Cây tháng =====
+        DefaultMutableTreeNode root = new DefaultMutableTreeNode("Danh sách Tháng chiếu");
+        String[] thangList = {
+                "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"
         };
-        for (String ngay : ngayList) {
-            root.add(new DefaultMutableTreeNode("Ngày chiếu: " + ngay));
+        for (String thang : thangList) {
+            root.add(new DefaultMutableTreeNode("Tháng: " + thang));
         }
 
         treeNgayChieu = new JTree(new DefaultTreeModel(root));
@@ -97,7 +93,7 @@ public class QuanLySuatChieu extends JPanel implements ActionListener, LoadData 
 
         pnForm.add(new JLabel("Tên Phim:"));
         cbTenPhim = new JComboBox<>();
-        loadTenPhim();
+        layTenPhim();
         pnForm.add(cbTenPhim);
 
         pnForm.add(new JLabel("Giá vé:"));
@@ -115,7 +111,7 @@ public class QuanLySuatChieu extends JPanel implements ActionListener, LoadData 
         pnForm.add(new JLabel("Phòng chiếu:"));
         cbPhong = new JComboBox<>();
         // Load phòng (rạp) từ database
-        loadPhong();
+        layPhong();
         pnForm.add(cbPhong);
 
         pnBody.add(pnForm, BorderLayout.NORTH);
@@ -184,27 +180,10 @@ public class QuanLySuatChieu extends JPanel implements ActionListener, LoadData 
         pnSouth.add(btnXoaRong);
 
         add(pnSouth, BorderLayout.SOUTH);
+
         // ===== Gọi hàm hiển thị dữ liệu =====
         capNhatBang();
-
-        // ===== Sự kiện chọn node trên cây =====
-        treeNgayChieu.addTreeSelectionListener(e -> {
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode) treeNgayChieu.getLastSelectedPathComponent();
-            if (node == null)
-                return;
-            String text = node.toString();
-            if (text.startsWith("Ngày chiếu:")) {
-                try {
-                    LocalDate date = LocalDate.parse(text.replace("Ngày chiếu:", "").trim(),
-                            DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-                    capNhatBangTheoNgay(date);
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(this, "Định dạng ngày không hợp lệ!");
-                }
-            } else {
-                capNhatBang();
-            }
-        });
+        chonNut();
     }
 
     @Override
@@ -221,6 +200,27 @@ public class QuanLySuatChieu extends JPanel implements ActionListener, LoadData 
         } else if (src == btnTim) {
             tim();
         }
+    }
+
+    private void chonNut() {
+        // ===== Sự kiện chọn node trên cây =====
+        treeNgayChieu.addTreeSelectionListener(e -> {
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) treeNgayChieu.getLastSelectedPathComponent();
+            if (node == null)
+                return;
+            String text = node.toString();
+            if (text.startsWith("Tháng:")) {
+                try {
+                    // chỉ có tháng và không có ngày chiếu nên lấy tháng
+                    String month = text.replace("Tháng:", "").trim();
+                    capNhatBangTheoThang(month);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this, "Định dạng tháng không hợp lệ!");
+                }
+            } else {
+                capNhatBang();
+            }
+        });
     }
 
     // ================= Các hàm xử lý ====================
@@ -291,22 +291,34 @@ public class QuanLySuatChieu extends JPanel implements ActionListener, LoadData 
         });
     }
 
-    private void loadTenPhim() {
+    private void layTenPhim() {
         try {
             dataPhim = new QuanLyPhim_DAO();
             ArrayList<Phim> danhSach = dataPhim.getAllPhim();
             cbTenPhim.removeAllItems();
+            // thêm mục placeholder ở vị trí đầu
+            String placeholder = "---:---";
+            cbTenPhim.addItem(placeholder);
+
             if (danhSach == null || danhSach.isEmpty()) {
+                // nếu chưa có phim, thêm thông báo nhưng giữ placeholder ở đầu
                 cbTenPhim.addItem("(Chưa có phim)");
+                cbTenPhim.setSelectedIndex(0);
                 return;
             }
             for (Phim p : danhSach) {
-                // Hiển thị dạng: mã - tên
                 cbTenPhim.addItem(p.getTenPhim());
             }
-            // khichọn1phimthìtựdộngđiềnmãphim
+            // đặt mặc định chọn placeholder
+            cbTenPhim.setSelectedIndex(0);
+            // khi chọn 1 phim thì tự động điền mã phim
             cbTenPhim.addActionListener(e -> {
                 String selectedTenPhim = (String) cbTenPhim.getSelectedItem();
+                if (selectedTenPhim == null || selectedTenPhim.equals(placeholder)
+                        || selectedTenPhim.equals("(Chưa có phim)") || selectedTenPhim.equals("(Lỗi tải phim)")) {
+                    txtMaPhim.setText("");
+                    return;
+                }
                 for (Phim p : danhSach) {
                     if (p.getTenPhim().equals(selectedTenPhim)) {
                         txtMaPhim.setText(p.getMaPhim());
@@ -336,10 +348,11 @@ public class QuanLySuatChieu extends JPanel implements ActionListener, LoadData 
         }
     }
 
-    private void capNhatBangTheoNgay(LocalDate ngay) {
+    private void capNhatBangTheoThang(String monthStr) {
         model.setRowCount(0);
         for (SuatChieu suat : quanLySuatChieu_DAO.getAllSuatChieu()) {
-            if (suat.getNgayChieu().isEqual(ngay)) {
+            // lọc theo tháng
+            if (suat.getNgayChieu().getMonthValue() == Integer.parseInt(monthStr)) {
                 model.addRow(new Object[] {
                         suat.getMaSuatChieu(),
                         suat.getMaPhim(),
@@ -354,19 +367,27 @@ public class QuanLySuatChieu extends JPanel implements ActionListener, LoadData 
     }
 
     // Load danh sách phòng (rạp) từ database vào combobox
-    private void loadPhong() {
+    private void layPhong() {
+
         try {
             dataRap = new QuanLyRap_DAO();
             ArrayList<Rap> danhSach = dataRap.getAllRap();
             cbPhong.removeAllItems();
+            // thêm mục placeholder ở vị trí đầu
+            String placeholder = "---:---";
+            cbPhong.addItem(placeholder);
+
             if (danhSach == null || danhSach.isEmpty()) {
+                // nếu chưa có phòng, thêm thông báo nhưng giữ placeholder ở đầu
                 cbPhong.addItem("(Chưa có phòng)");
+                cbPhong.setSelectedIndex(0);
                 return;
             }
             for (Rap r : danhSach) {
-                // Hiển thị dạng: mã - tên
                 cbPhong.addItem(r.getMaRap() + " - " + r.getTenRap());
             }
+            // đặt mặc định chọn placeholder
+            cbPhong.setSelectedIndex(0);
         } catch (Exception e) {
             e.printStackTrace();
             cbPhong.removeAllItems();
@@ -458,6 +479,16 @@ public class QuanLySuatChieu extends JPanel implements ActionListener, LoadData 
 
             SuatChieu suatChieu = new SuatChieu(maSuat, maPhim, maRap, ngayChieu, thoiGian, giaVe);
 
+            // kiểm tra khoảng cách thời gian với các suất khác trong cùng phòng cùng ngày
+            SuatChieu conflict = KiemTraSuatChieu(maRap, ngayChieu, thoiGian, maSuat);
+            if (conflict != null) {
+                JOptionPane.showMessageDialog(this,
+                        "Xung đột giờ chiếu với suất " + conflict.getMaSuatChieu() + " lúc "
+                                + conflict.getGioChieu().format(DateTimeFormatter.ofPattern("HH:mm"))
+                                + " — các suất phải cách nhau ít nhất 3 giờ.");
+                return;
+            }
+
             // Cập nhật xuống database qua DAO
             boolean updated = quanLySuatChieu_DAO.updateSuatChieu(suatChieu);
             if (updated) {
@@ -523,6 +554,7 @@ public class QuanLySuatChieu extends JPanel implements ActionListener, LoadData 
             JOptionPane.showMessageDialog(this, "Ngày không hợp lệ. Vui lòng nhập theo định dạng dd/MM/yyyy.");
             return;
         }
+        // giờ chiếu của các phim cùng một rap phải cách nhau 3h
         if (!thoiGianStr.matches(reGio)) {
             JOptionPane.showMessageDialog(this,
                     "Thời gian không hợp lệ. Vui lòng nhập theo định dạng HH:mm (00-23:59).");
@@ -542,6 +574,16 @@ public class QuanLySuatChieu extends JPanel implements ActionListener, LoadData 
             String maRap = phongStr.contains("-") ? phongStr.split("-")[0].trim() : phongStr.trim();
 
             SuatChieu suatChieu = new SuatChieu(maSuat, maPhim, maRap, ngayChieu, thoiGian, giaVe);
+
+            // kiểm tra khoảng cách thời gian với các suất khác trong cùng phòng cùng ngày
+            SuatChieu conflict = KiemTraSuatChieu(maRap, ngayChieu, thoiGian, null);
+            if (conflict != null) {
+                JOptionPane.showMessageDialog(this,
+                        "Xung đột giờ chiếu với suất " + conflict.getMaSuatChieu() + " lúc "
+                                + conflict.getGioChieu().format(DateTimeFormatter.ofPattern("HH:mm"))
+                                + " — các suất phải cách nhau ít nhất 3 giờ.");
+                return;
+            }
 
             // Ghi xuống database qua DAO
             boolean added = quanLySuatChieu_DAO.addNewSuatChieu(suatChieu);
@@ -565,4 +607,35 @@ public class QuanLySuatChieu extends JPanel implements ActionListener, LoadData 
         }
     }
 
+    private SuatChieu KiemTraSuatChieu(String maRap, LocalDate ngay, LocalTime gio, String excludeMaSuat) {
+        if (maRap == null || ngay == null || gio == null)
+            return null;
+        ArrayList<SuatChieu> ds = quanLySuatChieu_DAO.getAllSuatChieu();
+        if (ds == null || ds.isEmpty())
+            return null;
+        for (int i = 0; i < ds.size(); i++) {
+            SuatChieu s = ds.get(i);
+            if (s == null)
+                continue;
+            if (excludeMaSuat != null && excludeMaSuat.equals(s.getMaSuatChieu()))
+                continue;
+            if (s.getMaRap() == null || !s.getMaRap().equals(maRap))
+                continue;
+            if (!s.getNgayChieu().isEqual(ngay))
+                continue;
+            long diffMinutes = Math.abs(Duration.between(s.getGioChieu(), gio).toMinutes());
+            if (diffMinutes < 180)
+                return s;
+        }
+        return null;
+    }
+
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("Quản Lý Suất Chiếu");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(900, 600);
+        frame.setLocationRelativeTo(null);
+        frame.setContentPane(new QuanLySuatChieu());
+        frame.setVisible(true);
+    }
 }

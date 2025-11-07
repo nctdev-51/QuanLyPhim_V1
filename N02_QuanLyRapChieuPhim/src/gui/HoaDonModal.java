@@ -59,20 +59,20 @@ public class HoaDonModal extends JFrame {
         JPanel pHoaDon = new JPanel();
         pHoaDon.setLayout(new BoxLayout(pHoaDon, BoxLayout.Y_AXIS));
 
-        JLabel lblMaHD = new JLabel("Mã hóa đơn: " + hoaDon.getMaHoaDon());
-        JLabel lblNgayLap = new JLabel("Ngày lập hóa đơn: " + hoaDon.getNgayLap().toString());
-        JLabel lblSoLuongVe = new JLabel("Số lượng vé: " + hoaDon.getSoLuongVe());
-        JLabel lblTongTien = new JLabel("Tổng tiền: " + hoaDon.getTongTien());
+        JLabel lblMaHD = new JLabel("   Mã hóa đơn:             " + hoaDon.getMaHoaDon());
+        JLabel lblNgayLap = new JLabel("   Ngày lập hóa đơn:   " + hoaDon.getNgayLap().toString());
+        JLabel lblSoLuongVe = new JLabel("   Số lượng vé:             " + hoaDon.getSoLuongVe());
+        JLabel lblTongTien = new JLabel("   Tổng tiền:                  " + hoaDon.getTongTien());
 
-        JLabel lblNhanVien = new JLabel("Nhân viên bán vé: " + hoaDon.getNhanVien().getTenNV());
-        JLabel lblSoDienThoai = new JLabel("Số liên hệ: " + hoaDon.getNhanVien().getSoDienThoai());
-        JLabel lblDiaChiRap = new JLabel("Địa chỉ rạp chiếu: " +
+        JLabel lblNhanVien = new JLabel("   Nhân viên bán vé:  " + hoaDon.getNhanVien().getTenNV());
+        JLabel lblSoDienThoai = new JLabel("   Số liên hệ:               " + hoaDon.getNhanVien().getSoDienThoai());
+        JLabel lblDiaChiRap = new JLabel("   Địa chỉ rạp chiếu:  " +
                 "12 Nguyễn Văn Bảo, Phường 4, Quận Gò Vấp, TP. Hồ Chí Minh");
-        JLabel lblEmail = new JLabel("Email: " + "3TCinema@gmail.com");
+        JLabel lblEmail = new JLabel("   Email:                       " + "3TCinema@gmail.com");
 
-        JLabel lblTenKhachHang = new JLabel("Khách hàng: " + hoaDon.getKhachHang().getHoTen());
-        JLabel lblDiaChiKH = new JLabel("Địa chỉ: " + hoaDon.getKhachHang().getDiaChi());
-        JLabel lblSoDienThoaiKH = new JLabel("Số điện thoại: " + hoaDon.getKhachHang().getSoDT());
+        JLabel lblTenKhachHang = new JLabel("   Khách hàng:        " + hoaDon.getKhachHang().getHoTen());
+        JLabel lblDiaChiKH = new JLabel("   Địa chỉ:                 " + hoaDon.getKhachHang().getDiaChi());
+        JLabel lblSoDienThoaiKH = new JLabel("   Số điện thoại:      " + hoaDon.getKhachHang().getSoDT());
 
         JPanel pThongTinNhanVien = new JPanel();
         pThongTinNhanVien.setLayout(new BoxLayout(pThongTinNhanVien, BoxLayout.Y_AXIS));

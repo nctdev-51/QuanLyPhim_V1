@@ -115,18 +115,46 @@ public class QuanLyHoaDon_DAO {
     public boolean XoaHoaDonTheoMa(String maHD) {
         if (this.conn == null)
             return false;
-        PreparedStatement stmt = null;
+
+        PreparedStatement stmtCTHD = null;
+        PreparedStatement stmtHD = null;
         int n = 0;
+
         try {
-            String sql = "DELETE FROM Phim WHERE maPhim=?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, maHD);
-            n = stmt.executeUpdate();
+            // Bắt đầu transaction
+            conn.setAutoCommit(false);
+
+            // 1️⃣ Xóa các chi tiết hóa đơn liên quan
+            String sqlCTHD = "DELETE FROM ChiTietHoaDon WHERE maHoaDon = ?";
+            stmtCTHD = conn.prepareStatement(sqlCTHD);
+            stmtCTHD.setString(1, maHD);
+            stmtCTHD.executeUpdate();
+
+            // 2️⃣ Xóa hóa đơn chính
+            String sqlHD = "DELETE FROM HoaDon WHERE maHoaDon = ?";
+            stmtHD = conn.prepareStatement(sqlHD);
+            stmtHD.setString(1, maHD);
+            n = stmtHD.executeUpdate();
+
+            // 3️⃣ Xác nhận (commit) nếu không có lỗi
+            conn.commit();
         } catch (SQLException e) {
+            try {
+                conn.rollback(); // Hoàn tác nếu có lỗi
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
             e.printStackTrace();
         } finally {
-            close(null, stmt);
+            close(null, stmtCTHD);
+            close(null, stmtHD);
+            try {
+                conn.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
+
         return n > 0;
     }
 

@@ -31,12 +31,11 @@ import entity.KhachHang;
 import entity.NhanVien;
 import entity.Phim;
 import entity.Rap;
+import entity.ResetForm;
 import entity.SuatChieu;
 import entity.Ve;
 
 public class ThongTinVeModal extends JFrame {
-    private SuatChieu suatChieuDuocChon;
-    private ArrayList<String> selectedChairs;
     private QuanLySuatChieu_DAO suatChieuManager;
     private QuanLyPhim_DAO movieManager;
     private QuanLyRap_DAO rapManager;
@@ -44,25 +43,29 @@ public class ThongTinVeModal extends JFrame {
     private QuanLyVe_DAO ticketManager;
     private QuanLyHoaDon_DAO billManager;
     private Font fChonGhe = new Font("Arial", Font.BOLD, 16);
-    private QuanLyBanVe parentform;
+    private JPanel parentform;
     private QuanLyCTHD_DAO cthdManager;
     private Dimension modalDimension = new Dimension(500, 600);
     private JButton btnInVe;
     private JButton btnHuy;
     private JButton btnThanhToan;
     private JButton btnXemHoaDon;
-    private HoaDon hoaDon;
-    private Object trangThai;
     private JLabel lblTrangThai;
 
-    public ThongTinVeModal(KhachHang khachHang, SuatChieu suatChieuDuocChon,
-            ArrayList<String> selectedChairs, QuanLyBanVe parentForm) {
+    private HoaDon hoaDon;
+    private Ve ticketOrigin;
+    private SuatChieu suatChieu;
+    private ArrayList<String> soGheDuocChon;
 
-        if (suatChieuDuocChon == null || selectedChairs == null || parentForm == null)
+    public ThongTinVeModal(HoaDon hoaDon, Ve ve, JPanel parentForm, ArrayList<String> soGheDuocChon) {
+
+        if (hoaDon == null || ve == null || parentForm == null)
             return;
-        this.suatChieuDuocChon = suatChieuDuocChon;
-        this.selectedChairs = selectedChairs;
+
         this.parentform = parentForm;
+        this.hoaDon = hoaDon;
+        this.ticketOrigin = ve;
+        this.soGheDuocChon = soGheDuocChon;
 
         this.suatChieuManager = new QuanLySuatChieu_DAO();
         this.movieManager = new QuanLyPhim_DAO();
@@ -73,7 +76,7 @@ public class ThongTinVeModal extends JFrame {
         this.cthdManager = new QuanLyCTHD_DAO();
 
         setSize(modalDimension);
-        setLocationRelativeTo(this);
+        setLocationRelativeTo(this.parentform);
         setLayout(new BorderLayout());
         setTitle("Thông tin vé");
 
@@ -91,24 +94,23 @@ public class ThongTinVeModal extends JFrame {
         pCenter.setBorder(BorderFactory.createTitledBorder("THÔNG TIN VÉ"));
         // mã vé, thời gian chiếu, tên phim, tên phòng chiếu, số ghế, số lượng vé, thời
         // gian đặt vé
-        Ve ve = this.parentform.createTicket();
-        if (ve == null)
-            return;
-        String maVe = ve.getMaVe();
-        SuatChieu suatChieuFind = this.suatChieuManager.timSuatChieu(ve.getMaSuatChieu());
-        if (suatChieuFind == null)
-            return;
-        Phim phim = this.movieManager.timPhimTheoMa(suatChieuFind.getMaPhim());
-        String tenPhim = phim.getTenPhim();
-        Rap rap = this.rapManager.findRapByID(suatChieuFind.getMaRap());
-        String tenPhong = rap.getTenRap();
-        String thoiGian = this.suatChieuDuocChon.getGioChieu().toString() + ", "
-                + this.suatChieuDuocChon.getNgayChieu().toString();
-        String soVe = Integer.toString(this.selectedChairs.size());
 
-        String soGhe = String.join(", ", this.selectedChairs);
+        String maVe = this.ticketOrigin.getMaVe();
+        this.suatChieu = this.suatChieuManager.timSuatChieu(this.ticketOrigin.getMaSuatChieu());
+        if (suatChieu == null)
+            return;
+        Phim phim = this.movieManager.timPhimTheoMa(suatChieu.getMaPhim());
+        String tenPhim = phim.getTenPhim();
+        Rap rap = this.rapManager.findRapByID(suatChieu.getMaRap());
+        String tenPhong = rap.getTenRap();
+        String thoiGian = suatChieu.getGioChieu().toString() + ", "
+                + suatChieu.getNgayChieu().toString();
+
+        String soVe = Integer.toString(this.hoaDon.getSoLuongVe());
+
+        String soGhe = String.join(", ", this.soGheDuocChon);
+
         String thoiGianDatVe = ve.getNgayBan().toString();
-        this.trangThai = "Chưa thanh toán";
 
         JLabel lblMaVe = new JLabel("  Mã vé:                   " + maVe);
         JLabel lblTenPhim = new JLabel("  Tên phim:             " + tenPhim);
@@ -117,7 +119,7 @@ public class ThongTinVeModal extends JFrame {
         JLabel lblSoVe = new JLabel("  Số vé:                     " + soVe);
         JLabel lblSoGhe = new JLabel("  Số ghế:                   " + soGhe);
         JLabel lblThoiGianDatVe = new JLabel("  Thời gian đặt vé:  " + thoiGianDatVe);
-        this.lblTrangThai = new JLabel("  Trạng thái:             " + trangThai);
+        this.lblTrangThai = new JLabel("  Trạng thái:             " + this.ticketOrigin.getTrangThai());
         pCenter.add(Box.createVerticalStrut(10));
         pCenter.add(lblMaVe);
         pCenter.add(Box.createVerticalStrut(5));
@@ -151,11 +153,11 @@ public class ThongTinVeModal extends JFrame {
 
         btnInVe = new JButton("In vé");
         btnInVe.setFont(fChonGhe);
-        btnInVe.setEnabled(false);
+        btnInVe.setEnabled(this.ticketOrigin.isDaThanhToan());
 
         btnXemHoaDon = new JButton("Xem hóa đơn");
         btnXemHoaDon.setFont(fChonGhe);
-        btnXemHoaDon.setEnabled(false);
+        btnXemHoaDon.setEnabled(this.ticketOrigin.isDaThanhToan());
 
         pSouth.add(btnHuy);
         pSouth.add(btnThanhToan);
@@ -165,7 +167,7 @@ public class ThongTinVeModal extends JFrame {
         add(pSouth, BorderLayout.SOUTH);
 
         btnHuy.addActionListener(e -> close());
-        btnThanhToan.addActionListener(e -> thanhToan(khachHang));
+        btnThanhToan.addActionListener(e -> thanhToan());
         btnInVe.addActionListener(e -> InVe());
         btnXemHoaDon.addActionListener(e -> xemHoaDon(this.hoaDon));
 
@@ -175,7 +177,8 @@ public class ThongTinVeModal extends JFrame {
 
     private void close() {
         this.dispose();
-        this.parentform.resetForm();
+        ResetForm resetInterface = (ResetForm) this.parentform;
+        if(resetInterface != null) resetInterface.resetForm();
         this.hoaDon = null;
     }
 
@@ -185,26 +188,30 @@ public class ThongTinVeModal extends JFrame {
         return;
     }
 
-    private void thanhToan(KhachHang khachHang) {
+    private void thanhToan() {
+        if (this.ticketOrigin.isDaThanhToan()) {
+            JOptionPane.showMessageDialog(this, "Vé đã được thanh toán trước đó rồi !", "Lỗi",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         ArrayList<Ve> danhSachVeDaDat = new ArrayList<>();
-        for (int i = 0; i < this.selectedChairs.size(); i++) {
-            String tenGhe = this.selectedChairs.get(i);
-            Ghe ghe = this.chairManager.TimGheTheoTen(tenGhe, this.suatChieuDuocChon.getMaRap());
+        for (int i = 0; i < this.soGheDuocChon.size(); i++) {
 
-            Ve ve = this.parentform.xuLyTaoVeTheoGhe(ghe);
+            String tenGhe = this.soGheDuocChon.get(i);
+            Ghe ghe = this.chairManager.TimGheTheoTen(tenGhe, this.suatChieu.getMaRap());
+
+            Ve ve = xuLyTaoVeTheoGhe(ghe);
             if (ve != null) {
                 danhSachVeDaDat.add(ve);
                 this.ticketManager.add(ve);
+                ghe.setTinhTrang(true);
+                this.chairManager.capNhatTinhTrangGhe(ghe);
             }
-            ghe.setTinhTrang(true);
-            this.chairManager.capNhatTinhTrangGhe(ghe);
         }
 
-        float giaVe = this.suatChieuDuocChon.getGiaVe();
-        this.hoaDon = xuLyTaoHoaDon(khachHang, danhSachVeDaDat, giaVe);
         // Thêm hóa đơn
         this.billManager.add(this.hoaDon);
-        xuLyTaoChiTietHoaDon(this.hoaDon, danhSachVeDaDat, giaVe);
+        xuLyTaoChiTietHoaDon(this.hoaDon, danhSachVeDaDat, this.suatChieu.getGiaVe());
 
         JOptionPane.showMessageDialog(this, "Thanh toán thành công !",
                 "Hệ thống thông báo",
@@ -213,25 +220,37 @@ public class ThongTinVeModal extends JFrame {
         this.btnInVe.setEnabled(true);
         this.btnXemHoaDon.setEnabled(true);
         this.btnThanhToan.setEnabled(false);
-        this.trangThai = "Đã thanh toán";
-        this.lblTrangThai.setText("  Trạng thái:             " + this.trangThai);
+        String trangThai = "Đã thanh toán";
+        this.lblTrangThai.setText("  Trạng thái:             " + trangThai);
+    }
+
+    private Ve xuLyTaoVeTheoGhe(Ghe ghe) {
+        if (ghe == null) {
+            return null;
+        }
+        Ve ve = createTicket();
+        if (ve == null) {
+            return null;
+        }
+        ve.setDaThanhToan(true);
+        ve.setGhe(ghe);
+        return ve;
+    }
+
+    private Ve createTicket() {
+        if (this.suatChieu == null)
+            return null;
+        Ve ve = new Ve(QuanLyVe_DAO.taoMaVeTuDong());
+        ve.setMaSuatChieu(this.suatChieu.getMaSuatChieu());
+        ve.setNgayBan(LocalDate.now());
+        ve.setDaThanhToan(false);
+        return ve;
     }
 
     private void xemHoaDon(HoaDon hoaDon) {
         if (this.hoaDon == null)
             return;
         new HoaDonModal(hoaDon, this.parentform);
-    }
-
-    private HoaDon xuLyTaoHoaDon(KhachHang khachHang, ArrayList<Ve> danhSachVeDaDat, float giaVe) {
-        // Get NhanVien đang đăng nhập vào hệ thống - giả sử có mã là NV01
-        NhanVien nhanVien = DangNhap.nhanVienDangNhap;
-        int soLuongVe = danhSachVeDaDat.size();
-        float tongTien = giaVe * soLuongVe;
-
-        HoaDon hoaDon = new HoaDon(this.billManager.taoMaHoaDonTuDong(), LocalDate.now(), nhanVien, khachHang,
-                soLuongVe, tongTien);
-        return hoaDon;
     }
 
     private void xuLyTaoChiTietHoaDon(HoaDon hoaDon, ArrayList<Ve> danhSachVeDaDat, double giaVe) {

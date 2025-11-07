@@ -11,7 +11,7 @@ public class Start extends JFrame implements ActionListener {
     private JButton btnTrangChu, btnBanVe, btnPhim, btnSuatChieu,
             btnKhachHang, btnNhanVien, btnThongKe, btnDangXuat;
     private CardLayout cardLayout;
-    private JButton btnHoaDon;
+    private JButton btnHoaDon, btnVe;
 
     public Start() {
         setTitle("Hệ thống quản lý bán vé rạp chiếu phim");
@@ -58,10 +58,11 @@ public class Start extends JFrame implements ActionListener {
         btnNhanVien = new JButton("Nhân viên");
         btnThongKe = new JButton("Thống kê");
         btnHoaDon = new JButton("Hóa đơn");
+        btnVe = new JButton("Vé phim");
         btnDangXuat = new JButton("Đăng xuất");
 
         JButton[] menuButtons = {
-                btnTrangChu, btnBanVe, btnPhim, btnSuatChieu, btnKhachHang, btnNhanVien, btnThongKe, btnHoaDon
+                btnTrangChu, btnBanVe, btnPhim, btnSuatChieu, btnKhachHang, btnNhanVien, btnThongKe, btnHoaDon, btnVe
         };
 
         for (JButton btn : menuButtons) {
@@ -123,6 +124,7 @@ public class Start extends JFrame implements ActionListener {
         JPanel nhanVienPanel = new QuanLyNhanVien();
         JPanel thongKePanel = new QuanLyThongKe();
         JPanel hoaDonPanel = new QuanLyHoaDon();
+        JPanel vePanel = new QuanLyVe();
 
         pnCenter.add(trangChuPanel, "TrangChu");
         pnCenter.add(banVePanel, "BanVe");
@@ -132,6 +134,7 @@ public class Start extends JFrame implements ActionListener {
         pnCenter.add(nhanVienPanel, "NhanVien");
         pnCenter.add(thongKePanel, "ThongKe");
         pnCenter.add(hoaDonPanel, "HoaDon");
+        pnCenter.add(vePanel, "Ve");
 
         this.cardLayout = (CardLayout) pnCenter.getLayout();
         btnTrangChu.addActionListener(e -> showPanel(pnCenter, "TrangChu", null));
@@ -142,6 +145,7 @@ public class Start extends JFrame implements ActionListener {
         btnNhanVien.addActionListener(e -> showPanel(pnCenter, "NhanVien", (LoadData) nhanVienPanel));
         btnThongKe.addActionListener(e -> showPanel(pnCenter, "ThongKe", (LoadData) thongKePanel));
         btnHoaDon.addActionListener(e -> showPanel(pnCenter, "HoaDon", (LoadData) hoaDonPanel));
+        btnVe.addActionListener(e -> showPanel(pnCenter, "Ve", (LoadData) vePanel));
 
         btnDangXuat.addActionListener(this);
     }

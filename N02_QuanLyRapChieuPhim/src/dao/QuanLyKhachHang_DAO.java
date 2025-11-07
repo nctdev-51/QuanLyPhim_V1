@@ -64,6 +64,33 @@ public class QuanLyKhachHang_DAO {
         return khachHang;
     }
 
+    // Tìm khách hàng theo số điện thoại
+    public KhachHang timKhachHangTheoSDT(String sdt) {
+        if (this.conn == null || sdt == null || sdt.trim().isEmpty())
+            return null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        KhachHang khachHang = null;
+        try {
+            String sql = "Select * from KhachHang where soDT = ?";
+            stmt = this.conn.prepareStatement(sql);
+            stmt.setString(1, sdt);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                String maKH = rs.getString("maKH");
+                String hoTen = rs.getString("hoTen");
+                String gioiTinh = rs.getString("gioiTinh");
+                String diaChi = rs.getString("diaChi");
+                khachHang = new KhachHang(maKH, hoTen, gioiTinh, sdt, diaChi);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            close(rs, stmt);
+        }
+        return khachHang;
+    }
+
     // === HÀM LẤY DANH SÁCH (CỦA BẠN) ===
     public ArrayList<KhachHang> getDanhSachKhachHang() {
         if (this.conn == null)

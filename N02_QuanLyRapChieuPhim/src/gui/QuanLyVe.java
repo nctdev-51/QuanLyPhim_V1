@@ -8,45 +8,40 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.sql.Connection;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 
 import ConnectDB.ConnectDB;
-import dao.QuanLyHoaDon_DAO;
-import dao.QuanLyPhim_DAO;
-import entity.HoaDon;
+import dao.QuanLyCTHD_DAO;
+import dao.QuanLyVe_DAO;
+import entity.ChiTietHoaDon;
 import entity.LoadData;
-import entity.Phim;
-import entity.TheLoaiPhim;
+import entity.Ve;
+import entity.ResetForm;
 
-public class QuanLyHoaDon extends JPanel implements LoadData {
-    private QuanLyHoaDon_DAO billManager = new QuanLyHoaDon_DAO();
+public class QuanLyVe extends JPanel implements LoadData, ResetForm {
+    private QuanLyVe_DAO ticketManager;
+    private QuanLyCTHD_DAO cthdManager;
 
     private JTable table;
     private DefaultTableModel model;
-    private JTextField txtMaHD, txtNgayLap, txtMaNV, txtMaKH, txtSoLuongVe, txtTongTien, txtTimHD;
+    private JTextField txtMaVe, txtMaGhe, txtNgayBan, txtMaSuatChieu, txtDaThanhToan, txtTimVe;
     private JButton btnXoa, btnXoaRong, btnLuu, btnTim;
 
-    private ArrayList<HoaDon> danhSach = new ArrayList<>();
+    private ArrayList<Ve> danhSach = new ArrayList<>();
 
-    public QuanLyHoaDon() {
+    public QuanLyVe() {
         setLayout(new BorderLayout(10, 10));
         setBackground(Color.WHITE);
 
@@ -60,7 +55,8 @@ public class QuanLyHoaDon extends JPanel implements LoadData {
             JOptionPane.showMessageDialog(this, "Không thể kết nối CSDL: " + e.getMessage());
         }
 
-        billManager = new QuanLyHoaDon_DAO();
+        this.ticketManager = new QuanLyVe_DAO();
+        this.cthdManager = new QuanLyCTHD_DAO();
 
         JPanel pnNorth = new JPanel(new GridBagLayout());
         pnNorth.setBorder(BorderFactory.createTitledBorder(
@@ -75,59 +71,57 @@ public class QuanLyHoaDon extends JPanel implements LoadData {
         gbc.insets = new Insets(8, 10, 8, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JLabel lblMaHD = new JLabel("Mã hóa đơn:");
-        JLabel lblNgayLap = new JLabel("Ngày lập:");
-        JLabel lblMaNV = new JLabel("Mã nhân viên:");
-        JLabel lblMaKH = new JLabel("Mã khách hàng:");
-        JLabel lblSoLuongVe = new JLabel("Số lượng vé:");
-        JLabel lblTongTien = new JLabel("Tổng tiền:");
+        JLabel lblMaVe = new JLabel("Mã vé:");
+        JLabel lblGhe = new JLabel("Mã ghế:");
+        JLabel lblNgayBan = new JLabel("Ngày bán:");
+        JLabel lblMaSuatChieu = new JLabel("Mã suất chiếu:");
+        JLabel lblDaThanhToan = new JLabel("Trạng thái:");
 
         Font lblFont = new Font("Segoe UI", Font.BOLD, 18);
-        for (JLabel lbl : new JLabel[] { lblMaHD, lblNgayLap, lblMaNV, lblMaKH, lblSoLuongVe, lblTongTien })
+        for (JLabel lbl : new JLabel[] { lblMaVe, lblGhe, lblNgayBan, lblMaSuatChieu, lblDaThanhToan })
             lbl.setFont(lblFont);
 
-        this.txtMaHD = new JTextField(20);
-        this.txtNgayLap = new JTextField(20);
-        this.txtMaNV = new JTextField(20);
-        this.txtMaKH = new JTextField(20);
-        this.txtSoLuongVe = new JTextField(20);
-        this.txtTongTien = new JTextField(20);
+        this.txtMaVe = new JTextField(20);
+        this.txtMaGhe = new JTextField(20);
+        this.txtNgayBan = new JTextField(20);
+        this.txtMaSuatChieu = new JTextField(20);
+        this.txtDaThanhToan = new JTextField(20);
 
         gbc.gridx = 0;
         gbc.gridy = 0;
-        pnNorth.add(lblMaHD, gbc);
+        pnNorth.add(lblMaVe, gbc);
         gbc.gridx = 1;
-        pnNorth.add(txtMaHD, gbc);
+        pnNorth.add(txtMaVe, gbc);
         gbc.gridx = 2;
-        pnNorth.add(lblNgayLap, gbc);
+        pnNorth.add(lblGhe, gbc);
         gbc.gridx = 3;
-        pnNorth.add(txtNgayLap, gbc);
+        pnNorth.add(txtMaGhe, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 1;
-        pnNorth.add(lblMaNV, gbc);
+        pnNorth.add(lblNgayBan, gbc);
         gbc.gridx = 1;
-        pnNorth.add(txtMaNV, gbc);
+        pnNorth.add(txtNgayBan, gbc);
         gbc.gridx = 2;
-        pnNorth.add(lblMaKH, gbc);
+        pnNorth.add(lblMaSuatChieu, gbc);
         gbc.gridx = 3;
-        pnNorth.add(txtMaKH, gbc);
+        pnNorth.add(txtMaSuatChieu, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 2;
-        pnNorth.add(lblSoLuongVe, gbc);
+        pnNorth.add(lblDaThanhToan, gbc);
         gbc.gridx = 1;
-        pnNorth.add(txtSoLuongVe, gbc);
+        pnNorth.add(txtDaThanhToan, gbc);
         gbc.gridx = 2;
-        pnNorth.add(lblTongTien, gbc);
+        pnNorth.add(new JLabel(""), gbc);
         gbc.gridx = 3;
-        pnNorth.add(txtTongTien, gbc);
+        pnNorth.add(new JLabel(""), gbc);
 
         setFormEditable(false);
         add(pnNorth, BorderLayout.NORTH);
 
         model = new DefaultTableModel(new String[] {
-                "Mã hóa đơn", "Ngày lập", "Mã NV", "Mã KH", "Số lượng vé", "Tổng tiền"
+                "STT", "Mã vé", "Mã ghế", "Ngày bán", "Mã suất chiếu", "Trạng thái"
         }, 0);
         table = new JTable(model);
         table.setFont(new Font("Segoe UI", Font.PLAIN, 16));
@@ -138,7 +132,7 @@ public class QuanLyHoaDon extends JPanel implements LoadData {
         JScrollPane scroll = new JScrollPane(table);
         scroll.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(Color.LIGHT_GRAY),
-                "Danh sách hóa đơn",
+                "Danh sách vé",
                 TitledBorder.LEFT, TitledBorder.TOP,
                 new Font("Segoe UI", Font.BOLD, 18),
                 Color.DARK_GRAY));
@@ -147,10 +141,10 @@ public class QuanLyHoaDon extends JPanel implements LoadData {
         JPanel pnSouth = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
         pnSouth.setBackground(Color.WHITE);
 
-        JLabel lblTim = new JLabel("Xem hóa đơn:");
+        JLabel lblTim = new JLabel("Xem vé phim:");
         lblTim.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        this.txtTimHD = new JTextField(15);
-        this.txtTimHD.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+        this.txtTimVe = new JTextField(15);
+        this.txtTimVe.setFont(new Font("Segoe UI", Font.PLAIN, 18));
 
         btnTim = new JButton("Xem");
         btnXoa = new JButton("Xóa");
@@ -175,7 +169,7 @@ public class QuanLyHoaDon extends JPanel implements LoadData {
         }
 
         pnSouth.add(lblTim);
-        pnSouth.add(this.txtTimHD);
+        pnSouth.add(this.txtTimVe);
         pnSouth.add(btnTim);
         pnSouth.add(btnXoa);
         pnSouth.add(btnXoaRong);
@@ -187,7 +181,7 @@ public class QuanLyHoaDon extends JPanel implements LoadData {
         loadData();
 
         btnXoa.addActionListener(e -> xoaHoaDon());
-        btnXoaRong.addActionListener(e -> xoaRong());
+        btnXoaRong.addActionListener(e -> resetForm());
         btnLuu.addActionListener(e -> luu());
         btnTim.addActionListener(e -> timHoaDon());
         table.getSelectionModel().addListSelectionListener(e -> hienThiLenForm());
@@ -196,7 +190,7 @@ public class QuanLyHoaDon extends JPanel implements LoadData {
     // Load data from DAO into table
     @Override
     public void loadData() {
-        danhSach = billManager.getDanhSachHoaDon();
+        danhSach = this.ticketManager.getDanhSachVe();
         refreshTable();
     }
 
@@ -204,82 +198,85 @@ public class QuanLyHoaDon extends JPanel implements LoadData {
         this.model.setRowCount(0);
         if (danhSach == null)
             return;
-        for (HoaDon hd : danhSach) {
-            String ma = hd.getMaHoaDon();
-            String ngay = hd.getNgayLap() != null ? hd.getNgayLap().toString() : "";
-            String maNV = hd.getNhanVien() != null ? hd.getNhanVien().getMaNV() : "";
-            String maKH = hd.getKhachHang() != null ? hd.getKhachHang().getMaKH() : "";
-            int sl = hd.getSoLuongVe();
-            float tt = hd.getTongTien();
-            this.model.addRow(new Object[] { ma, ngay, maNV, maKH, sl, tt });
+        int count = 1;
+        for (Ve ve : danhSach) {
+            String stt = Integer.toString(count);
+            String maVe = ve.getMaVe();
+            String maGhe = ve.getGhe().getMaGhe();
+            String ngayBan = ve.getNgayBan().toString();
+            String maSuatChieu = ve.getMaSuatChieu();
+            String trangThai = ve.getTrangThai();
+
+            this.model.addRow(new Object[] { stt, maVe, maGhe, ngayBan, maSuatChieu, trangThai });
+            count++;
         }
     }
 
     private void xoaHoaDon() {
-        String ma = this.txtMaHD.getText().trim();
+        String ma = this.txtMaVe.getText().trim();
         if (ma.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Nhập mã hóa đơn cần xóa!");
+            JOptionPane.showMessageDialog(this, "Nhập mã vé cần xóa!");
             return;
         }
-        int confirm = JOptionPane.showConfirmDialog(this, "Xóa hóa đơn " + ma + "?", "Xác nhận",
+        int confirm = JOptionPane.showConfirmDialog(this, "Xóa vé phim này " + ma + "?", "Xác nhận",
                 JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
-            if (this.billManager.XoaHoaDonTheoMa(ma)) {
+            if (this.ticketManager.XoaVeTheoMa(ma)) {
                 JOptionPane.showMessageDialog(this, "Xóa thành công!");
                 loadData();
-                xoaRong();
+                resetForm();
             } else {
-                JOptionPane.showMessageDialog(this, "Không tìm thấy hóa đơn cần xóa!");
+                JOptionPane.showMessageDialog(this, "Không tìm thấy vé cần xóa!");
             }
         }
     }
 
     private void setFormEditable(boolean editable) {
-        this.txtMaHD.setEditable(editable);
-        this.txtNgayLap.setEditable(editable);
-        this.txtMaNV.setEditable(editable);
-        this.txtMaKH.setEditable(editable);
-        this.txtSoLuongVe.setEditable(editable);
-        this.txtTongTien.setEditable(editable);
+        this.txtMaVe.setEditable(editable);
+        this.txtDaThanhToan.setEditable(editable);
+        this.txtMaGhe.setEditable(editable);
+        this.txtMaSuatChieu.setEditable(editable);
+        this.txtNgayBan.setEditable(editable);
     }
 
     private void timHoaDon() {
-        String ma = this.txtTimHD.getText().trim();
+        String ma = this.txtTimVe.getText().trim();
         if (ma.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Nhập mã hóa đơn cần tìm!");
+            JOptionPane.showMessageDialog(this, "Nhập mã vé cần tìm!");
             return;
         }
-        HoaDon hoaDon = this.billManager.findHoaDonByID(ma);
-        if (hoaDon != null) {
-            new HoaDonModal(hoaDon, this);
+        ChiTietHoaDon cthd = this.cthdManager.TimCTHDTheoMaVe(ma);
+        if (cthd != null) {
+            ArrayList<String> danhSachGhe = new ArrayList<>();
+            danhSachGhe.add(cthd.getVe().getGhe().getTenGhe());
+            new ThongTinVeModal(cthd.getHoaDon(), cthd.getVe(), this, danhSachGhe);
         } else {
-            JOptionPane.showMessageDialog(this, "Không tìm thấy hóa đơn có mã " + ma);
+            JOptionPane.showMessageDialog(this, "Không tìm thấy vé có mã " + ma);
         }
     }
 
     private void hienThiLenForm() {
         int i = table.getSelectedRow();
         if (i >= 0 && i < this.danhSach.size()) {
-            HoaDon p = this.danhSach.get(i);
-            this.txtMaHD.setText(p.getMaHoaDon());
-            this.txtTimHD.setText(p.getMaHoaDon());
-            ;
-            this.txtNgayLap.setText(p.getNgayLap().toString());
-            this.txtMaNV.setText(p.getNhanVien().getMaNV());
-            this.txtMaKH.setText(p.getKhachHang().getMaKH());
-            this.txtSoLuongVe.setText(String.valueOf(p.getSoLuongVe()));
-            this.txtTongTien.setText(Float.toString(p.getTongTien()));
+            Ve p = this.danhSach.get(i);
+            this.txtMaVe.setText(p.getMaVe());
+            this.txtTimVe.setText(p.getMaVe());
+            this.txtMaGhe.setText(p.getGhe().getMaGhe());
+            this.txtNgayBan.setText(p.getNgayBan().toString());
+            this.txtMaSuatChieu.setText(p.getMaSuatChieu());
+            this.txtDaThanhToan.setText(String.valueOf(p.getTrangThai()));
         }
     }
-
-    private void xoaRong() {
-        txtMaHD.setText("");
-        txtNgayLap.setText("");
-        txtMaNV.setText("");
-        txtMaKH.setText("");
-        txtSoLuongVe.setText("");
-        txtTongTien.setText("");
-        this.txtTimHD.setText("");
+    
+    @Override
+    public void resetForm() {
+        // TODO Auto-generated method stub
+                this.txtMaVe.setText("");
+        this.txtMaGhe.setText("");
+        this.txtNgayBan.setText("");
+        this.txtMaSuatChieu.setText("");
+        this.txtDaThanhToan.setText("");
+        this.txtTimVe.setText("");
     }
 
     private void luu() {

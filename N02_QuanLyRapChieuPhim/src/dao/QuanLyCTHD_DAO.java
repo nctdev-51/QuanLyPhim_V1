@@ -6,6 +6,10 @@ import ConnectDB.ConnectDB;
 
 import java.sql.*;
 import entity.ChiTietHoaDon;
+import entity.Ghe;
+import entity.HoaDon;
+import entity.Rap;
+import entity.Ve;
 
 public class QuanLyCTHD_DAO {
     private Connection conn;
@@ -67,6 +71,35 @@ public class QuanLyCTHD_DAO {
             close(rs, stmt);
         }
         return dsCTHD;
+    }
+    // Lấy CTHD theo mã vé
+    public ChiTietHoaDon TimCTHDTheoMaVe(String maVe) {
+        if (this.conn == null || maVe == null || maVe.trim().isEmpty())
+            return null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        ChiTietHoaDon cthd = null;
+        try {
+            String sql = "Select * from ChiTietHoaDon where maVe = ?";
+            stmt = this.conn.prepareStatement(sql);
+            stmt.setString(1, maVe);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                String maHoaDon = rs.getString("maHoaDon");
+                int soLuong = rs.getInt("soLuong");
+                float giaVe = rs.getFloat("giaVe");
+                QuanLyVe_DAO ticketManager = new QuanLyVe_DAO();
+                QuanLyHoaDon_DAO billManager = new QuanLyHoaDon_DAO();
+                HoaDon hoaDon = billManager.findHoaDonByID(maHoaDon);
+                Ve ve = ticketManager.findVeByID(maVe);
+                cthd = new ChiTietHoaDon(hoaDon, ve, soLuong, giaVe);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            close(rs, stmt);
+        }
+        return cthd;
     }
 
     // ====== HÀM TIỆN ÍCH ======

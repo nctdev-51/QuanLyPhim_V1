@@ -101,6 +101,50 @@ public class QuanLyVe_DAO {
         return dsVe;
     }
 
+    public boolean XoaVeTheoMa(String maVe) {
+        if (this.conn == null)
+            return false;
+
+        PreparedStatement stmtChiTiet = null;
+        PreparedStatement stmtVe = null;
+        int n = 0;
+
+        try {
+            conn.setAutoCommit(false); // Bắt đầu transaction
+
+            // 1. Xóa trước trong ChiTietHoaDon
+            String sqlCTHD = "DELETE FROM ChiTietHoaDon WHERE maVe = ?";
+            stmtChiTiet = conn.prepareStatement(sqlCTHD);
+            stmtChiTiet.setString(1, maVe);
+            stmtChiTiet.executeUpdate();
+
+            // 2. Sau đó xóa trong Ve
+            String sqlVe = "DELETE FROM Ve WHERE maVe = ?";
+            stmtVe = conn.prepareStatement(sqlVe);
+            stmtVe.setString(1, maVe);
+            n = stmtVe.executeUpdate();
+
+            conn.commit();
+        } catch (SQLException e) {
+            try {
+                conn.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            e.printStackTrace();
+        } finally {
+            close(null, stmtChiTiet);
+            close(null, stmtVe);
+            try {
+                conn.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return n > 0;
+    }
+
     // ====== HÀM TIỆN ÍCH ======
     private void close(ResultSet rs, Statement stmt) {
         try {
