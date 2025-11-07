@@ -557,6 +557,12 @@ public class QuanLyBanVe extends JPanel implements LoadData, ResetForm {
             return;
         }
         KhachHang khachHang = this.customerManager.timKhachHangTheoSDT(sdt);
+        if (khachHang == null) {
+            JOptionPane.showMessageDialog(this,
+                    "Không tìm thấy khách hàng nào có số điện thoại: " + sdt,
+                    "Hệ thống thông báo",
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
         this.txtHoTen.setText(khachHang.getHoTen());
         this.txtDiaChi.setText(khachHang.getDiaChi());
         this.cbGioiTinh.setSelectedItem(khachHang.getGioiTinh());
