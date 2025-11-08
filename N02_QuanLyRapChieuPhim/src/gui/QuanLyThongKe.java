@@ -4,18 +4,37 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+
+import dao.QuanLyHoaDon_DAO;
+import dao.QuanLyPhim_DAO;
+import dao.QuanLySuatChieu_DAO;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import entity.LoadData;
+import entity.Phim;
 import entity.SuatChieu;
 
 public class QuanLyThongKe extends JPanel implements ActionListener, LoadData {
     private JTable tblThongKe;
-    private JButton btnXem, btnBaoCao, btnTim, btnThemThuMuc;
+    private JButton btnXem, btnBaoCao, btnTim;
+    private JLabel lblTotalPhimValue, lblTotalVeValue, lblTotalDoanhThuValue;
+    private JTextField txtTimKiem;
+    private JTree treeNgayChieu;
+    private DefaultMutableTreeNode root;
+    private DefaultTableModel model;
+
+    private QuanLySuatChieu_DAO quanLySuatChieu_DAO;
+
+    private QuanLyPhim_DAO quanLyPhim_Dao;
+    private QuanLyHoaDon_DAO quanLyHoaDon_DAO;
+    private String month;
 
     @Override
     public void loadData() {
@@ -23,13 +42,10 @@ public class QuanLyThongKe extends JPanel implements ActionListener, LoadData {
         capNhatBang();
     }
 
-    private JLabel lblTotalPhimValue, lblTotalVeValue, lblTotalDoanhThuValue;
-    private JTextField txtTimKiem;
-    private JTree treeNgayChieu;
-    private DefaultMutableTreeNode root;
-    private DefaultTableModel model;
-
     public QuanLyThongKe() {
+        quanLyPhim_Dao = new QuanLyPhim_DAO();
+        quanLyHoaDon_DAO = new QuanLyHoaDon_DAO();
+
         setLayout(new BorderLayout(10, 10));
         setBackground(Color.WHITE);
 
@@ -107,15 +123,8 @@ public class QuanLyThongKe extends JPanel implements ActionListener, LoadData {
 
         // === BẢNG DỮ LIỆU ===
         String[] columns = { "Mã phim", "Ngày", "Tên phim", "Số vé đã bán", "Tổng doanh thu (vnđ)" };
-        Object[][] data = {
-                { "MP001", "2025/10/01", "Những nụ hôn rực rỡ", "1231", "33.000.000" },
-                { "MP002", "2025/09/15", "Avatar", "2342", "234.765.000" },
-                { "MP003", "2025/08/20", "Tết này ai đến nhà mình", "4435", "455.456.400" },
-                { "MP004", "2025/07/05", "Chuông reo là bắn", "2352", "54.678.000" },
-                { "MP005", "2025/06/10", "Đẹp từng Centimet", "2453", "54.002.000" }
-        };
 
-        model = new DefaultTableModel(data, columns) {
+        model = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int col) {
                 return false;
@@ -175,13 +184,49 @@ public class QuanLyThongKe extends JPanel implements ActionListener, LoadData {
             capNhatBang();
         else if (src == btnTim)
             timKiem();
-        else if (src == btnThemThuMuc)
-            JOptionPane.showMessageDialog(this, "Đã thêm nút mới!");
         else if (src == btnBaoCao)
-            JOptionPane.showMessageDialog(this, "Đã lập báo cáo thống kê!");
+            if (month != null) {
+                lapBaoCao(month);
+            } else {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn tháng để lập báo cáo!", "Thông báo",
+                        JOptionPane.WARNING_MESSAGE);
+            }
+
     }
 
-    // ==================== CÁC HÀM XỬ LÝ ====================
+    private void tinhTongThongKeTheoThang(String thang) {
+        int totalDoanhThu = 0;
+        int totalPhim = 0;
+        int totalVe = 0;
+
+        for (Phim phim : quanLyPhim_Dao.getAllPhim()) {
+            if (ktPhimTrongThang(phim.getMaPhim(), Integer.parseInt(thang))) {
+                totalPhim++;
+                int soLuongVe = quanLyHoaDon_DAO.tinhTongSoLuongVeTheoPhim(phim.getMaPhim());
+                totalVe += soLuongVe;
+                totalDoanhThu += quanLyHoaDon_DAO.tinhDoanhThuTheoPhim(phim.getMaPhim());
+            }
+        }
+        lblTotalPhimValue.setText(String.valueOf(totalPhim));
+        lblTotalVeValue.setText(String.valueOf(totalVe));
+        NumberFormat nf = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
+        nf.setMinimumFractionDigits(2);
+        nf.setMaximumFractionDigits(2);
+        lblTotalDoanhThuValue.setText(nf.format(totalDoanhThu));
+    }
+
+    private boolean ktPhimTrongThang(String maPhim, int month) {
+
+        if (quanLySuatChieu_DAO == null)
+            quanLySuatChieu_DAO = new QuanLySuatChieu_DAO();
+        for (SuatChieu suat : quanLySuatChieu_DAO.getAllSuatChieu()) {
+            if (suat.getMaPhim().equalsIgnoreCase(maPhim) && suat.getNgayChieu().getMonthValue() == month) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void chonNut() {
         // ===== Sự kiện chọn node trên cây =====
         treeNgayChieu.addTreeSelectionListener(e -> {
@@ -192,7 +237,7 @@ public class QuanLyThongKe extends JPanel implements ActionListener, LoadData {
             if (text.startsWith("Tháng:")) {
                 try {
                     // chỉ có tháng và không có ngày chiếu nên lấy tháng
-                    String month = text.replace("Tháng:", "").trim();
+                    month = text.replace("Tháng:", "").trim();
                     capNhatBangTheoThang(month);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(this, "Định dạng tháng không hợp lệ!");
@@ -207,35 +252,72 @@ public class QuanLyThongKe extends JPanel implements ActionListener, LoadData {
         int totalPhim = model.getRowCount();
         int totalVe = 0;
         long totalDoanhThu = 0L;
-        for (int i = 0; i < totalPhim; i++) {
-            totalVe += Integer.parseInt(model.getValueAt(i, 3).toString().replaceAll("[^0-9]", ""));
-            totalDoanhThu += Long.parseLong(model.getValueAt(i, 4).toString().replaceAll("[^0-9]", ""));
+        // compute totals from DAOs to avoid parsing formatted strings
+        for (Phim phim : quanLyPhim_Dao.getAllPhim()) {
+            totalVe += quanLyHoaDon_DAO.tinhTongSoLuongVeTheoPhim(phim.getMaPhim());
+            totalDoanhThu += quanLyHoaDon_DAO.tinhDoanhThuTheoPhim(phim.getMaPhim());
         }
         lblTotalPhimValue.setText(String.valueOf(totalPhim));
         lblTotalVeValue.setText(String.valueOf(totalVe));
-        lblTotalDoanhThuValue.setText(new DecimalFormat("#,###").format(totalDoanhThu));
+        NumberFormat nf = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
+        nf.setMinimumFractionDigits(2);
+        nf.setMaximumFractionDigits(2);
+        lblTotalDoanhThuValue.setText(nf.format(totalDoanhThu));
     }
 
     private void capNhatBang() {
-        JOptionPane.showMessageDialog(this, "Đã tải lại toàn bộ dữ liệu thống kê!");
+
+        model.setRowCount(0);
+        for (Phim phim : quanLyPhim_Dao.getAllPhim()) {
+            model.addRow(new Object[] {
+                    phim.getMaPhim(),
+                    phim.getTenPhim(),
+                    ngayChieu(phim.getMaPhim()),
+                    quanLyHoaDon_DAO.tinhTongSoLuongVeTheoPhim(phim.getMaPhim()),
+                    quanLyHoaDon_DAO.tinhDoanhThuTheoPhim(phim.getMaPhim())
+            });
+        }
+        tinhTongThongKe();
+    }
+
+    private String ngayChieu(String maPhim) {
+        quanLySuatChieu_DAO = new QuanLySuatChieu_DAO();
+        for (SuatChieu suat : quanLySuatChieu_DAO.getAllSuatChieu()) {
+            if (suat.getMaPhim().equalsIgnoreCase(maPhim)) {
+                return suat.getNgayChieu().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            }
+        }
+        return null;
     }
 
     private void capNhatBangTheoThang(String monthStr) {
-        // model.setRowCount(0);
-        // for (SuatChieu suat : quanLySuatChieu_DAO.getAllSuatChieu()) {
-        // // lọc theo tháng
-        // if (suat.getNgayChieu().getMonthValue() == Integer.parseInt(monthStr)) {
-        // model.addRow(new Object[] {
-        // suat.getMaSuatChieu(),
-        // suat.getMaPhim(),
-        // tenPhim(suat.getMaPhim()),
-        // suat.getMaRap(),
-        // suat.getNgayChieu().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-        // suat.getGioChieu().format(DateTimeFormatter.ofPattern("HH:mm")),
-        // suat.getGiaVe()
-        // });
-        // }
-        // }
+        model.setRowCount(0);
+        for (Phim phim : quanLyPhim_Dao.getAllPhim()) {
+            String dateStr = ngayChieu(phim.getMaPhim());
+            if (dateStr == null || dateStr.trim().isEmpty()) {
+                // không có suất chiếu cho phim này -> bỏ qua
+                continue;
+            }
+            try {
+                LocalDate date = LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                if (date.getMonthValue() == Integer.parseInt(monthStr)) {
+                    // Chú ý: cột đã khai báo là {"Mã phim", "Ngày", "Tên phim", ...}
+                    model.addRow(new Object[] {
+                            phim.getMaPhim(),
+                            dateStr,
+                            phim.getTenPhim(),
+                            quanLyHoaDon_DAO.tinhTongSoLuongVeTheoPhim(phim.getMaPhim()),
+                            quanLyHoaDon_DAO.tinhDoanhThuTheoPhim(phim.getMaPhim())
+                    });
+                }
+            } catch (Exception ex) {
+                // Nếu parse thất bại, bỏ qua phim này (tránh ném ngoại lệ làm vỡ giao diện)
+                System.err.println("Bỏ qua phim do lỗi parse ngày: " + phim.getMaPhim() + " -> " + dateStr);
+            }
+        }
+
+        tinhTongThongKeTheoThang(monthStr);
+
     }
 
     private void timKiem() {
@@ -257,13 +339,9 @@ public class QuanLyThongKe extends JPanel implements ActionListener, LoadData {
         JOptionPane.showMessageDialog(this, "Không tìm thấy suất chiếu!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    public static void main(String[] args) {
+    private void lapBaoCao(String month) {
+        new BaoCaoUI(month);
 
-        JFrame frame = new JFrame("Quản Lý Thống Kê");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(900, 600);
-        frame.setLocationRelativeTo(null);
-        frame.setContentPane(new QuanLyThongKe());
-        frame.setVisible(true);
     }
+
 }
