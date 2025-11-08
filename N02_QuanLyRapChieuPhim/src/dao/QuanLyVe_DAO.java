@@ -8,7 +8,6 @@ import ConnectDB.ConnectDB;
 import java.sql.*;
 import java.time.LocalDate;
 
-import entity.ChiTietHoaDon;
 import entity.Ve;
 
 public class QuanLyVe_DAO {

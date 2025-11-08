@@ -2,12 +2,9 @@ package gui;
 
 import javax.swing.*;
 
-import dao.DangNhap_DAO;
-import dao.QuanLyCTHD_DAO;
 import dao.QuanLyGhe_DAO;
 import dao.QuanLyHoaDon_DAO;
 import dao.QuanLyKhachHang_DAO;
-import dao.QuanLyNhanVien_DAO;
 import dao.QuanLyPhim_DAO;
 import dao.QuanLyRap_DAO;
 import dao.QuanLySuatChieu_DAO;
@@ -562,6 +559,7 @@ public class QuanLyBanVe extends JPanel implements LoadData, ResetForm {
                     "Không tìm thấy khách hàng nào có số điện thoại: " + sdt,
                     "Hệ thống thông báo",
                     JOptionPane.INFORMATION_MESSAGE);
+            return;
         }
         this.txtHoTen.setText(khachHang.getHoTen());
         this.txtDiaChi.setText(khachHang.getDiaChi());

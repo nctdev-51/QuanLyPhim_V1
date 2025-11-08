@@ -6,9 +6,7 @@ import ConnectDB.ConnectDB;
 
 import java.sql.*;
 import entity.ChiTietHoaDon;
-import entity.Ghe;
 import entity.HoaDon;
-import entity.Rap;
 import entity.Ve;
 
 public class QuanLyCTHD_DAO {

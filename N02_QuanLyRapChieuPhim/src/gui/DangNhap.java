@@ -5,6 +5,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
+import ConnectDB.ConnectDB;
 import dao.DangNhap_DAO;
 import entity.NhanVien;
 import entity.TaiKhoan;
@@ -92,6 +93,8 @@ public class DangNhap extends JFrame implements ActionListener {
         Object src = e.getSource();
 
         if (src == btnThoat) {
+            //ngắt kết nối database trước khi thoát
+            ConnectDB.disconnect();
             System.exit(0);
         } else if (src == btnDangNhap) {
             xuLyDangNhap();

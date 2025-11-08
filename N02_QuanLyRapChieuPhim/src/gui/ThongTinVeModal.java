@@ -27,8 +27,6 @@ import dao.QuanLyVe_DAO;
 import entity.ChiTietHoaDon;
 import entity.Ghe;
 import entity.HoaDon;
-import entity.KhachHang;
-import entity.NhanVien;
 import entity.Phim;
 import entity.Rap;
 import entity.ResetForm;
