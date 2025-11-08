@@ -38,6 +38,8 @@ public class QuanLySuatChieu extends JPanel implements ActionListener, LoadData 
     public void loadData() {
         // TODO Auto-generated method stub
         quanLySuatChieu_DAO = new QuanLySuatChieu_DAO();
+        //Thêm tên phim vào cb
+        layTenPhim();
         // Hiển thị dữ liệu lên bảng
         capNhatBang();
     }

@@ -158,6 +158,59 @@ public class QuanLyHoaDon_DAO {
         return n > 0;
     }
 
+    // Tường thêm 2 hàm tính doanh thu & số lượng vé theo phim
+    public double tinhDoanhThuTheoPhim(String maPhim) {
+        if (this.conn == null || maPhim == null || maPhim.trim().isEmpty())
+            return 0;
+        double doanhThu = 0;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            // HoaDon không lưu trực tiếp maSuatChieu. Đi qua ChiTietHoaDon -> Ve ->
+            // SuatChieu
+            String sql = "SELECT SUM(ct.soLuong * ct.giaVe) AS TongDoanhThu " +
+                    "FROM ChiTietHoaDon ct " +
+                    "JOIN Ve v ON ct.maVe = v.maVe " +
+                    "JOIN SuatChieu sc ON v.maSuatChieu = sc.maSuatChieu " +
+                    "WHERE sc.maPhim = ?";
+            stmt = this.conn.prepareStatement(sql);
+            stmt.setString(1, maPhim);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                doanhThu = rs.getDouble("TongDoanhThu");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            close(rs, stmt);
+        }
+        return doanhThu;
+    }
+
+    public int tinhTongSoLuongVeTheoPhim(String maPhim) {
+        if (this.conn == null || maPhim == null || maPhim.trim().isEmpty())
+            return 0;
+        int tongSoLuongVe = 0;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            // Đếm số vé từ bảng Ve liên kết qua SuatChieu
+            String sql = "SELECT COUNT(v.maVe) AS TongSoLuongVe " +
+                    "FROM Ve v JOIN SuatChieu sc ON v.maSuatChieu = sc.maSuatChieu " +
+                    "WHERE sc.maPhim = ?";
+            stmt = this.conn.prepareStatement(sql);
+            stmt.setString(1, maPhim);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                tongSoLuongVe = rs.getInt("TongSoLuongVe");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            close(rs, stmt);
+        }
+        return tongSoLuongVe;
+    }
     // ====== HÀM TIỆN ÍCH ======
     private void close(ResultSet rs, Statement stmt) {
         try {
