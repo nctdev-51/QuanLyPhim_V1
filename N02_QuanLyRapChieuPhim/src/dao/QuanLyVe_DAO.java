@@ -66,7 +66,34 @@ public class QuanLyVe_DAO {
         }
         return ve;
     }
-
+    //Tìm danh sách vé theo mã suất chiếu
+    public ArrayList<Ve> timVeTheoMaSuatChieu(String maSuatChieu) {
+        if (this.conn == null || maSuatChieu == null || maSuatChieu.trim().isEmpty())
+            return null;
+        ArrayList<Ve> ticketList = new ArrayList<>();
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            String sql = "Select * from Ve where maSuatChieu = ?";
+            stmt = this.conn.prepareStatement(sql);
+            stmt.setString(1, maSuatChieu);
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                String maVe = rs.getString("maVe");
+                String maGhe = rs.getString("maGhe");
+                LocalDate ngayBan = rs.getDate("ngayBan").toLocalDate();
+                boolean daThanhToan = rs.getBoolean("daThanhToan");
+                QuanLyGhe_DAO gheManager = new QuanLyGhe_DAO();
+                Ve ve = new Ve(maVe, gheManager.TimGheTheoMa(maGhe), ngayBan, maSuatChieu, daThanhToan);
+                ticketList.add(ve);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            close(rs, stmt);
+        }
+        return ticketList;
+    }
     public static String taoMaVeTuDong() {
         long timeMillis = System.currentTimeMillis();
         int rand = new Random().nextInt(1000);
@@ -99,6 +126,50 @@ public class QuanLyVe_DAO {
             close(rs, stmt);
         }
         return dsVe;
+    }
+
+    public boolean XoaVeTheoMa(String maVe) {
+        if (this.conn == null)
+            return false;
+
+        PreparedStatement stmtChiTiet = null;
+        PreparedStatement stmtVe = null;
+        int n = 0;
+
+        try {
+            conn.setAutoCommit(false); // Bắt đầu transaction
+
+            // 1. Xóa trước trong ChiTietHoaDon
+            String sqlCTHD = "DELETE FROM ChiTietHoaDon WHERE maVe = ?";
+            stmtChiTiet = conn.prepareStatement(sqlCTHD);
+            stmtChiTiet.setString(1, maVe);
+            stmtChiTiet.executeUpdate();
+
+            // 2. Sau đó xóa trong Ve
+            String sqlVe = "DELETE FROM Ve WHERE maVe = ?";
+            stmtVe = conn.prepareStatement(sqlVe);
+            stmtVe.setString(1, maVe);
+            n = stmtVe.executeUpdate();
+
+            conn.commit();
+        } catch (SQLException e) {
+            try {
+                conn.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            e.printStackTrace();
+        } finally {
+            close(null, stmtChiTiet);
+            close(null, stmtVe);
+            try {
+                conn.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return n > 0;
     }
 
     // ====== HÀM TIỆN ÍCH ======

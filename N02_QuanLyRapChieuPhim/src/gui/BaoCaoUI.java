@@ -1,4 +1,3 @@
-
 package gui;
 
 import javax.swing.*;
@@ -26,6 +25,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -191,22 +191,44 @@ public class BaoCaoUI extends JFrame {
         PdfWriter.getInstance(doc, new FileOutputStream(outFile));
         doc.open();
 
-        Paragraph title = new Paragraph("BÁO CÁO THỐNG KÊ");
+        // try to find a Unicode-capable TTF to embed so Vietnamese characters render correctly
+        String fontPath = null;
+        String[] candidates = new String[] { "fonts/Unicode8.ttf", "fonts/arialuni.ttf",
+                "C:/Windows/Fonts/ARIALUNI.TTF", "C:/Windows/Fonts/ARIAL.TTF" };
+        for (String p : candidates) {
+            if (new File(p).exists()) {
+                fontPath = p;
+                break;
+            }
+        }
+
+        BaseFont bf;
+        if (fontPath != null) {
+            bf = BaseFont.createFont(fontPath, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+        } else {
+            bf = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.WINANSI, false);
+        }
+
+        com.itextpdf.text.Font fontTitle = new com.itextpdf.text.Font(bf, 16, com.itextpdf.text.Font.BOLD);
+        com.itextpdf.text.Font fontNormal = new com.itextpdf.text.Font(bf, 12, com.itextpdf.text.Font.NORMAL);
+        com.itextpdf.text.Font fontHeader = new com.itextpdf.text.Font(bf, 12, com.itextpdf.text.Font.BOLD);
+
+        Paragraph title = new Paragraph("BÁO CÁO THỐNG KÊ", fontTitle);
         title.setAlignment(Element.ALIGN_CENTER);
         doc.add(title);
-        doc.add(new Paragraph(" "));
+        doc.add(new Paragraph(" ", fontNormal));
 
         // add meta
         doc.add(new Paragraph("Ngày xuất: " + java.time.LocalDateTime.now()
-                .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"))));
-        doc.add(new Paragraph(" "));
+                .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")), fontNormal));
+        doc.add(new Paragraph(" ", fontNormal));
 
         // table: month, films, tickets, revenue
         PdfPTable table = new PdfPTable(model.getColumnCount());
         table.setWidthPercentage(100);
         // headers
         for (int c = 0; c < model.getColumnCount(); c++) {
-            PdfPCell h = new PdfPCell(new Paragraph(model.getColumnName(c)));
+            PdfPCell h = new PdfPCell(new Paragraph(model.getColumnName(c), fontHeader));
             h.setHorizontalAlignment(Element.ALIGN_CENTER);
             table.addCell(h);
         }
@@ -214,16 +236,19 @@ public class BaoCaoUI extends JFrame {
         for (int r = 0; r < model.getRowCount(); r++) {
             for (int c = 0; c < model.getColumnCount(); c++) {
                 Object v = model.getValueAt(r, c);
-                PdfPCell cell = new PdfPCell(new Paragraph(v == null ? "" : v.toString()));
+                PdfPCell cell = new PdfPCell(new Paragraph(v == null ? "" : v.toString(), fontNormal));
                 table.addCell(cell);
             }
         }
         doc.add(table);
 
         // totals
-        doc.add(new Paragraph(" "));
+        doc.add(new Paragraph(" ", fontNormal));
+        NumberFormat nf = NumberFormat.getNumberInstance(java.util.Locale.forLanguageTag("vi-VN"));
+        nf.setMinimumFractionDigits(2);
+        nf.setMaximumFractionDigits(2);
         doc.add(new Paragraph("Tổng phim: " + totalPhim + "   Tổng vé: " + totalVe + "   Tổng doanh thu: "
-                + NumberFormat.getNumberInstance(new Locale("vi", "VN")).format(totalDoanhThu)));
+                + nf.format(totalDoanhThu), fontNormal));
 
         doc.close();
     }
