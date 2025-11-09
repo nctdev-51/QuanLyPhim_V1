@@ -7,6 +7,10 @@ import java.awt.Font;
 import java.awt.Dialog.ModalExclusionType;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.io.File;
+import java.io.FileOutputStream;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -32,6 +36,12 @@ import entity.Rap;
 import entity.ResetForm;
 import entity.SuatChieu;
 import entity.Ve;
+// iText 5
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfWriter;
 
 public class ThongTinVeModal extends JFrame {
     private QuanLySuatChieu_DAO suatChieuManager;
@@ -181,9 +191,86 @@ public class ThongTinVeModal extends JFrame {
     }
 
     private void InVe() {
-        JOptionPane.showMessageDialog(this, "Đã in vé thành công",
-                "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-        return;
+        try {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setDialogTitle("Lưu vé PDF");
+            chooser.setFileFilter(new FileNameExtensionFilter("PDF Files", "pdf"));
+            String defaultName = "Ve_" + this.ticketOrigin.getMaVe() + "_" + java.time.LocalDateTime.now()
+                    .format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + ".pdf";
+            chooser.setSelectedFile(new File(defaultName));
+            if (chooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION)
+                return;
+            File out = chooser.getSelectedFile();
+            if (!out.getName().toLowerCase().endsWith(".pdf")) {
+                out = new File(out.getParentFile(), out.getName() + ".pdf");
+            }
+
+            // gather data
+            Phim phim = null;
+            Rap rap = null;
+            if (this.suatChieu != null) {
+                phim = this.movieManager.timPhimTheoMa(this.suatChieu.getMaPhim());
+                rap = this.rapManager.findRapByID(this.suatChieu.getMaRap());
+            }
+
+            String tenPhim = phim == null ? "" : phim.getTenPhim();
+            String tenPhong = rap == null ? "" : rap.getTenRap();
+            String thoiGian = this.suatChieu == null ? "" : this.suatChieu.getGioChieu().toString() + ", "
+                    + this.suatChieu.getNgayChieu().toString();
+            String soVe = Integer.toString(this.hoaDon.getSoLuongVe());
+            String soGhe = String.join(", ", this.soGheDuocChon);
+            String thoiGianDatVe = this.ticketOrigin.getNgayBan().toString();
+            String trangThai = this.ticketOrigin.getTrangThai();
+
+            // create PDF with embedded Unicode font (if available)
+            Document doc = new Document();
+            PdfWriter.getInstance(doc, new FileOutputStream(out));
+            doc.open();
+
+            // try to find a Unicode TTF in project or Windows fonts
+            String fontPath = null;
+            String[] candidates = new String[] { "fonts/Unicode8.ttf", "fonts/arialuni.ttf",
+                    "C:/Windows/Fonts/ARIALUNI.TTF", "C:/Windows/Fonts/ARIAL.TTF" };
+            for (String p : candidates) {
+                if (new File(p).exists()) {
+                    fontPath = p;
+                    break;
+                }
+            }
+
+            BaseFont bf;
+            if (fontPath != null) {
+                bf = BaseFont.createFont(fontPath, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+            } else {
+                bf = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.WINANSI, false);
+            }
+
+            com.itextpdf.text.Font fontTitle = new com.itextpdf.text.Font(bf, 16, com.itextpdf.text.Font.BOLD);
+            com.itextpdf.text.Font fontNormal = new com.itextpdf.text.Font(bf, 12, com.itextpdf.text.Font.NORMAL);
+
+            Paragraph title = new Paragraph("VÉ XEM PHIM", fontTitle);
+            title.setAlignment(Element.ALIGN_CENTER);
+            doc.add(title);
+            doc.add(new Paragraph(" ", fontNormal));
+
+            doc.add(new Paragraph("Mã vé: " + this.ticketOrigin.getMaVe(), fontNormal));
+            doc.add(new Paragraph("Tên phim: " + tenPhim, fontNormal));
+            doc.add(new Paragraph("Phòng chiếu: " + tenPhong, fontNormal));
+            doc.add(new Paragraph("Thời gian: " + thoiGian, fontNormal));
+            doc.add(new Paragraph("Số vé: " + soVe, fontNormal));
+            doc.add(new Paragraph("Số ghế: " + soGhe, fontNormal));
+            doc.add(new Paragraph("Thời gian đặt vé: " + thoiGianDatVe, fontNormal));
+            doc.add(new Paragraph("Trạng thái: " + trangThai, fontNormal));
+
+            doc.close();
+
+            JOptionPane.showMessageDialog(this, "Đã lưu vé PDF: " + out.getAbsolutePath(), "Thành công",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Lỗi khi xuất PDF: " + ex.getMessage(), "Lỗi",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void thanhToan() {
