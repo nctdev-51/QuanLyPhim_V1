@@ -53,8 +53,4 @@ public class ConnectDB {
         }
         return con;
     }
-
-    public static void main(String[] args) {
-        ConnectDB.getInstance().connect();
-    }
 }

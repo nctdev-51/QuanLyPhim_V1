@@ -63,7 +63,9 @@ public class Ve {
     public void setDaThanhToan(boolean daThanhToan) {
         this.daThanhToan = daThanhToan;
     }
-
+    public String getTrangThai(){
+        return isDaThanhToan() ? "Đã thanh toán" : "Chưa thanh toán";
+    }
     @Override
     public String toString() {
         return "Vé {" +
