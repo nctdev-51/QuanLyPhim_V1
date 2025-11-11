@@ -76,6 +76,7 @@ public class Start extends JFrame implements ActionListener {
             btn.setIconTextGap(5);
             btn.addMouseListener(new java.awt.event.MouseAdapter() {
                 public void mouseEntered(java.awt.event.MouseEvent evt) {
+
                     btn.setBackground(new Color(41, 128, 185));
                 }
 
@@ -84,16 +85,6 @@ public class Start extends JFrame implements ActionListener {
                 }
             });
         }
-
-        // Gán icon
-        btnTrangChu.setIcon(resizeIcon("icon/home.png", 28, 28));
-        btnBanVe.setIcon(resizeIcon("icon/ticket.png", 28, 28));
-        btnPhim.setIcon(resizeIcon("icon/movie.png", 60, 28));
-        btnSuatChieu.setIcon(resizeIcon("icon/schedule.png", 28, 28));
-        btnKhachHang.setIcon(resizeIcon("icon/customer.png", 28, 28));
-        btnNhanVien.setIcon(resizeIcon("icon/staff.png", 28, 28));
-        btnThongKe.setIcon(resizeIcon("icon/stats.png", 28, 28));
-
         btnDangXuat.setBackground(Color.WHITE);
         btnDangXuat.setForeground(Color.BLACK);
         btnDangXuat.setFont(fontButton);
@@ -137,15 +128,42 @@ public class Start extends JFrame implements ActionListener {
         pnCenter.add(vePanel, "Ve");
 
         this.cardLayout = (CardLayout) pnCenter.getLayout();
-        btnTrangChu.addActionListener(e -> showPanel(pnCenter, "TrangChu", null));
-        btnBanVe.addActionListener(e -> showPanel(pnCenter, "BanVe", (LoadData) banVePanel));
-        btnPhim.addActionListener(e -> showPanel(pnCenter, "Phim", (LoadData) phimPanel));
-        btnSuatChieu.addActionListener(e -> showPanel(pnCenter, "SuatChieu", (LoadData) suatChieuPanel));
-        btnKhachHang.addActionListener(e -> showPanel(pnCenter, "KhachHang", (LoadData) khachHangPanel));
-        btnNhanVien.addActionListener(e -> showPanel(pnCenter, "NhanVien", (LoadData) nhanVienPanel));
-        btnThongKe.addActionListener(e -> showPanel(pnCenter, "ThongKe", (LoadData) thongKePanel));
-        btnHoaDon.addActionListener(e -> showPanel(pnCenter, "HoaDon", (LoadData) hoaDonPanel));
-        btnVe.addActionListener(e -> showPanel(pnCenter, "Ve", (LoadData) vePanel));
+        btnTrangChu.addActionListener(e -> {
+            showPanel(pnCenter, "TrangChu", null);
+            selectButton(btnTrangChu, menuButtons, bgMenu);
+        });
+        btnBanVe.addActionListener(e -> {
+            showPanel(pnCenter, "BanVe", (LoadData) banVePanel);
+            selectButton(btnBanVe, menuButtons, bgMenu);
+        });
+        btnPhim.addActionListener(e -> {
+            showPanel(pnCenter, "Phim", (LoadData) phimPanel);
+            selectButton(btnPhim, menuButtons, bgMenu);
+        });
+        btnSuatChieu.addActionListener(e -> {
+            showPanel(pnCenter, "SuatChieu", (LoadData) suatChieuPanel);
+            selectButton(btnSuatChieu, menuButtons, bgMenu);
+        });
+        btnKhachHang.addActionListener(e -> {
+            showPanel(pnCenter, "KhachHang", (LoadData) khachHangPanel);
+            selectButton(btnKhachHang, menuButtons, bgMenu);
+        });
+        btnNhanVien.addActionListener(e -> {
+            showPanel(pnCenter, "NhanVien", (LoadData) nhanVienPanel);
+            selectButton(btnNhanVien, menuButtons, bgMenu);
+        });
+        btnThongKe.addActionListener(e -> {
+            showPanel(pnCenter, "ThongKe", (LoadData) thongKePanel);
+            selectButton(btnThongKe, menuButtons, bgMenu);
+        });
+        btnHoaDon.addActionListener(e -> {
+            showPanel(pnCenter, "HoaDon", (LoadData) hoaDonPanel);
+            selectButton(btnHoaDon, menuButtons, bgMenu);
+        });
+        btnVe.addActionListener(e -> {
+            showPanel(pnCenter, "Ve", (LoadData) vePanel);
+            selectButton(btnVe, menuButtons, bgMenu);
+        });
 
         btnDangXuat.addActionListener(this);
     }
@@ -161,6 +179,18 @@ public class Start extends JFrame implements ActionListener {
         if (e.getSource() == btnDangXuat) {
             new DangNhap().setVisible(true);
             dispose();
+        }
+    }
+
+    private void selectButton(JButton selected, JButton[] navButtons, Color bgMenu) {
+        for (JButton b : navButtons) {
+            if (b == selected) {
+                b.setBackground(bgMenu);
+                b.setForeground(Color.BLACK);
+            } else {
+                b.setBackground(bgMenu);
+                b.setForeground(Color.WHITE);
+            }
         }
     }
 

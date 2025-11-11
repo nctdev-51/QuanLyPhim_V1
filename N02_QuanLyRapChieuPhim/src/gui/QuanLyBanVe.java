@@ -521,7 +521,6 @@ public class QuanLyBanVe extends JPanel implements LoadData, ResetForm {
 
     @Override
     public void loadData() {
-        // TODO Auto-generated method stub
         this.movieManager = new QuanLyPhim_DAO();
         this.suatChieuManager = new QuanLySuatChieu_DAO();
         this.rapManager = new QuanLyRap_DAO();

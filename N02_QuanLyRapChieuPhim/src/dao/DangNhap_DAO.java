@@ -10,11 +10,6 @@ import entity.NhanVien;
 import entity.TaiKhoan;
 
 public class DangNhap_DAO {
-	// ArrayList<TaiKhoan> dstk;
-
-	// public DangNhap_DAO() {
-	// dstk = new ArrayList<TaiKhoan>();
-	// }
 	public TaiKhoan ktDangNhap(String taiKhoan, String matKhau) {
 		Connection con = ConnectDB.getInstance().getConnection();
 		PreparedStatement stmt = null;

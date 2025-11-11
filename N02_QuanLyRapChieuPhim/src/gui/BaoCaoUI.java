@@ -2,8 +2,6 @@ package gui;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.text.JTextComponent;
-
 import dao.QuanLyHoaDon_DAO;
 import dao.QuanLyPhim_DAO;
 import dao.QuanLySuatChieu_DAO;
@@ -12,10 +10,8 @@ import entity.SuatChieu;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dialog.ModalExclusionType;
 import java.awt.GridLayout;
-import java.awt.Label;
 import java.text.NumberFormat;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -191,7 +187,8 @@ public class BaoCaoUI extends JFrame {
         PdfWriter.getInstance(doc, new FileOutputStream(outFile));
         doc.open();
 
-        // try to find a Unicode-capable TTF to embed so Vietnamese characters render correctly
+        // try to find a Unicode-capable TTF to embed so Vietnamese characters render
+        // correctly
         String fontPath = null;
         String[] candidates = new String[] { "fonts/Unicode8.ttf", "fonts/arialuni.ttf",
                 "C:/Windows/Fonts/ARIALUNI.TTF", "C:/Windows/Fonts/ARIAL.TTF" };

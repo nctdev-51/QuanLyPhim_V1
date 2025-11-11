@@ -267,11 +267,10 @@ public class QuanLyVe extends JPanel implements LoadData, ResetForm {
             this.txtDaThanhToan.setText(String.valueOf(p.getTrangThai()));
         }
     }
-    
+
     @Override
     public void resetForm() {
-        // TODO Auto-generated method stub
-                this.txtMaVe.setText("");
+        this.txtMaVe.setText("");
         this.txtMaGhe.setText("");
         this.txtNgayBan.setText("");
         this.txtMaSuatChieu.setText("");

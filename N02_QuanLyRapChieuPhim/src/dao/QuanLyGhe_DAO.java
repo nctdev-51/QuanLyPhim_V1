@@ -91,7 +91,6 @@ public class QuanLyGhe_DAO {
                 danhSachGhe.add(ghe);
             }
         } catch (Exception e) {
-            // TODO: handle exception
             e.printStackTrace();
         } finally {
             close(rs, stmt);

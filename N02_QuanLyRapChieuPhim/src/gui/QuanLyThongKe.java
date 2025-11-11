@@ -11,7 +11,6 @@ import dao.QuanLySuatChieu_DAO;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 import java.time.LocalDate;
@@ -27,7 +26,6 @@ public class QuanLyThongKe extends JPanel implements ActionListener, LoadData {
     private JLabel lblTotalPhimValue, lblTotalVeValue, lblTotalDoanhThuValue;
     private JTextField txtTimKiem;
     private JTree treeNgayChieu;
-    private DefaultMutableTreeNode root;
     private DefaultTableModel model;
 
     private QuanLySuatChieu_DAO quanLySuatChieu_DAO;
@@ -38,7 +36,6 @@ public class QuanLyThongKe extends JPanel implements ActionListener, LoadData {
 
     @Override
     public void loadData() {
-        // TODO Auto-generated method stub
         capNhatBang();
     }
 

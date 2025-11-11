@@ -46,8 +46,7 @@ public class QuanLyPhim extends JPanel implements LoadData {
                 "Thông tin phim",
                 TitledBorder.LEFT, TitledBorder.TOP,
                 new Font("Segoe UI", Font.BOLD, 20),
-                Color.DARK_GRAY
-        ));
+                Color.DARK_GRAY));
         pnNorth.setBackground(Color.WHITE);
 
         GridBagConstraints gbc = new GridBagConstraints();
@@ -62,7 +61,7 @@ public class QuanLyPhim extends JPanel implements LoadData {
         JLabel lblQuocGia = new JLabel("Quốc gia:");
 
         Font lblFont = new Font("Segoe UI", Font.BOLD, 18);
-        for (JLabel lbl : new JLabel[]{lblMaPhim, lblTenPhim, lblNhaSX, lblTheLoai, lblThoiLuong, lblQuocGia})
+        for (JLabel lbl : new JLabel[] { lblMaPhim, lblTenPhim, lblNhaSX, lblTheLoai, lblThoiLuong, lblQuocGia })
             lbl.setFont(lblFont);
 
         txtMaPhim = new JTextField(20);
@@ -73,25 +72,40 @@ public class QuanLyPhim extends JPanel implements LoadData {
         txtThoiLuong = new JTextField(20);
         txtQuocGia = new JTextField(20);
 
-        gbc.gridx = 0; gbc.gridy = 0; pnNorth.add(lblMaPhim, gbc);
-        gbc.gridx = 1; pnNorth.add(txtMaPhim, gbc);
-        gbc.gridx = 2; pnNorth.add(lblTenPhim, gbc);
-        gbc.gridx = 3; pnNorth.add(txtTenPhim, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        pnNorth.add(lblMaPhim, gbc);
+        gbc.gridx = 1;
+        pnNorth.add(txtMaPhim, gbc);
+        gbc.gridx = 2;
+        pnNorth.add(lblTenPhim, gbc);
+        gbc.gridx = 3;
+        pnNorth.add(txtTenPhim, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 1; pnNorth.add(lblNhaSX, gbc);
-        gbc.gridx = 1; pnNorth.add(txtNhaSX, gbc);
-        gbc.gridx = 2; pnNorth.add(lblTheLoai, gbc);
-        gbc.gridx = 3; pnNorth.add(cboTheLoai, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        pnNorth.add(lblNhaSX, gbc);
+        gbc.gridx = 1;
+        pnNorth.add(txtNhaSX, gbc);
+        gbc.gridx = 2;
+        pnNorth.add(lblTheLoai, gbc);
+        gbc.gridx = 3;
+        pnNorth.add(cboTheLoai, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 2; pnNorth.add(lblThoiLuong, gbc);
-        gbc.gridx = 1; pnNorth.add(txtThoiLuong, gbc);
-        gbc.gridx = 2; pnNorth.add(lblQuocGia, gbc);
-        gbc.gridx = 3; pnNorth.add(txtQuocGia, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        pnNorth.add(lblThoiLuong, gbc);
+        gbc.gridx = 1;
+        pnNorth.add(txtThoiLuong, gbc);
+        gbc.gridx = 2;
+        pnNorth.add(lblQuocGia, gbc);
+        gbc.gridx = 3;
+        pnNorth.add(txtQuocGia, gbc);
 
         add(pnNorth, BorderLayout.NORTH);
 
         // ====== BẢNG PHIM ======
-        model = new DefaultTableModel(new String[]{
+        model = new DefaultTableModel(new String[] {
                 "Mã phim", "Tên phim", "Nhà SX", "Thể loại", "Thời lượng", "Quốc gia"
         }, 0);
         table = new JTable(model);
@@ -106,8 +120,7 @@ public class QuanLyPhim extends JPanel implements LoadData {
                 "Danh sách phim",
                 TitledBorder.LEFT, TitledBorder.TOP,
                 new Font("Segoe UI", Font.BOLD, 18),
-                Color.DARK_GRAY
-        ));
+                Color.DARK_GRAY));
         add(scroll, BorderLayout.CENTER);
 
         // ===== PANEL CHỨC NĂNG =====
@@ -126,14 +139,14 @@ public class QuanLyPhim extends JPanel implements LoadData {
         btnXoaRong = new JButton("Xóa rỗng");
         btnLuu = new JButton("Lưu");
 
-        JButton[] arrBtns = {btnThem, btnSua, btnXoa, btnXoaRong, btnLuu, btnTim};
+        JButton[] arrBtns = { btnThem, btnSua, btnXoa, btnXoaRong, btnLuu, btnTim };
         Color[] colors = {
-                new Color(46, 204, 113),  // xanh lá
-                new Color(52, 152, 219),  // xanh dương
-                new Color(231, 76, 60),   // đỏ
-                new Color(155, 89, 182),  // tím
-                new Color(241, 196, 15),  // vàng
-                new Color(255, 140, 0)    // cam
+                new Color(46, 204, 113), // xanh lá
+                new Color(52, 152, 219), // xanh dương
+                new Color(231, 76, 60), // đỏ
+                new Color(155, 89, 182), // tím
+                new Color(241, 196, 15), // vàng
+                new Color(255, 140, 0) // cam
         };
 
         Font btnFont = new Font("Segoe UI", Font.BOLD, 18);
@@ -174,7 +187,7 @@ public class QuanLyPhim extends JPanel implements LoadData {
         model.setRowCount(0);
         dsPhim = phimDAO.getAllPhim();
         for (Phim p : dsPhim) {
-            model.addRow(new Object[]{
+            model.addRow(new Object[] {
                     p.getMaPhim(), p.getTenPhim(), p.getNhaSanXuat(),
                     p.getTheLoai().getTenHienThi(), p.getThoiLuong(), p.getQuocGia()
             });
@@ -189,8 +202,7 @@ public class QuanLyPhim extends JPanel implements LoadData {
                     txtNhaSX.getText(),
                     (TheLoaiPhim) cboTheLoai.getSelectedItem(),
                     Integer.parseInt(txtThoiLuong.getText()),
-                    txtQuocGia.getText()
-            );
+                    txtQuocGia.getText());
 
             if (phimDAO.themPhim(p)) {
                 JOptionPane.showMessageDialog(this, "✅ Thêm phim thành công!");
@@ -212,8 +224,7 @@ public class QuanLyPhim extends JPanel implements LoadData {
                     txtNhaSX.getText(),
                     (TheLoaiPhim) cboTheLoai.getSelectedItem(),
                     Integer.parseInt(txtThoiLuong.getText()),
-                    txtQuocGia.getText()
-            );
+                    txtQuocGia.getText());
 
             if (phimDAO.capNhatPhim(p)) {
                 JOptionPane.showMessageDialog(this, "✅ Cập nhật thành công!");
@@ -233,7 +244,8 @@ public class QuanLyPhim extends JPanel implements LoadData {
             JOptionPane.showMessageDialog(this, "Nhập mã phim cần xóa!");
             return;
         }
-        int confirm = JOptionPane.showConfirmDialog(this, "Xóa phim " + ma + "?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+        int confirm = JOptionPane.showConfirmDialog(this, "Xóa phim " + ma + "?", "Xác nhận",
+                JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
             if (phimDAO.xoaPhim(ma)) {
                 JOptionPane.showMessageDialog(this, "✅ Xóa thành công!");
@@ -277,6 +289,7 @@ public class QuanLyPhim extends JPanel implements LoadData {
             txtQuocGia.setText(p.getQuocGia());
         }
     }
+
     private void xoaRong() {
         txtMaPhim.setText("");
         txtTenPhim.setText("");
@@ -287,12 +300,13 @@ public class QuanLyPhim extends JPanel implements LoadData {
         txtTimPhim.setText("");
         txtMaPhim.requestFocus();
     }
+
     private void luu() {
         JOptionPane.showMessageDialog(this, "💾 Dữ liệu đã được lưu vào CSDL!");
     }
+
     @Override
     public void loadData() {
-        // TODO Auto-generated method stub
         loadDataToTable();
     }
 }
