@@ -113,7 +113,6 @@ public class QuanLyNhanVien extends JPanel implements LoadData {
         pnlForm.add(txtTen, gbc);
         row++;
 
-        // Hàng 2: Giới tính và Ngày sinh
         gbc.gridx = 0; gbc.gridy = row; gbc.weightx = 0.1;
         JLabel lblGioiTinh = new JLabel("Giới tính:");
         lblGioiTinh.setFont(labelFont);

@@ -65,6 +65,8 @@ public class QuanLyPhim extends JPanel implements LoadData {
             lbl.setFont(lblFont);
 
         txtMaPhim = new JTextField(20);
+        txtMaPhim.setEditable(false); 
+        
         txtTenPhim = new JTextField(20);
         txtNhaSX = new JTextField(20);
         cboTheLoai = new JComboBox<>(TheLoaiPhim.values());
@@ -104,15 +106,21 @@ public class QuanLyPhim extends JPanel implements LoadData {
 
         add(pnNorth, BorderLayout.NORTH);
 
-        // ====== BẢNG PHIM ======
         model = new DefaultTableModel(new String[] {
                 "Mã phim", "Tên phim", "Nhà SX", "Thể loại", "Thời lượng", "Quốc gia"
-        }, 0);
+        }, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        
         table = new JTable(model);
         table.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         table.setRowHeight(26);
         table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 18));
         table.getTableHeader().setBackground(new Color(245, 245, 245));
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); 
 
         JScrollPane scroll = new JScrollPane(table);
         scroll.setBorder(BorderFactory.createTitledBorder(
@@ -178,10 +186,15 @@ public class QuanLyPhim extends JPanel implements LoadData {
         btnXoaRong.addActionListener(e -> xoaRong());
         btnLuu.addActionListener(e -> luu());
         btnTim.addActionListener(e -> timPhim());
-        table.getSelectionModel().addListSelectionListener(e -> hienThiLenForm());
+        table.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) { 
+                hienThiLenForm();
+            }
+        });
+        
+        xoaRong();
     }
 
-    // ===== HÀM XỬ LÝ =====
 
     private void loadDataToTable() {
         model.setRowCount(0);
@@ -194,15 +207,104 @@ public class QuanLyPhim extends JPanel implements LoadData {
         }
     }
 
+    private boolean validateInput(boolean isAdding) {
+        String maPhim = txtMaPhim.getText().trim();
+        String tenPhim = txtTenPhim.getText().trim();
+        String nhaSX = txtNhaSX.getText().trim();
+        String thoiLuongStr = txtThoiLuong.getText().trim();
+        String quocGia = txtQuocGia.getText().trim();
+
+        if (maPhim.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Mã phim không được để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            txtMaPhim.requestFocus();
+            return false;
+        }
+        if (!maPhim.matches("^P\\d{3,5}$")) { 
+            JOptionPane.showMessageDialog(this, "Mã phim phải có định dạng Pxxx (ví dụ: P001, P0123).", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            txtMaPhim.requestFocus();
+            return false;
+        }
+        if (isAdding && phimDAO.timPhimTheoMa(maPhim) != null) {
+            JOptionPane.showMessageDialog(this, "Mã phim đã tồn tại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            txtMaPhim.requestFocus();
+            return false;
+        }
+
+        if (tenPhim.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Tên phim không được để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            txtTenPhim.requestFocus();
+            return false;
+        }
+        if (!tenPhim.matches("^[A-Za-zÀ-ỹ0-9\\s'.,-]+$")) {
+            JOptionPane.showMessageDialog(this, "Tên phim chỉ được chứa chữ, số, khoảng trắng và một số ký tự .,',-.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            txtTenPhim.requestFocus();
+            return false;
+        }
+
+        if (nhaSX.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Nhà sản xuất không được để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            txtNhaSX.requestFocus();
+            return false;
+        }
+        if (!nhaSX.matches("^[A-Za-zÀ-ỹ\\s'.,-]+$")) {
+            JOptionPane.showMessageDialog(this, "Tên nhà sản xuất chỉ được chứa chữ và ký tự .,',-.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            txtNhaSX.requestFocus();
+            return false;
+        }
+
+        if (thoiLuongStr.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Thời lượng không được để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            txtThoiLuong.requestFocus();
+            return false;
+        }
+
+        int thoiLuong;
+        try {
+            thoiLuong = Integer.parseInt(thoiLuongStr);
+            if (thoiLuong <= 0 || thoiLuong > 500) {
+                JOptionPane.showMessageDialog(this, "Thời lượng phải nằm trong khoảng 1–500 phút.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                txtThoiLuong.requestFocus();
+                return false;
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Thời lượng phải là một số nguyên hợp lệ.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            txtThoiLuong.requestFocus();
+            return false;
+        }
+
+        if (quocGia.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Quốc gia không được để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            txtQuocGia.requestFocus();
+            return false;
+        }
+        if (!quocGia.matches("^[A-Za-zÀ-ỹ\\s]+$")) {
+            JOptionPane.showMessageDialog(this, "Tên quốc gia chỉ được chứa chữ và khoảng trắng.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            txtQuocGia.requestFocus();
+            return false;
+        }
+
+        return true; 
+    }
+
+
     private void themPhim() {
+        if (!txtMaPhim.isEditable()) {
+            JOptionPane.showMessageDialog(this, "Bạn đang ở chế độ sửa. Vui lòng nhấn 'Xóa rỗng' để thêm phim mới.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        if (!validateInput(true)) { 
+            return; 
+        }
+
         try {
             Phim p = new Phim(
-                    txtMaPhim.getText(),
-                    txtTenPhim.getText(),
-                    txtNhaSX.getText(),
+                    txtMaPhim.getText().trim(),
+                    txtTenPhim.getText().trim(),
+                    txtNhaSX.getText().trim(),
                     (TheLoaiPhim) cboTheLoai.getSelectedItem(),
-                    Integer.parseInt(txtThoiLuong.getText()),
-                    txtQuocGia.getText());
+                    Integer.parseInt(txtThoiLuong.getText().trim()),
+                    txtQuocGia.getText().trim());
 
             if (phimDAO.themPhim(p)) {
                 JOptionPane.showMessageDialog(this, "✅ Thêm phim thành công!");
@@ -212,19 +314,28 @@ public class QuanLyPhim extends JPanel implements LoadData {
                 JOptionPane.showMessageDialog(this, "❌ Thêm thất bại!");
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Lỗi khi thêm phim: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Lỗi không xác định khi thêm: " + e.getMessage());
         }
     }
 
     private void suaPhim() {
+        if (txtMaPhim.isEditable() || txtMaPhim.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một phim từ danh sách bên dưới để sửa.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        
+        if (!validateInput(false)) { 
+            return; 
+        }
+        
         try {
             Phim p = new Phim(
-                    txtMaPhim.getText(),
-                    txtTenPhim.getText(),
-                    txtNhaSX.getText(),
+                    txtMaPhim.getText().trim(), 
+                    txtTenPhim.getText().trim(),
+                    txtNhaSX.getText().trim(),
                     (TheLoaiPhim) cboTheLoai.getSelectedItem(),
-                    Integer.parseInt(txtThoiLuong.getText()),
-                    txtQuocGia.getText());
+                    Integer.parseInt(txtThoiLuong.getText().trim()),
+                    txtQuocGia.getText().trim());
 
             if (phimDAO.capNhatPhim(p)) {
                 JOptionPane.showMessageDialog(this, "✅ Cập nhật thành công!");
@@ -239,13 +350,16 @@ public class QuanLyPhim extends JPanel implements LoadData {
     }
 
     private void xoaPhim() {
-        String ma = txtMaPhim.getText().trim();
-        if (ma.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Nhập mã phim cần xóa!");
+        if (txtMaPhim.isEditable() || txtMaPhim.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một phim từ danh sách để xóa.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
-        int confirm = JOptionPane.showConfirmDialog(this, "Xóa phim " + ma + "?", "Xác nhận",
-                JOptionPane.YES_NO_OPTION);
+
+        String ma = txtMaPhim.getText().trim();
+        
+        int confirm = JOptionPane.showConfirmDialog(this, "Xóa phim " + ma + "?\n(Thao tác này cũng sẽ xóa các suất chiếu liên quan)", "Xác nhận",
+                JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+        
         if (confirm == JOptionPane.YES_OPTION) {
             if (phimDAO.xoaPhim(ma)) {
                 JOptionPane.showMessageDialog(this, "✅ Xóa thành công!");
@@ -272,6 +386,8 @@ public class QuanLyPhim extends JPanel implements LoadData {
             cboTheLoai.setSelectedItem(p.getTheLoai());
             txtThoiLuong.setText(String.valueOf(p.getThoiLuong()));
             txtQuocGia.setText(p.getQuocGia());
+            txtMaPhim.setEditable(false);
+
             int index = -1;
             for (int i = 0; i < dsPhim.size(); i++) {
                 if (dsPhim.get(i).getMaPhim().equals(p.getMaPhim())) {
@@ -284,8 +400,10 @@ public class QuanLyPhim extends JPanel implements LoadData {
                 table.setRowSelectionInterval(index, index);
                 table.scrollRectToVisible(table.getCellRect(index, 0, true));
             }
+
         } else {
             JOptionPane.showMessageDialog(this, "❌ Không tìm thấy phim có mã " + ma);
+            xoaRong(); 
         }
     }
 
@@ -299,6 +417,7 @@ public class QuanLyPhim extends JPanel implements LoadData {
             cboTheLoai.setSelectedItem(p.getTheLoai());
             txtThoiLuong.setText(String.valueOf(p.getThoiLuong()));
             txtQuocGia.setText(p.getQuocGia());
+            txtMaPhim.setEditable(false); 
         }
     }
 
@@ -311,6 +430,7 @@ public class QuanLyPhim extends JPanel implements LoadData {
         txtQuocGia.setText("");
         txtTimPhim.setText("");
         table.clearSelection();
+        txtMaPhim.setEditable(true);
         txtMaPhim.requestFocus();
     }
 
@@ -321,5 +441,6 @@ public class QuanLyPhim extends JPanel implements LoadData {
     @Override
     public void loadData() {
         loadDataToTable();
+        xoaRong();
     }
 }

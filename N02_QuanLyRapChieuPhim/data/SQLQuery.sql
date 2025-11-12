@@ -1,24 +1,12 @@
-﻿-- =======================================================================
--- KIỂM TRA VÀ TẠO DATABASE NẾU CHƯA TỒN TẠI
--- =======================================================================
-IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'QLRapChieuPhim')
+﻿IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'QLRapChieuPhim')
 BEGIN
     CREATE DATABASE QLRapChieuPhim;
-    PRINT 'DA TAO MOI DATABASE QLRapChieuPhim';
-END
-ELSE
-BEGIN
-    PRINT 'DATABASE QLRapChieuPhim DA TON TAI';
 END
 GO
 
 USE QLRapChieuPhim;
 GO
 
--- =======================================================================
--- XÓA TẤT CẢ CÁC BẢNG HIỆN TẠI (ĐỂ CHẠY LẠI SCRIPT MÀ KHÔNG BỊ LỖI)
--- Xóa theo thứ tự ngược lại của các ràng buộc khóa ngoại (Foreign Key)
--- =======================================================================
 DROP TABLE IF EXISTS ChiTietHoaDon;
 DROP TABLE IF EXISTS TaiKhoan;
 DROP TABLE IF EXISTS HoaDon;
@@ -31,36 +19,23 @@ DROP TABLE IF EXISTS NhanVien;
 DROP TABLE IF EXISTS KhachHang;
 GO
 
-PRINT 'DA XOA CAC BANG CU';
-GO
-
--- ==========================================
--- BẢNG RẠP
--- ==========================================
 CREATE TABLE Rap (
     maRap NVARCHAR(10) PRIMARY KEY,
     tenRap NVARCHAR(100) NOT NULL,
     soLuongGhe INT CHECK (soLuongGhe >= 0)
 );
 GO
-PRINT 'Tao bang Rap';
 
--- ==========================================
--- BẢNG GHẾ
--- ==========================================
 CREATE TABLE Ghe (
     maGhe NVARCHAR(20) PRIMARY KEY,
 	tenGhe NVARCHAR(20) NOT NULL,
     maRap NVARCHAR(10) NOT NULL,
-    tinhTrang BIT DEFAULT 0, -- 0: trống, 1: đã đặt
-    CONSTRAINT FK_GHE_RAP FOREIGN KEY (maRap) REFERENCES Rap(maRap)
+    tinhTrang BIT DEFAULT 0, 
+    
+    CONSTRAINT FK_GHE_RAP FOREIGN KEY (maRap) REFERENCES Rap(maRap) ON DELETE CASCADE
 );
 GO
-PRINT 'Tao bang Ghe';
 
--- ==========================================
--- BẢNG NHÂN VIÊN
--- ==========================================
 CREATE TABLE NhanVien (
     maNV NVARCHAR(10) PRIMARY KEY,
     tenNV NVARCHAR(100) NOT NULL,
@@ -71,11 +46,7 @@ CREATE TABLE NhanVien (
     gioiTinh NVARCHAR(10)
 );
 GO
-PRINT 'Tao bang NhanVien';
 
--- ==========================================
--- BẢNG KHÁCH HÀNG
--- ==========================================
 CREATE TABLE KhachHang (
     maKH NVARCHAR(50) PRIMARY KEY,
     hoTen NVARCHAR(100) NOT NULL,
@@ -84,11 +55,7 @@ CREATE TABLE KhachHang (
     diaChi NVARCHAR(200)
 );
 GO
-PRINT 'Tao bang KhachHang';
 
--- ==========================================
--- BẢNG PHIM
--- ==========================================
 CREATE TABLE Phim (
     maPhim NVARCHAR(10) PRIMARY KEY,
     tenPhim NVARCHAR(200) NOT NULL,
@@ -98,11 +65,7 @@ CREATE TABLE Phim (
     quocGia NVARCHAR(50)
 );
 GO
-PRINT 'Tao bang Phim';
 
--- ==========================================
--- BẢNG SUẤT CHIẾU
--- ==========================================
 CREATE TABLE SuatChieu (
     maSuatChieu NVARCHAR(10) PRIMARY KEY,
     maPhim NVARCHAR(10) NOT NULL,
@@ -111,15 +74,11 @@ CREATE TABLE SuatChieu (
     gioChieu TIME NOT NULL,
     giaVe FLOAT CHECK (giaVe > 0),
 
-    CONSTRAINT FK_SUATCHIEU_PHIM FOREIGN KEY (maPhim) REFERENCES Phim(maPhim),
-    CONSTRAINT FK_SUATCHIEU_RAP FOREIGN KEY (maRap) REFERENCES Rap(maRap)
+    CONSTRAINT FK_SUATCHIEU_PHIM FOREIGN KEY (maPhim) REFERENCES Phim(maPhim) ON DELETE CASCADE,
+    CONSTRAINT FK_SUATCHIEU_RAP FOREIGN KEY (maRap) REFERENCES Rap(maRap) ON DELETE CASCADE
 );
 GO
-PRINT 'Tao bang SuatChieu';
 
--- ==========================================
--- BẢNG VÉ
--- ==========================================
 CREATE TABLE Ve (
     maVe NVARCHAR(50) PRIMARY KEY,
     maGhe NVARCHAR(20) NOT NULL,
@@ -131,11 +90,7 @@ CREATE TABLE Ve (
     CONSTRAINT FK_VE_SUATCHIEU FOREIGN KEY (maSuatChieu) REFERENCES SuatChieu(maSuatChieu)
 );
 GO
-PRINT 'Tao bang Ve';
 
--- ==========================================
--- BẢNG HÓA ĐƠN
--- ==========================================
 CREATE TABLE HoaDon (
     maHoaDon NVARCHAR(50) PRIMARY KEY,
     ngayLap DATE DEFAULT GETDATE(),
@@ -145,14 +100,10 @@ CREATE TABLE HoaDon (
     tongTien FLOAT CHECK (tongTien >= 0),
 
     CONSTRAINT FK_HOADON_NV FOREIGN KEY (maNV) REFERENCES NhanVien(maNV),
-    CONSTRAINT FK_HOADON_KH FOREIGN KEY (maKH) REFERENCES KhachHang(maKH)
+    CONSTRAINT FK_HOADON_KH FOREIGN KEY (maKH) REFERENCES KhachHang(maKH) ON DELETE CASCADE
 );
 GO
-PRINT 'Tao bang HoaDon';
 
--- ==========================================
--- BẢNG CHI TIẾT HÓA ĐƠN
--- ==========================================
 CREATE TABLE ChiTietHoaDon (
     maHoaDon NVARCHAR(50) NOT NULL,
     maVe NVARCHAR(50) NOT NULL,
@@ -160,30 +111,20 @@ CREATE TABLE ChiTietHoaDon (
     giaVe FLOAT CHECK (giaVe > 0),
 
     CONSTRAINT PK_CTHD PRIMARY KEY (maHoaDon, maVe),
-    CONSTRAINT FK_CTHD_HD FOREIGN KEY (maHoaDon) REFERENCES HoaDon(maHoaDon),
+    CONSTRAINT FK_CTHD_HD FOREIGN KEY (maHoaDon) REFERENCES HoaDon(maHoaDon) ON DELETE CASCADE,
     CONSTRAINT FK_CTHD_VE FOREIGN KEY (maVe) REFERENCES Ve(maVe)
 );
 GO
-PRINT 'Tao bang ChiTietHoaDon';
 
--- ==========================================
--- BẢNG TÀI KHOẢN
--- ==========================================
 CREATE TABLE TaiKhoan (
     maNV NVARCHAR(10) PRIMARY KEY,
     taiKhoan NVARCHAR(50) UNIQUE NOT NULL,
     matKhau NVARCHAR(100) NOT NULL,
 
-    CONSTRAINT FK_TAIKHOAN_NV FOREIGN KEY (maNV) REFERENCES NhanVien(maNV)
+    CONSTRAINT FK_TAIKHOAN_NV FOREIGN KEY (maNV) REFERENCES NhanVien(maNV) ON DELETE CASCADE
 );
 GO
-PRINT 'Tao bang TaiKhoan';
 
--- ==========================================
--- CHÈN DỮ LIỆU MẪU
--- ==========================================
-
--- DỮ LIỆU PHIM
 INSERT INTO Phim (maPhim, tenPhim, nhaSanXuat, theLoai, thoiLuong, quocGia) VALUES
 ('P001', N'Cuộc chiến vĩ đại', N'Studio A', N'Hành động', 120, N'Mỹ'),
 ('P002', N'Tình yêu mùa hè', N'Studio B', N'Tình cảm', 105, N'Hàn Quốc'),
@@ -216,18 +157,14 @@ INSERT INTO Phim (maPhim, tenPhim, nhaSanXuat, theLoai, thoiLuong, quocGia) VALU
 ('P029', N'Anh hùng đường phố', N'Studio CC', N'Hành động', 120, N'Mỹ'),
 ('P030', N'Chuyện tình mùa đông', N'Studio DD', N'Tình cảm', 100, N'Hàn Quốc');
 GO
-PRINT 'Chen du lieu Phim';
 
--- DỮ LIỆU RẠP
 INSERT INTO Rap (maRap, tenRap, soLuongGhe) VALUES
 ('RAP001', N'Phòng 1', 25),
 ('RAP002', N'Phòng 2', 30),
 ('RAP003', N'Phòng 3', 30),
 ('RAP004', N'Phòng 4', 30);
 GO
-PRINT 'Chen du lieu Rap';
 
--- DỮ LIỆU SUẤT CHIẾU
 INSERT INTO SuatChieu (maSuatChieu, maPhim, maRap, ngayChieu, gioChieu, giaVe) VALUES
 ('SC001', 'P001', 'RAP001', '2025-11-03', '10:00', 50000),
 ('SC002', 'P002', 'RAP002', '2025-11-03', '12:30', 55000),
@@ -250,10 +187,7 @@ INSERT INTO SuatChieu (maSuatChieu, maPhim, maRap, ngayChieu, gioChieu, giaVe) V
 ('SC019', 'P019', 'RAP003', '2025-11-06', '18:00', 50000),
 ('SC020', 'P020', 'RAP003', '2025-11-06', '20:00', 55000);
 GO
-PRINT 'Chen du lieu SuatChieu';
 
--- DỮ LIỆU GHẾ
--- Ghế cho RAP001 (25 ghế)
 INSERT INTO Ghe (maGhe, tenGhe, maRap, tinhTrang) VALUES
 ('RAP001_G1', N'Ghế 1', 'RAP001', 1), ('RAP001_G2', N'Ghế 2', 'RAP001', 1), ('RAP001_G3', N'Ghế 3', 'RAP001', 0), ('RAP001_G4', N'Ghế 4', 'RAP001', 0), ('RAP001_G5', N'Ghế 5', 'RAP001', 0),
 ('RAP001_G6', N'Ghế 6', 'RAP001', 0), ('RAP001_G7', N'Ghế 7', 'RAP001', 0), ('RAP001_G8', N'Ghế 8', 'RAP001', 0), ('RAP001_G9', N'Ghế 9', 'RAP001', 0), ('RAP001_G10', N'Ghế 10', 'RAP001', 0),
@@ -261,25 +195,24 @@ INSERT INTO Ghe (maGhe, tenGhe, maRap, tinhTrang) VALUES
 ('RAP001_G16', N'Ghế 16', 'RAP001', 0), ('RAP001_G17', N'Ghế 17', 'RAP001', 0), ('RAP001_G18', N'Ghế 18', 'RAP001', 0), ('RAP001_G19', N'Ghế 19', 'RAP001', 0), ('RAP001_G20', N'Ghế 20', 'RAP001', 0),
 ('RAP001_G21', N'Ghế 21', 'RAP001', 0), ('RAP001_G22', N'Ghế 22', 'RAP001', 0), ('RAP001_G23', N'Ghế 23', 'RAP001', 0), ('RAP001_G24', N'Ghế 24', 'RAP001', 0), ('RAP001_G25', N'Ghế 25', 'RAP001', 0);
 GO
--- Ghế cho RAP002 (30 ghế)
 INSERT INTO Ghe (maGhe, tenGhe, maRap, tinhTrang) VALUES
 ('RAP002_G1', N'Ghế 1', 'RAP002', 0), ('RAP002_G2', N'Ghế 2', 'RAP002', 0), ('RAP002_G3', N'Ghế 3', 'RAP002', 0), ('RAP002_G4', N'Ghế 4', 'RAP002', 0), ('RAP002_G5', N'Ghế 5', 'RAP002', 0),
 ('RAP002_G6', N'Ghế 6', 'RAP002', 0), ('RAP002_G7', N'Ghế 7', 'RAP002', 0), ('RAP002_G8', N'Ghế 8', 'RAP002', 0), ('RAP002_G9', N'Ghế 9', 'RAP002', 0), ('RAP002_G10', N'Ghế 10', 'RAP002', 1),
 ('RAP002_G11', N'Ghế 11', 'RAP002', 1), ('RAP002_G12', N'Ghế 12', 'RAP002', 0), ('RAP002_G13', N'Ghế 13', 'RAP002', 0), ('RAP002_G14', N'Ghế 14', 'RAP002', 0), ('RAP002_G15', N'Ghế 15', 'RAP002', 0),
 ('RAP002_G16', N'Ghế 16', 'RAP002', 0), ('RAP002_G17', N'Ghế 17', 'RAP002', 0), ('RAP002_G18', N'Ghế 18', 'RAP002', 0), ('RAP002_G19', N'Ghế 19', 'RAP002', 0), ('RAP002_G20', N'Ghế 20', 'RAP002', 0),
 ('RAP002_G21', N'Ghế 21', 'RAP002', 0), ('RAP002_G22', N'Ghế 22', 'RAP002', 0), ('RAP002_G23', N'Ghế 23', 'RAP002', 0), ('RAP002_G24', N'Ghế 24', 'RAP002', 0), ('RAP002_G25', N'Ghế 25', 'RAP002', 0),
-('RAP002_G26', N'Ghế 26', 'RAP002', 0), ('RAP002_G27', N'Ghế 27', 'RAP002', 0), ('RAP002_G28', N'Ghế 28', 'RAP002', 0), ('RAP002_G29', N'Ghế 29', 'RAP002', 0), ('RAP002_G30', N'Ghế 30', 'RAP002', 0);
+('RAP002_G26', N'Ghế 26', 'RAP002', 0), ('RAP002_G27', N'Ghế 27', 'RAP002', 0), ('RAP002_G28', N'Ghế 28', 'RAP002', 0),
+('RAP002_G29', N'Ghế 29', 'RAP002', 0), ('RAP002_G30', N'Ghế 30', 'RAP002', 0);
 GO
--- Ghế cho RAP003 (30 ghế)
 INSERT INTO Ghe (maGhe, tenGhe, maRap, tinhTrang) VALUES
 ('RAP003_G1', N'Ghế 1', 'RAP003', 0), ('RAP003_G2', N'Ghế 2', 'RAP003', 0), ('RAP003_G3', N'Ghế 3', 'RAP003', 0), ('RAP003_G4', N'Ghế 4', 'RAP003', 0), ('RAP003_G5', N'Ghế 5', 'RAP003', 0),
 ('RAP003_G6', N'Ghế 6', 'RAP003', 0), ('RAP003_G7', N'Ghế 7', 'RAP003', 0), ('RAP003_G8', N'Ghế 8', 'RAP003', 0), ('RAP003_G9', N'Ghế 9', 'RAP003', 0), ('RAP003_G10', N'Ghế 10', 'RAP003', 0),
 ('RAP003_G11', N'Ghế 11', 'RAP003', 0), ('RAP003_G12', N'Ghế 12', 'RAP003', 0), ('RAP003_G13', N'Ghế 13', 'RAP003', 0), ('RAP003_G14', N'Ghế 14', 'RAP003', 0), ('RAP003_G15', N'Ghế 15', 'RAP003', 1),
 ('RAP003_G16', N'Ghế 16', 'RAP003', 1), ('RAP003_G17', N'Ghế 17', 'RAP003', 1), ('RAP003_G18', N'Ghế 18', 'RAP003', 0), ('RAP003_G19', N'Ghế 19', 'RAP003', 0), ('RAP003_G20', N'Ghế 20', 'RAP003', 0),
 ('RAP003_G21', N'Ghế 21', 'RAP003', 0), ('RAP003_G22', N'Ghế 22', 'RAP003', 0), ('RAP003_G23', N'Ghế 23', 'RAP003', 0), ('RAP003_G24', N'Ghế 24', 'RAP003', 0), ('RAP003_G25', N'Ghế 25', 'RAP003', 0),
-('RAP003_G26', N'Ghế 26', 'RAP003', 0), ('RAP003_G27', N'Ghế 27', 'RAP003', 0), ('RAP003_G28', N'Ghế 28', 'RAP003', 0), ('RAP003_G29', N'Ghế 29', 'RAP003', 0), ('RAP003_G30', N'Ghế 30', 'RAP003', 0);
+('RAP003_G26', N'Ghế 26', 'RAP003', 0), ('RAP003_G27', N'Ghế 27', 'RAP003', 0), ('RAP003_G28', N'Ghế 28', 'RAP003', 0),
+('RAP003_G29', N'Ghế 29', 'RAP003', 0), ('RAP003_G30', N'Ghế 30', 'RAP003', 0);
 GO
--- Ghế cho RAP004 (30 ghế)
 INSERT INTO Ghe (maGhe, tenGhe, maRap, tinhTrang) VALUES
 ('RAP004_G1', N'Ghế 1', 'RAP004', 0), ('RAP004_G2', N'Ghế 2', 'RAP004', 0), ('RAP004_G3', N'Ghế 3', 'RAP004', 0), ('RAP004_G4', N'Ghế 4', 'RAP004', 0), ('RAP004_G5', N'Ghế 5', 'RAP004', 0),
 ('RAP004_G6', N'Ghế 6', 'RAP004', 0), ('RAP004_G7', N'Ghế 7', 'RAP004', 0), ('RAP004_G8', N'Ghế 8', 'RAP004', 0), ('RAP004_G9', N'Ghế 9', 'RAP004', 0), ('RAP004_G10', N'Ghế 10', 'RAP004', 0),
@@ -288,25 +221,49 @@ INSERT INTO Ghe (maGhe, tenGhe, maRap, tinhTrang) VALUES
 ('RAP004_G21', N'Ghế 21', 'RAP004', 0), ('RAP004_G22', N'Ghế 22', 'RAP004', 0), ('RAP004_G23', N'Ghế 23', 'RAP004', 0), ('RAP004_G24', N'Ghế 24', 'RAP004', 0), ('RAP004_G25', N'Ghế 25', 'RAP004', 0),
 ('RAP004_G26', N'Ghế 26', 'RAP004', 0), ('RAP004_G27', N'Ghế 27', 'RAP004', 0), ('RAP004_G28', N'Ghế 28', 'RAP004', 0), ('RAP004_G29', N'Ghế 29', 'RAP004', 1), ('RAP004_G30', N'Ghế 30', 'RAP004', 1);
 GO
-PRINT 'Chen du lieu Ghe';
 
--- DỮ LIỆU NHÂN VIÊN
 INSERT INTO NhanVien (maNV, tenNV, diaChi, soDienThoai, ngaySinh, email, gioiTinh)
 VALUES
 ('NV01', N'Lê Minh Tân', N'123 Lê Lợi, Quận 1, TP.HCM', '0905123456', '1998-03-15', 'an.nguyen@example.com', N'Nam'),
 ('NV02', N'Nguyễn Chí Tâm', N'45 Hai Bà Trưng, Hà Nội', '0987654321', '2000-07-22', 'binh.tran@example.com', N'Nữ'),
 ('NV03', N'Đỗ Thanh Tường', N'78 Nguyễn Huệ, Đà Nẵng', '0912345678', '1995-11-09', 'phuc.le@example.com', N'Nam');
 GO
-PRINT 'Chen du lieu NhanVien';
 
--- DỮ LIỆU TÀI KHOẢN
 INSERT INTO TaiKhoan (maNV, taiKhoan, matKhau)
 VALUES
 ('NV01', N'leminhtan', N'123456'),
 ('NV02', N'nguyenchitam', N'123456'),
 ('NV03', N'dothanhtuong', N'123456');
 GO
-PRINT 'Chen du lieu TaiKhoan';
 
-PRINT 'HOAN TAT QUA TRINH CAI DAT DATABASE!';
+INSERT INTO KhachHang (maKH, hoTen, gioiTinh, soDT, diaChi)
+VALUES
+('KH001', N'Trần Văn An', N'Nam', '0909111222', N'123 CMT8, P.10, Q.3, TP.HCM'),
+('KH002', N'Nguyễn Thị Bê', N'Nữ', '0909333444', N'456 Lê Lợi, Q.1, TP.HCM'),
+('KH003', N'Lý Văn Cường', N'Nam', '0909555666', N'789 Hóc Môn, TP.HCM');
+GO
+
+INSERT INTO Ve (maVe, maGhe, ngayBan, maSuatChieu, daThanhToan)
+VALUES
+('VE0001', 'RAP001_G1', '2025-11-03', 'SC001', 1),
+('VE0002', 'RAP001_G2', '2025-11-03', 'SC001', 1),
+('VE0003', 'RAP002_G10', '2025-11-03', 'SC002', 1),
+('VE0004', 'RAP003_G15', '2025-11-03', 'SC003', 1),
+('VE0005', 'RAP003_G16', '2025-11-03', 'SC003', 1);
+GO
+
+INSERT INTO HoaDon (maHoaDon, ngayLap, maNV, maKH, soLuongVe, tongTien)
+VALUES
+('HD001', '2025-11-03', 'NV01', 'KH001', 2, 100000),
+('HD002', '2025-11-03', 'NV02', 'KH002', 1, 55000),
+('HD003', '2025-11-03', 'NV01', 'KH003', 2, 90000);
+GO
+
+INSERT INTO ChiTietHoaDon (maHoaDon, maVe, soLuong, giaVe)
+VALUES
+('HD001', 'VE0001', 1, 50000),
+('HD001', 'VE0002', 1, 50000),
+('HD002', 'VE0003', 1, 55000),
+('HD003', 'VE0004', 1, 45000),
+('HD003', 'VE0005', 1, 45000);
 GO
