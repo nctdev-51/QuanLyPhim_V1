@@ -1,6 +1,7 @@
 package gui;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
@@ -18,6 +19,10 @@ public class QuanLyKhachHang extends JPanel implements ActionListener, MouseList
     private JComboBox<String> cboGioiTinh;
     private JButton btnThem, btnXoaTrang, btnXoa1Dong, btnLamMoi, btnSua, btnTimKiem;
 
+    private final Font FONT_LBL = new Font("Segoe UI", Font.BOLD, 16);
+    private final Font FONT_TXT = new Font("Segoe UI", Font.PLAIN, 16);
+    private final Border BORDER_BTN = BorderFactory.createLineBorder(new Color(0, 123, 255), 1);
+
     @Override
     public void loadData() {
         DocDuLieuVaoTable();
@@ -25,164 +30,129 @@ public class QuanLyKhachHang extends JPanel implements ActionListener, MouseList
     }
 
     public QuanLyKhachHang() {
-        setLayout(new BorderLayout());
-        setBackground(Color.WHITE);
+        setLayout(null); 
+        
+        Color bgColor = new Color(235, 245, 255);
+        setBackground(bgColor);
 
-        JPanel pNorth = new JPanel();
-        pNorth.setBackground(new Color(30, 144, 255));
-        JLabel lblTieuDe = new JLabel("QUẢN LÝ HỘI VIÊN");
-        lblTieuDe.setForeground(Color.WHITE);
+        kh_dao = new QuanLyKhachHang_DAO();
+
+        JLabel lblTieuDe = new JLabel("Quản lý hội viên");
         lblTieuDe.setFont(new Font("Segoe UI", Font.BOLD, 24));
-        pNorth.add(lblTieuDe);
-        add(pNorth, BorderLayout.NORTH);
+        lblTieuDe.setHorizontalAlignment(SwingConstants.CENTER);
+        lblTieuDe.setBounds(0, 15, 1180, 35);
+        add(lblTieuDe);
 
-        Box b = Box.createVerticalBox();
-        b.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        JPanel pnInput = new JPanel();
+        pnInput.setLayout(null);
+        pnInput.setBackground(Color.WHITE);
+        pnInput.setBorder(BorderFactory.createTitledBorder("Thông tin hội viên"));
+        pnInput.setBounds(40, 60, 780, 240); 
+        add(pnInput);
 
-        Font fontTxt = new Font("Segoe UI", Font.PLAIN, 15);
-        Dimension txtSize = new Dimension(200, 28);
-        Insets margin = new Insets(4, 8, 4, 8);
-        
-        java.util.function.Consumer<JTextField> styleTextField = txt -> {
-            txt.setFont(fontTxt);
-            txt.setPreferredSize(txtSize);
-            txt.setMargin(margin);
-            txt.setAlignmentY(Component.CENTER_ALIGNMENT);
-        };
-
-        JPanel pInput = new JPanel();
-        pInput.setLayout(new BoxLayout(pInput, BoxLayout.Y_AXIS));
-        pInput.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(Color.GRAY), "Thông tin hội viên"));
-
-        Box b1, b2, b3, b4;
-
-        pInput.add(b1 = Box.createHorizontalBox());
         JLabel lblMaKH = new JLabel("Mã khách hàng:");
-        lblMaKH.setFont(fontTxt);
-        lblMaKH.setPreferredSize(new Dimension(120, 28));
-        b1.add(lblMaKH);
-        b1.add(Box.createHorizontalStrut(10));
-        b1.add(txtMaKH = new JTextField());
-        styleTextField.accept(txtMaKH);
+        lblMaKH.setBounds(40, 40, 120, 30);
+        lblMaKH.setFont(FONT_LBL);
+        pnInput.add(lblMaKH);
+
+        txtMaKH = new JTextField();
+        txtMaKH.setBounds(170, 40, 200, 30);
         txtMaKH.setEditable(false);
-        pInput.add(Box.createVerticalStrut(8));
+        styleTextField(txtMaKH);
+        pnInput.add(txtMaKH);
 
-        pInput.add(b2 = Box.createHorizontalBox());
         JLabel lblHoTen = new JLabel("Họ tên:");
-        lblHoTen.setFont(fontTxt);
-        lblHoTen.setPreferredSize(new Dimension(120, 28));
-        b2.add(lblHoTen);
-        b2.add(Box.createHorizontalStrut(10));
-        b2.add(txtHoTen = new JTextField());
-        styleTextField.accept(txtHoTen);
-        pInput.add(Box.createVerticalStrut(8));
+        lblHoTen.setBounds(410, 40, 120, 30);
+        lblHoTen.setFont(FONT_LBL);
+        pnInput.add(lblHoTen);
 
-        pInput.add(b3 = Box.createHorizontalBox());
+        txtHoTen = new JTextField();
+        txtHoTen.setBounds(540, 40, 200, 30);
+        styleTextField(txtHoTen);
+        pnInput.add(txtHoTen);
+
         JLabel lblGioiTinh = new JLabel("Giới tính:");
-        lblGioiTinh.setFont(fontTxt);
-        lblGioiTinh.setPreferredSize(new Dimension(120, 28));
-        b3.add(lblGioiTinh);
-        b3.add(Box.createHorizontalStrut(10));
+        lblGioiTinh.setBounds(40, 100, 120, 30);
+        lblGioiTinh.setFont(FONT_LBL);
+        pnInput.add(lblGioiTinh);
+
         cboGioiTinh = new JComboBox<>(new String[] { "Nam", "Nữ" });
-        cboGioiTinh.setFont(fontTxt);
-        cboGioiTinh.setPreferredSize(new Dimension(100, 28));
-        cboGioiTinh.setAlignmentY(Component.CENTER_ALIGNMENT);
-        b3.add(cboGioiTinh);
-        b3.add(Box.createHorizontalStrut(20));
+        cboGioiTinh.setBounds(170, 100, 200, 30);
+        cboGioiTinh.setFont(FONT_TXT);
+        pnInput.add(cboGioiTinh);
+
         JLabel lblSoDT = new JLabel("Số điện thoại:");
-        lblSoDT.setFont(fontTxt);
-        lblSoDT.setPreferredSize(new Dimension(100, 28));
-        b3.add(lblSoDT);
-        b3.add(Box.createHorizontalStrut(10));
-        b3.add(txtSoDT = new JTextField());
-        styleTextField.accept(txtSoDT);
-        pInput.add(Box.createVerticalStrut(8));
+        lblSoDT.setBounds(410, 100, 120, 30);
+        lblSoDT.setFont(FONT_LBL);
+        pnInput.add(lblSoDT);
 
-        pInput.add(b4 = Box.createHorizontalBox());
+        txtSoDT = new JTextField();
+        txtSoDT.setBounds(540, 100, 200, 30);
+        styleTextField(txtSoDT);
+        pnInput.add(txtSoDT);
+
         JLabel lblDiaChi = new JLabel("Địa chỉ:");
-        lblDiaChi.setFont(fontTxt);
-        lblDiaChi.setPreferredSize(new Dimension(120, 28));
-        b4.add(lblDiaChi);
-        b4.add(Box.createHorizontalStrut(10));
-        b4.add(txtDiaChi = new JTextField());
-        txtDiaChi.setPreferredSize(new Dimension(450, 28));
-        txtDiaChi.setFont(fontTxt);
-        txtDiaChi.setMargin(margin);
-        txtDiaChi.setAlignmentY(Component.CENTER_ALIGNMENT);
-        pInput.add(Box.createVerticalStrut(8));
-        
-        b.add(pInput);
-        b.add(Box.createVerticalStrut(15));
+        lblDiaChi.setBounds(40, 160, 120, 30);
+        lblDiaChi.setFont(FONT_LBL);
+        pnInput.add(lblDiaChi);
 
-        Box b5 = Box.createHorizontalBox();
-        
-        btnThem = new JButton("Thêm");
-        btnThem.setIcon(new ImageIcon("icon/add.png"));
-        btnXoaTrang = new JButton("Xóa trắng");
-        btnXoaTrang.setIcon(new ImageIcon("icon/clear.png"));
-        btnXoa1Dong = new JButton("Xóa");
-        btnXoa1Dong.setIcon(new ImageIcon("icon/delete.png"));
-        btnLamMoi = new JButton("Làm mới");
-        btnLamMoi.setIcon(new ImageIcon("icon/refresh.png"));
-        btnSua = new JButton("Sửa");
-        btnSua.setIcon(new ImageIcon("icon/edit.png"));
+        txtDiaChi = new JTextField();
+        txtDiaChi.setBounds(170, 160, 570, 30);
+        styleTextField(txtDiaChi);
+        pnInput.add(txtDiaChi);
+
+        JPanel pnActions = new JPanel();
+        pnActions.setLayout(null);
+        pnActions.setBackground(Color.WHITE);
+        pnActions.setBounds(840, 60, 320, 240); 
+        add(pnActions);
+
+        JLabel lblTim = new JLabel("Nhập mã KH cần tìm:");
+        lblTim.setFont(FONT_LBL);
+        lblTim.setBounds(20, 10, 180, 30);
+        pnActions.add(lblTim);
+
+        txtTimKiem = new JTextField();
+        txtTimKiem.setBounds(20, 45, 180, 30);
+        styleTextField(txtTimKiem);
+        pnActions.add(txtTimKiem);
+
         btnTimKiem = new JButton("Tìm");
         btnTimKiem.setIcon(new ImageIcon("icon/search.png"));
-        txtTimKiem = new JTextField();
-        styleTextField.accept(txtTimKiem);
+        styleButton(btnTimKiem, new Color(108, 117, 125));
+        btnTimKiem.setBounds(210, 45, 90, 30);
+        pnActions.add(btnTimKiem);
 
-        JButton[] btns = { btnThem, btnXoaTrang, btnXoa1Dong, btnLamMoi, btnSua, btnTimKiem };
-        Font buttonFont = new Font("Segoe UI", Font.BOLD, 14);
-        Dimension buttonSize = new Dimension(140, 36);
+        btnThem = new JButton("Thêm");
+        btnThem.setIcon(new ImageIcon("icon/add.png"));
+        styleButton(btnThem, new Color(0, 123, 255));
+        btnThem.setBounds(20, 90, 135, 45); 
+        pnActions.add(btnThem);
 
-        for (JButton btn : btns) {
-            btn.setFont(buttonFont);
-            btn.setBackground(new Color(245, 245, 245));
-            btn.setForeground(Color.BLACK);
-            btn.setFocusPainted(false);
-            btn.setAlignmentY(Component.CENTER_ALIGNMENT);
-            
-            btn.setPreferredSize(buttonSize);
-            btn.setMinimumSize(buttonSize);
-            btn.setMaximumSize(buttonSize);
-        }
+        btnSua = new JButton("Sửa");
+        btnSua.setIcon(new ImageIcon("icon/edit.png"));
+        styleButton(btnSua, new Color(23, 162, 184));
+        btnSua.setBounds(165, 90, 135, 45); 
+        pnActions.add(btnSua);
 
-        btnThem.setBackground(new Color(0, 123, 255));
-        btnThem.setForeground(Color.WHITE);
-
-        btnSua.setBackground(new Color(23, 162, 184));
-        btnSua.setForeground(Color.WHITE);
+        btnXoa1Dong = new JButton("Xóa");
+        btnXoa1Dong.setIcon(new ImageIcon("icon/delete.png"));
+        styleButton(btnXoa1Dong, new Color(220, 53, 69));
+        btnXoa1Dong.setBounds(20, 145, 135, 45); 
+        pnActions.add(btnXoa1Dong);
         
-        btnXoa1Dong.setBackground(new Color(220, 53, 69));
-        btnXoa1Dong.setForeground(Color.WHITE);
-
-        btnTimKiem.setBackground(new Color(108, 117, 125));
-        btnTimKiem.setForeground(Color.WHITE);
+        btnXoaTrang = new JButton("Xóa rỗng");
+        btnXoaTrang.setIcon(new ImageIcon("icon/clear.png"));
+        styleButton(btnXoaTrang, new Color(255, 193, 7));
+        btnXoaTrang.setBounds(165, 145, 135, 45); 
+        pnActions.add(btnXoaTrang);
         
-        b5.add(btnThem);
-        b5.add(Box.createHorizontalStrut(10));
-        b5.add(btnXoaTrang);
-        b5.add(Box.createHorizontalStrut(10));
-        b5.add(btnXoa1Dong);
-        b5.add(Box.createHorizontalStrut(10));
-        b5.add(btnLamMoi);
-        b5.add(Box.createHorizontalStrut(10));
-        b5.add(btnSua);
-        b5.add(Box.createHorizontalStrut(20));
+        btnLamMoi = new JButton("Làm mới Table");
+        btnLamMoi.setIcon(new ImageIcon("icon/refresh.png"));
+        styleButton(btnLamMoi, new Color(108, 117, 125));
+        btnLamMoi.setBounds(20, 200, 280, 35);
+        pnActions.add(btnLamMoi);
 
-        JLabel lblTimKiem = new JLabel("Tìm mã KH:");
-        lblTimKiem.setFont(fontTxt);
-        lblTimKiem.setAlignmentY(Component.CENTER_ALIGNMENT);
-        b5.add(lblTimKiem);
-        b5.add(Box.createHorizontalStrut(10));
-        b5.add(txtTimKiem);
-        b5.add(Box.createHorizontalStrut(10));
-        b5.add(btnTimKiem);
-        b.add(b5);
-        b.add(Box.createVerticalStrut(15));
-
-        Box b6 = Box.createHorizontalBox();
         String[] headers = "Mã KH;Họ tên;Giới tính;Số ĐT;Địa chỉ".split(";");
         tableModel = new DefaultTableModel(headers, 0) {
             @Override
@@ -194,12 +164,11 @@ public class QuanLyKhachHang extends JPanel implements ActionListener, MouseList
         table.setRowHeight(26);
         table.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 15));
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane scroll = new JScrollPane(table);
-        scroll.setPreferredSize(new Dimension(880, 260));
-        b6.add(scroll);
-        b.add(b6);
-
-        add(b, BorderLayout.CENTER);
+ 
+        scroll.setBounds(40, 320, 1120, 400); 
+        add(scroll);
 
         table.addMouseListener(this);
         btnThem.addActionListener(this);
@@ -211,10 +180,28 @@ public class QuanLyKhachHang extends JPanel implements ActionListener, MouseList
 
         btnSua.setEnabled(false);
         btnXoa1Dong.setEnabled(false);
-
-        kh_dao = new QuanLyKhachHang_DAO();
         DocDuLieuVaoTable();
     }
+
+    // === CÁC HÀM STYLING ===
+    private void styleTextField(JTextField txt) {
+        txt.setFont(FONT_TXT);
+        txt.setMargin(new Insets(2, 6, 2, 6));
+        txt.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1),
+            BorderFactory.createEmptyBorder(5, 5, 5, 5)
+        ));
+    }
+
+    private void styleButton(JButton btn, Color bgColor) {
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        btn.setBackground(bgColor);
+        btn.setForeground(Color.WHITE);
+        btn.setFocusPainted(false);
+        btn.setBorder(BORDER_BTN);
+    }
+
+    // === CÁC HÀM LOGIC (GIỮ NGUYÊN) ===
 
     private void DocDuLieuVaoTable() {
         tableModel.setRowCount(0);
@@ -251,7 +238,7 @@ public class QuanLyKhachHang extends JPanel implements ActionListener, MouseList
         String diaChi = txtDiaChi.getText().trim();
         String maKH_hien_tai = txtMaKH.getText().trim();
 
-        if (hoTen.isEmpty() || !hoTen.matches("^[A-Za-zÀ-ỹ\\s]+$")) {
+        if (hoTen.isEmpty() || !hoTen.matches("^[\\p{L}\\s.']+$")) {
             JOptionPane.showMessageDialog(this, "Họ tên không hợp lệ (chỉ chứa chữ, dấu cách, . và ').", "Lỗi", JOptionPane.ERROR_MESSAGE);
             txtHoTen.requestFocus();
             return false;
@@ -269,11 +256,11 @@ public class QuanLyKhachHang extends JPanel implements ActionListener, MouseList
             return false;
         }
         
-        if (!diaChi.matches(".*[A-Za-zÀ-ỹ].*")) {
-            JOptionPane.showMessageDialog(this, "Địa chỉ không hợp lệ (phải chứa ít nhất một chữ cái, không thể chỉ là số).", "Lỗi", JOptionPane.ERROR_MESSAGE);
-           txtDiaChi.requestFocus();
-           return false;
-       }
+        if (!diaChi.matches(".*[\\p{L}].*")) {
+             JOptionPane.showMessageDialog(this, "Địa chỉ không hợp lệ (phải chứa ít nhất một chữ cái, không thể chỉ là số).", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            txtDiaChi.requestFocus();
+            return false;
+        }
 
         KhachHang kh_trung_sdt = kh_dao.timKhachHangTheoSDT(sdt); 
 
@@ -379,12 +366,18 @@ public class QuanLyKhachHang extends JPanel implements ActionListener, MouseList
                     "Xác nhận xóa", JOptionPane.YES_NO_OPTION);
 
             if (confirm == JOptionPane.YES_OPTION) {
-                if (kh_dao.delete(maKH)) {
-                    JOptionPane.showMessageDialog(this, "Xóa thành công!");
-                    DocDuLieuVaoTable();
-                    xoaTrang();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Xóa thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                try {
+                    if (kh_dao.delete(maKH)) {
+                        JOptionPane.showMessageDialog(this, "Xóa thành công!");
+                        DocDuLieuVaoTable();
+                        xoaTrang();
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Xóa thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this,
+                        "Không thể xóa khách hàng này!\nKhách hàng đã có lịch sử giao dịch (hóa đơn).",
+                        "Lỗi CSDL", JOptionPane.ERROR_MESSAGE);
                 }
             }
             return;
@@ -441,5 +434,4 @@ public class QuanLyKhachHang extends JPanel implements ActionListener, MouseList
     public void mouseEntered(MouseEvent e) {}
     @Override
     public void mouseExited(MouseEvent e) {}
-
 }
