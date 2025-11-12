@@ -42,7 +42,6 @@ public class DangNhap_DAO {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
-			// Đóng ResultSet và PreparedStatement
 			try {
 				if (rs != null)
 					rs.close();

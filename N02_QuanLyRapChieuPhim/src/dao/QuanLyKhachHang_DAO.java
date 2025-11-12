@@ -13,7 +13,6 @@ public class QuanLyKhachHang_DAO {
         this.conn = ConnectDB.getConnection();
     }
 
-    // === HÀM THÊM (CỦA BẠN) ===
     public boolean add(KhachHang khachHang) {
         if (this.conn == null || khachHang == null)
             return false;
@@ -37,7 +36,6 @@ public class QuanLyKhachHang_DAO {
         return n > 0;
     }
 
-    // === HÀM TÌM KIẾM (CỦA BẠN) ===
     public KhachHang findKhachHang(String maKhachHang) {
         if (this.conn == null || maKhachHang == null || maKhachHang.trim().isEmpty())
             return null;
@@ -64,7 +62,6 @@ public class QuanLyKhachHang_DAO {
         return khachHang;
     }
 
-    // Tìm khách hàng theo số điện thoại
     public KhachHang timKhachHangTheoSDT(String sdt) {
         if (this.conn == null || sdt == null || sdt.trim().isEmpty())
             return null;
@@ -91,7 +88,6 @@ public class QuanLyKhachHang_DAO {
         return khachHang;
     }
 
-    // === HÀM LẤY DANH SÁCH (CỦA BẠN) ===
     public ArrayList<KhachHang> getDanhSachKhachHang() {
         if (this.conn == null)
             return null;
@@ -119,7 +115,6 @@ public class QuanLyKhachHang_DAO {
         return danhSachKhachHang;
     }
 
-    // === HÀM SỬA (BỔ SUNG) ===
     public boolean update(KhachHang khachHang) {
         if (this.conn == null || khachHang == null)
             return false;
@@ -142,8 +137,7 @@ public class QuanLyKhachHang_DAO {
         }
         return n > 0;
     }
-
-    // === HÀM XÓA (BỔ SUNG) ===
+    
     public boolean delete(String maKhachHang) {
         if (this.conn == null || maKhachHang == null || maKhachHang.trim().isEmpty())
             return false;
@@ -161,15 +155,12 @@ public class QuanLyKhachHang_DAO {
         }
         return n > 0;
     }
-
-    // === HÀM TẠO MÃ (CỦA BẠN) ===
     public static String taoMaKHTuDong() {
         long timeMillis = System.currentTimeMillis();
         int rand = new Random().nextInt(1000);
         return "KH" + timeMillis + String.format("%03d", rand);
     }
-
-    // ====== HÀM TIỆN ÍCH (CỦA BẠN) ======
+    
     private void close(ResultSet rs, Statement stmt) {
         try {
             if (rs != null)

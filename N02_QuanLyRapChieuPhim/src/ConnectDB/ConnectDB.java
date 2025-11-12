@@ -8,9 +8,6 @@ public class ConnectDB {
     private static Connection con = null;
     private static ConnectDB instance = new ConnectDB();
 
-    private ConnectDB() {
-    }
-
     public static ConnectDB getInstance() {
         return instance;
     }
@@ -22,14 +19,13 @@ public class ConnectDB {
 
         try {
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-
             con = DriverManager.getConnection(url, user, password);
-            System.out.println("✅ Kết nối CSDL thành công!");
+            System.out.println("Kết nối CSDL thành công!");
         } catch (ClassNotFoundException e) {
-            System.err.println("❌ Không tìm thấy driver SQL Server!");
+            System.err.println("Không tìm thấy driver SQL Server!");
             e.printStackTrace();
         } catch (SQLException e) {
-            System.err.println("❌ Lỗi kết nối CSDL!");
+            System.err.println("Lỗi kết nối CSDL!");
             e.printStackTrace();
         }
     }
@@ -39,7 +35,7 @@ public class ConnectDB {
             try {
                 con.close();
                 con = null;
-                System.out.println("🔌 Đã ngắt kết nối CSDL.");
+                System.out.println("Đã ngắt kết nối CSDL.");
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -47,7 +43,6 @@ public class ConnectDB {
     }
 
     public static Connection getConnection() {
-        // Tự động kết nối nếu chưa có
         if (con == null) {
             getInstance().connect();
         }

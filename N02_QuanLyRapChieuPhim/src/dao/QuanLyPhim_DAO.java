@@ -8,7 +8,6 @@ import entity.TheLoaiPhim;
 
 public class QuanLyPhim_DAO {
 
-    // Lấy toàn bộ danh sách phimsrc/dao/QuanLyPhim_DAO.java
     public ArrayList<Phim> getAllPhim() {
         ArrayList<Phim> dsPhim = new ArrayList<>();
         Connection con = ConnectDB.getConnection();
@@ -25,7 +24,7 @@ public class QuanLyPhim_DAO {
                 String tenPhim = rs.getString("tenPhim");
                 String nhaSanXuat = rs.getString("nhaSanXuat");
                 String theLoaiStr = rs.getString("theLoai");
-                TheLoaiPhim theLoai = TheLoaiPhim.fromTenHienThi(theLoaiStr); // ✅ chuyển đúng cách
+                TheLoaiPhim theLoai = TheLoaiPhim.fromTenHienThi(theLoaiStr); 
                 int thoiLuong = rs.getInt("thoiLuong");
                 String quocGia = rs.getString("quocGia");
 
@@ -40,7 +39,6 @@ public class QuanLyPhim_DAO {
         return dsPhim;
     }
 
-    // Thêm phim mới
     public boolean themPhim(Phim p) {
         Connection con = ConnectDB.getConnection();
         PreparedStatement stmt = null;
@@ -51,7 +49,7 @@ public class QuanLyPhim_DAO {
             stmt.setString(1, p.getMaPhim());
             stmt.setString(2, p.getTenPhim());
             stmt.setString(3, p.getNhaSanXuat());
-            stmt.setString(4, p.getTheLoai().getTenHienThi()); // ✅ lưu tiếng Việt đẹp
+            stmt.setString(4, p.getTheLoai().getTenHienThi()); 
             stmt.setInt(5, p.getThoiLuong());
             stmt.setString(6, p.getQuocGia());
 
@@ -64,7 +62,6 @@ public class QuanLyPhim_DAO {
         return n > 0;
     }
 
-    // Cập nhật thông tin phim
     public boolean capNhatPhim(Phim p) {
         Connection con = ConnectDB.getConnection();
         PreparedStatement stmt = null;
@@ -74,7 +71,7 @@ public class QuanLyPhim_DAO {
             stmt = con.prepareStatement(sql);
             stmt.setString(1, p.getTenPhim());
             stmt.setString(2, p.getNhaSanXuat());
-            stmt.setString(3, p.getTheLoai().getTenHienThi()); // ✅
+            stmt.setString(3, p.getTheLoai().getTenHienThi()); 
             stmt.setInt(4, p.getThoiLuong());
             stmt.setString(5, p.getQuocGia());
             stmt.setString(6, p.getMaPhim());
@@ -105,7 +102,6 @@ public class QuanLyPhim_DAO {
         return n > 0;
     }
 
-    // Tìm phim theo mã
     public Phim timPhimTheoMa(String maPhim) {
         Connection con = ConnectDB.getConnection();
         PreparedStatement stmt = null;
@@ -137,7 +133,6 @@ public class QuanLyPhim_DAO {
         return p;
     }
 
-    // ====== HÀM TIỆN ÍCH ======
     private void close(ResultSet rs, Statement stmt) {
         try {
             if (rs != null)
