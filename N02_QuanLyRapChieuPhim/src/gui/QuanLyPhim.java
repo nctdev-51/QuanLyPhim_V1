@@ -272,6 +272,18 @@ public class QuanLyPhim extends JPanel implements LoadData {
             cboTheLoai.setSelectedItem(p.getTheLoai());
             txtThoiLuong.setText(String.valueOf(p.getThoiLuong()));
             txtQuocGia.setText(p.getQuocGia());
+            int index = -1;
+            for (int i = 0; i < dsPhim.size(); i++) {
+                if (dsPhim.get(i).getMaPhim().equals(p.getMaPhim())) {
+                    index = i;
+                    break;
+                }
+            }
+            
+            if (index != -1) {
+                table.setRowSelectionInterval(index, index);
+                table.scrollRectToVisible(table.getCellRect(index, 0, true));
+            }
         } else {
             JOptionPane.showMessageDialog(this, "❌ Không tìm thấy phim có mã " + ma);
         }
@@ -298,6 +310,7 @@ public class QuanLyPhim extends JPanel implements LoadData {
         txtThoiLuong.setText("");
         txtQuocGia.setText("");
         txtTimPhim.setText("");
+        table.clearSelection();
         txtMaPhim.requestFocus();
     }
 
