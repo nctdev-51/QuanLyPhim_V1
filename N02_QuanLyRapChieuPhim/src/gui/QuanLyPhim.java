@@ -225,7 +225,6 @@ public class QuanLyPhim extends JPanel implements LoadData, ActionListener {
         btn.setBorder(BORDER_BTN);
     }
     
-    // === CÁC HÀM LOGIC (GIỮ NGUYÊN) ===
     
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -297,8 +296,8 @@ public class QuanLyPhim extends JPanel implements LoadData, ActionListener {
             txtNhaSX.requestFocus();
             return false;
         }
-        if (!nhaSX.matches("^[A-Za-zÀ-ỹ\\s'.,-]+$")) {
-            JOptionPane.showMessageDialog(this, "Tên nhà sản xuất chỉ được chứa chữ và ký tự .,',-.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        if (!nhaSX.matches("^[A-Za-zÀ-ỹ0-9\\s'.,-]+$")) {
+            JOptionPane.showMessageDialog(this, "Tên nhà sản xuất chỉ được chứa chữ, số và ký tự .,',-.", "Lỗi", JOptionPane.ERROR_MESSAGE);
             txtNhaSX.requestFocus();
             return false;
         }
@@ -328,7 +327,7 @@ public class QuanLyPhim extends JPanel implements LoadData, ActionListener {
             txtQuocGia.requestFocus();
             return false;
         }
-        if (!quocGia.matches("^[\\p{L}\\s]+$")) { // Cho phép chữ cái unicode và khoảng trắng
+        if (!quocGia.matches("^[\\p{L}\\s]+$")) { 
             JOptionPane.showMessageDialog(this, "Tên quốc gia chỉ được chứa chữ và khoảng trắng.", "Lỗi", JOptionPane.ERROR_MESSAGE);
             txtQuocGia.requestFocus();
             return false;
